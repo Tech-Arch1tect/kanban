@@ -1,0 +1,623 @@
+definitions:
+  adminController.ListUsersResponse:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total_pages:
+        type: integer
+      total_records:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    type: object
+  adminController.RemoveUserResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  adminController.UpdateUserRoleRequest:
+    properties:
+      role:
+        type: string
+    type: object
+  adminController.UpdateUserRoleResponse:
+    properties:
+      message:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+    type: object
+  authController.ChangePasswordRequest:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        minLength: 8
+        type: string
+    required:
+    - current_password
+    - new_password
+    type: object
+  authController.ChangePasswordResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  authController.ConfirmTOTPRequest:
+    properties:
+      code:
+        type: string
+    required:
+    - code
+    type: object
+  authController.ConfirmTOTPResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  authController.DisableTOTPRequest:
+    properties:
+      code:
+        type: string
+    required:
+    - code
+    type: object
+  authController.DisableTOTPResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  authController.EnableTOTPRequest:
+    properties:
+      code:
+        type: string
+    required:
+    - code
+    type: object
+  authController.EnableTOTPResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  authController.GenerateTOTPResponse:
+    properties:
+      secret:
+        type: string
+    type: object
+  authController.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  authController.LoginResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  authController.PasswordResetRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  authController.PasswordResetResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  authController.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  authController.ResetPasswordRequest:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - code
+    - email
+    - password
+    type: object
+  authController.ResetPasswordResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  miscController.AppNameResponse:
+    properties:
+      app_name:
+        type: string
+    type: object
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  models.Role:
+    enum:
+    - user
+    - admin
+    - disabled
+    type: string
+    x-enum-varnames:
+    - RoleUser
+    - RoleAdmin
+    - RoleDisabled
+  models.User:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: integer
+      role:
+        $ref: '#/definitions/models.Role'
+      totp_enabled:
+        type: boolean
+      updated_at:
+        type: string
+    required:
+    - email
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/admin/users:
+    get:
+      description: List all users with optional pagination parameters and search functionality
+      parameters:
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        minimum: 1
+        name: page_size
+        type: integer
+      - in: query
+        name: search
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/adminController.ListUsersResponse'
+        "400":
+          description: 'error: Invalid page or page size'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: 'error: failed to list users'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: List users with pagination and optional search
+      tags:
+      - admin
+  /api/v1/admin/users/{id}:
+    delete:
+      description: Remove a user from the database by providing their ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: 'message: user removed'
+          schema:
+            $ref: '#/definitions/adminController.RemoveUserResponse'
+        "500":
+          description: 'error: failed to remove user'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Remove a user by ID
+      tags:
+      - admin
+  /api/v1/admin/users/{id}/role:
+    put:
+      consumes:
+      - application/json
+      description: Update the role of a user identified by their ID with the provided
+        role
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New Role
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/adminController.UpdateUserRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: user role updated, user: updated user details'
+          schema:
+            $ref: '#/definitions/adminController.UpdateUserRoleResponse'
+        "400":
+          description: 'error: invalid input or invalid role'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: 'error: user not found'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: 'error: failed to update user role'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Update user role by ID
+      tags:
+      - admin
+  /api/v1/auth/change-password:
+    post:
+      consumes:
+      - application/json
+      description: Change the password of the logged-in user
+      parameters:
+      - description: Password change details
+        in: body
+        name: passwordChange
+        required: true
+        schema:
+          $ref: '#/definitions/authController.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: password changed successfully'
+          schema:
+            $ref: '#/definitions/authController.ChangePasswordResponse'
+        "400":
+          description: 'error: bad request'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: 'error: unauthorized'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: 'error: internal server error'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Change user password
+      tags:
+      - auth
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user with email and password
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/authController.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authController.LoginResponse'
+        "400":
+          description: 'error: bad request'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: 'error: invalid credentials'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Login a user
+      tags:
+      - auth
+  /api/v1/auth/logout:
+    post:
+      description: Logout the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: logged out'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Logout a user
+      tags:
+      - auth
+  /api/v1/auth/password-reset:
+    post:
+      consumes:
+      - application/json
+      description: Request a password reset for a user
+      parameters:
+      - description: Password reset details
+        in: body
+        name: passwordReset
+        required: true
+        schema:
+          $ref: '#/definitions/authController.PasswordResetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: If you have an account with us, you will receive
+            a password reset link shortly.'
+          schema:
+            $ref: '#/definitions/authController.PasswordResetResponse'
+        "400":
+          description: 'error: invalid request'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: 'error: internal server error'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Request a password reset
+      tags:
+      - auth
+  /api/v1/auth/profile:
+    get:
+      description: Get the profile of the logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: 'error: internal server error'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Get user profile
+      tags:
+      - auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with email and password
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/authController.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'message: user created'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: bad request'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: 'error: internal server error'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - auth
+  /api/v1/auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Reset a user's password
+      parameters:
+      - description: Reset password details
+        in: body
+        name: resetPassword
+        required: true
+        schema:
+          $ref: '#/definitions/authController.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: Password reset successful'
+          schema:
+            $ref: '#/definitions/authController.ResetPasswordResponse'
+        "400":
+          description: 'error: invalid request'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: 'error: internal server error'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Reset a user's password
+      tags:
+      - auth
+  /api/v1/auth/totp/confirm:
+    post:
+      consumes:
+      - application/json
+      description: Confirm TOTP code for the user during login
+      parameters:
+      - description: TOTP code
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authController.ConfirmTOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authController.ConfirmTOTPResponse'
+        "400":
+          description: 'error: invalid request or invalid TOTP code'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: 'error: unauthorized'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: 'error: internal server error'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Confirm TOTP code
+      tags:
+      - auth
+  /api/v1/auth/totp/disable:
+    post:
+      consumes:
+      - application/json
+      description: Disable TOTP for the logged-in user
+      parameters:
+      - description: TOTP code
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authController.DisableTOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authController.DisableTOTPResponse'
+        "400":
+          description: 'error: invalid TOTP code'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: 'error: unauthorized'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: 'error: internal server error'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Disable TOTP
+      tags:
+      - auth
+  /api/v1/auth/totp/enable:
+    post:
+      consumes:
+      - application/json
+      description: Enable TOTP for the logged-in user
+      parameters:
+      - description: TOTP code
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authController.EnableTOTPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authController.EnableTOTPResponse'
+        "400":
+          description: 'error: invalid TOTP code'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: 'error: unauthorized'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: 'error: internal server error'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Enable TOTP
+      tags:
+      - auth
+  /api/v1/auth/totp/generate:
+    post:
+      description: Generate a new TOTP secret for the logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authController.GenerateTOTPResponse'
+        "401":
+          description: 'error: unauthorized'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: 'error: internal server error'
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Generate TOTP secret
+      tags:
+      - auth
+  /api/v1/misc/appname:
+    get:
+      description: Get the app name
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/miscController.AppNameResponse'
+      summary: Get the app name
+      tags:
+      - misc
+swagger: "2.0"
