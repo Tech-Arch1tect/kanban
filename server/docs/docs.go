@@ -73,6 +73,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
                     }
                 ],
                 "description": "Remove a user from the database by providing their ID",
@@ -110,6 +113,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
                     }
                 ],
                 "description": "Update the role of a user identified by their ID with the provided role",
@@ -174,6 +180,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
                     }
                 ],
                 "description": "Change the password of the logged-in user",
@@ -219,6 +228,43 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "error: internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/csrf-token": {
+            "get": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "description": "Get the CSRF token for the logged-in user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get CSRF token",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/authController.GetCSRFTokenResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -274,6 +320,11 @@ const docTemplate = `{
         },
         "/api/v1/auth/logout": {
             "post": {
+                "security": [
+                    {
+                        "csrf": []
+                    }
+                ],
                 "description": "Logout the current user",
                 "produces": [
                     "application/json"
@@ -524,6 +575,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
                     }
                 ],
                 "description": "Disable TOTP for the logged-in user",
@@ -581,6 +635,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
                     }
                 ],
                 "description": "Enable TOTP for the logged-in user",
@@ -638,6 +695,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
                     }
                 ],
                 "description": "Generate a new TOTP secret for the logged-in user",
@@ -831,6 +891,14 @@ const docTemplate = `{
                 }
             }
         },
+        "authController.GetCSRFTokenResponse": {
+            "type": "object",
+            "properties": {
+                "csrf_token": {
+                    "type": "string"
+                }
+            }
+        },
         "authController.LoginRequest": {
             "type": "object",
             "properties": {
@@ -976,6 +1044,13 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "csrf": {
+            "type": "apiKey",
+            "name": "X-CSRF-Token",
+            "in": "header"
         }
     }
 }`

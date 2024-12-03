@@ -88,6 +88,11 @@ definitions:
       secret:
         type: string
     type: object
+  authController.GetCSRFTokenResponse:
+    properties:
+      csrf_token:
+        type: string
+    type: object
   authController.LoginRequest:
     properties:
       email:
@@ -240,6 +245,7 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       security:
       - cookieAuth: []
+      - csrf: []
       summary: Remove a user by ID
       tags:
       - admin
@@ -282,6 +288,7 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       security:
       - cookieAuth: []
+      - csrf: []
       summary: Update user role by ID
       tags:
       - admin
@@ -318,7 +325,31 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       security:
       - cookieAuth: []
+      - csrf: []
       summary: Change user password
+      tags:
+      - auth
+  /api/v1/auth/csrf-token:
+    get:
+      description: Get the CSRF token for the logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authController.GetCSRFTokenResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Get CSRF token
       tags:
       - auth
   /api/v1/auth/login:
@@ -363,6 +394,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - csrf: []
       summary: Logout a user
       tags:
       - auth
@@ -545,6 +578,7 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       security:
       - cookieAuth: []
+      - csrf: []
       summary: Disable TOTP
       tags:
       - auth
@@ -581,6 +615,7 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       security:
       - cookieAuth: []
+      - csrf: []
       summary: Enable TOTP
       tags:
       - auth
@@ -604,6 +639,7 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       security:
       - cookieAuth: []
+      - csrf: []
       summary: Generate TOTP secret
       tags:
       - auth
@@ -620,4 +656,9 @@ paths:
       summary: Get the app name
       tags:
       - misc
+securityDefinitions:
+  csrf:
+    in: header
+    name: X-CSRF-Token
+    type: apiKey
 swagger: "2.0"
