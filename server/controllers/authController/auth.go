@@ -135,6 +135,7 @@ func Login(c *gin.Context) {
 // @Summary Logout a user
 // @Description Logout the current user
 // @Tags auth
+// @Security csrf
 // @Produce json
 // @Success 200 {object} map[string]string "message: logged out"
 // @Router /api/v1/auth/logout [post]
@@ -187,6 +188,7 @@ type ChangePasswordResponse struct {
 // @Description Change the password of the logged-in user
 // @Tags auth
 // @Security cookieAuth
+// @Security csrf
 // @Accept json
 // @Produce json
 // @Param passwordChange body ChangePasswordRequest true "Password change details"
@@ -236,5 +238,36 @@ func ChangePassword(c *gin.Context) {
 
 	c.JSON(http.StatusOK, ChangePasswordResponse{
 		Message: "password changed successfully",
+	})
+}
+
+type GetCSRFTokenResponse struct {
+	CSRFToken string `json:"csrf_token"`
+}
+
+// GetCSRFToken godoc
+// @Summary Get CSRF token
+// @Description Get the CSRF token for the logged-in user
+// @Tags auth
+// @Security cookieAuth
+// @Produce json
+// @Success 200 {object} GetCSRFTokenResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/auth/csrf-token [get]
+func GetCSRFToken(c *gin.Context) {
+	user, err := helpers.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "unauthorized"})
+		return
+	}
+
+	if user.CSRFToken == "" {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, GetCSRFTokenResponse{
+		CSRFToken: user.CSRFToken,
 	})
 }

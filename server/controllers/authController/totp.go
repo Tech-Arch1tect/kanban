@@ -22,6 +22,7 @@ type GenerateTOTPResponse struct {
 // @Description Generate a new TOTP secret for the logged-in user
 // @Tags auth
 // @Security cookieAuth
+// @Security csrf
 // @Produce json
 // @Success 200 {object} GenerateTOTPResponse
 // @Failure 401 {object} models.ErrorResponse "error: unauthorized"
@@ -66,6 +67,7 @@ type EnableTOTPResponse struct {
 // @Description Enable TOTP for the logged-in user
 // @Tags auth
 // @Security cookieAuth
+// @Security csrf
 // @Accept json
 // @Produce json
 // @Param request body EnableTOTPRequest true "TOTP code"
@@ -123,6 +125,7 @@ type DisableTOTPResponse struct {
 // @Description Disable TOTP for the logged-in user
 // @Tags auth
 // @Security cookieAuth
+// @Security csrf
 // @Accept json
 // @Produce json
 // @Param request body DisableTOTPRequest true "TOTP code"

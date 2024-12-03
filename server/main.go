@@ -12,6 +12,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @SecurityDefinitions.apikey csrf
+// @in header
+// @name X-CSRF-Token
+
 func main() {
 	config.LoadConfig()
 	// Initialize database

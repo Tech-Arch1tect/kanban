@@ -19,6 +19,7 @@ type RemoveUserResponse struct {
 // @Description Remove a user from the database by providing their ID
 // @Tags admin
 // @Security cookieAuth
+// @Security csrf
 // @Param id path string true "User ID"
 // @Success 200 {object} RemoveUserResponse "message: user removed"
 // @Failure 500 {object} models.ErrorResponse "error: failed to remove user"
@@ -98,6 +99,7 @@ type UpdateUserRoleResponse struct {
 // @Description Update the role of a user identified by their ID with the provided role
 // @Tags admin
 // @Security cookieAuth
+// @Security csrf
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"

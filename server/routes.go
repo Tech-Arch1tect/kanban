@@ -27,9 +27,10 @@ func routes(r *gin.Engine) {
 		{
 			auth.POST("/register", authController.Register)
 			auth.POST("/login", authController.Login)
-			auth.POST("/logout", middleware.AuthRequired(), authController.Logout)
+			auth.POST("/logout", middleware.AuthRequired(), middleware.CSRFTokenRequired(), authController.Logout)
 			auth.GET("/profile", middleware.AuthRequired(), authController.Profile)
-			auth.POST("/change-password", middleware.AuthRequired(), authController.ChangePassword)
+			auth.GET("/csrf-token", middleware.AuthRequired(), authController.GetCSRFToken)
+			auth.POST("/change-password", middleware.AuthRequired(), middleware.CSRFTokenRequired(), authController.ChangePassword)
 			auth.POST("/password-reset", authController.PasswordReset)
 			auth.POST("/reset-password", authController.ResetPassword)
 		}
@@ -43,17 +44,17 @@ func routes(r *gin.Engine) {
 		authLoginRequired := api.Group("/auth")
 		authLoginRequired.Use(middleware.AuthRequired())
 		{
-			authLoginRequired.POST("/totp/generate", authController.GenerateTOTP)
-			authLoginRequired.POST("/totp/enable", authController.EnableTOTP)
-			authLoginRequired.POST("/totp/disable", authController.DisableTOTP)
+			authLoginRequired.POST("/totp/generate", middleware.CSRFTokenRequired(), authController.GenerateTOTP)
+			authLoginRequired.POST("/totp/enable", middleware.CSRFTokenRequired(), authController.EnableTOTP)
+			authLoginRequired.POST("/totp/disable", middleware.CSRFTokenRequired(), authController.DisableTOTP)
 		}
 
 		admin := api.Group("admin")
 		admin.Use(middleware.EnsureRole(models.RoleAdmin))
 		{
-			admin.DELETE("/users/:id", adminController.RemoveUser)
+			admin.DELETE("/users/:id", middleware.CSRFTokenRequired(), adminController.RemoveUser)
 			admin.GET("/users", adminController.ListUsers)
-			admin.PUT("/users/:id/role", adminController.UpdateUserRole)
+			admin.PUT("/users/:id/role", middleware.CSRFTokenRequired(), adminController.UpdateUserRole)
 		}
 	}
 }
