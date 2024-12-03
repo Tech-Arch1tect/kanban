@@ -22,6 +22,10 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	}
 }
 
+func (r *GormUserRepository) Migrate() error {
+	return r.db.AutoMigrate(&models.User{})
+}
+
 func (r *GormUserRepository) GetByEmail(email string) (models.User, error) {
 	var user models.User
 	result := r.db.Where("email = ?", email).First(&user)

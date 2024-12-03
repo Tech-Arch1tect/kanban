@@ -6,6 +6,7 @@ import (
 )
 
 type Repository[T any] interface {
+	Migrate() error
 	GetAll() ([]T, error)
 	GetByID(id uint) (T, error)
 	Create(entity *T) error
@@ -34,6 +35,11 @@ func Init() {
 	database, err := initFunc()
 	if err != nil {
 		log.Fatalf("Failed to initialize %s database: %v", config.CFG.DBType, err)
+	}
+
+	err = database.Migrate()
+	if err != nil {
+		log.Fatalf("Failed to migrate %s database: %v", config.CFG.DBType, err)
 	}
 
 	DB = database

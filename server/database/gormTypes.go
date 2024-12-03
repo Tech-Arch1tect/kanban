@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"server/config"
-	"server/models"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -13,11 +12,6 @@ import (
 
 func NewSqlite() (Database, error) {
 	db, err := gorm.Open(sqlite.Open(config.CFG.SQLite.FilePath), &gorm.Config{})
-	if err != nil {
-		return Database{}, err
-	}
-
-	err = db.AutoMigrate(&models.User{})
 	if err != nil {
 		return Database{}, err
 	}
@@ -39,14 +33,13 @@ func NewMySQL() (Database, error) {
 		return Database{}, err
 	}
 
-	err = db.AutoMigrate(&models.User{})
-	if err != nil {
-		return Database{}, err
-	}
-
 	userRepo := NewUserRepository(db)
 
 	return Database{
 		UserRepository: userRepo,
 	}, nil
+}
+
+func (d *Database) Migrate() error {
+	return d.UserRepository.Migrate()
 }
