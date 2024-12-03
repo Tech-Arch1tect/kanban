@@ -13,6 +13,7 @@ export * from './AuthControllerDisableTOTPResponse';
 export * from './AuthControllerEnableTOTPRequest';
 export * from './AuthControllerEnableTOTPResponse';
 export * from './AuthControllerGenerateTOTPResponse';
+export * from './AuthControllerGetCSRFTokenResponse';
 export * from './AuthControllerLoginRequest';
 export * from './AuthControllerLoginResponse';
 export * from './AuthControllerPasswordResetRequest';

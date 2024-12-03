@@ -24,6 +24,7 @@ import type {
   AuthControllerEnableTOTPRequest,
   AuthControllerEnableTOTPResponse,
   AuthControllerGenerateTOTPResponse,
+  AuthControllerGetCSRFTokenResponse,
   AuthControllerLoginRequest,
   AuthControllerLoginResponse,
   AuthControllerPasswordResetRequest,
@@ -53,6 +54,8 @@ import {
     AuthControllerEnableTOTPResponseToJSON,
     AuthControllerGenerateTOTPResponseFromJSON,
     AuthControllerGenerateTOTPResponseToJSON,
+    AuthControllerGetCSRFTokenResponseFromJSON,
+    AuthControllerGetCSRFTokenResponseToJSON,
     AuthControllerLoginRequestFromJSON,
     AuthControllerLoginRequestToJSON,
     AuthControllerLoginResponseFromJSON,
@@ -128,6 +131,10 @@ export class AuthApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-CSRF-Token"] = await this.configuration.apiKey("X-CSRF-Token"); // csrf authentication
+        }
+
         const response = await this.request({
             path: `/api/v1/auth/change-password`,
             method: 'POST',
@@ -145,6 +152,34 @@ export class AuthApi extends runtime.BaseAPI {
      */
     async apiV1AuthChangePasswordPost(requestParameters: ApiV1AuthChangePasswordPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AuthControllerChangePasswordResponse> {
         const response = await this.apiV1AuthChangePasswordPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get the CSRF token for the logged-in user
+     * Get CSRF token
+     */
+    async apiV1AuthCsrfTokenGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AuthControllerGetCSRFTokenResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/v1/auth/csrf-token`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AuthControllerGetCSRFTokenResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get the CSRF token for the logged-in user
+     * Get CSRF token
+     */
+    async apiV1AuthCsrfTokenGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AuthControllerGetCSRFTokenResponse> {
+        const response = await this.apiV1AuthCsrfTokenGetRaw(initOverrides);
         return await response.value();
     }
 
@@ -194,6 +229,10 @@ export class AuthApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-CSRF-Token"] = await this.configuration.apiKey("X-CSRF-Token"); // csrf authentication
+        }
 
         const response = await this.request({
             path: `/api/v1/auth/logout`,
@@ -412,6 +451,10 @@ export class AuthApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-CSRF-Token"] = await this.configuration.apiKey("X-CSRF-Token"); // csrf authentication
+        }
+
         const response = await this.request({
             path: `/api/v1/auth/totp/disable`,
             method: 'POST',
@@ -450,6 +493,10 @@ export class AuthApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-CSRF-Token"] = await this.configuration.apiKey("X-CSRF-Token"); // csrf authentication
+        }
+
         const response = await this.request({
             path: `/api/v1/auth/totp/enable`,
             method: 'POST',
@@ -478,6 +525,10 @@ export class AuthApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-CSRF-Token"] = await this.configuration.apiKey("X-CSRF-Token"); // csrf authentication
+        }
 
         const response = await this.request({
             path: `/api/v1/auth/totp/generate`,

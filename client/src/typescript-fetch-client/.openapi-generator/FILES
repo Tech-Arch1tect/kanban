@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/AdminApi.ts
 apis/AuthApi.ts
 apis/MiscApi.ts
@@ -17,6 +16,7 @@ models/AuthControllerDisableTOTPResponse.ts
 models/AuthControllerEnableTOTPRequest.ts
 models/AuthControllerEnableTOTPResponse.ts
 models/AuthControllerGenerateTOTPResponse.ts
+models/AuthControllerGetCSRFTokenResponse.ts
 models/AuthControllerLoginRequest.ts
 models/AuthControllerLoginResponse.ts
 models/AuthControllerPasswordResetRequest.ts
