@@ -29,7 +29,7 @@ func GetUserFromSession(c *gin.Context) (models.User, error) {
 	if userID == nil {
 		return models.User{}, errors.New("unauthenticated")
 	}
-	user, err := database.DB.GetUserByID(userID.(string))
+	user, err := database.DB.UserRepository.GetByID(userID.(uint))
 	if err != nil {
 		return models.User{}, err
 	}

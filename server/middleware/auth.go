@@ -29,7 +29,7 @@ func EnsureRole(role models.Role) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthenticated"})
 			return
 		}
-		user, err := database.DB.GetUserByID(userID.(string))
+		user, err := database.DB.UserRepository.GetByID(userID.(uint))
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 			return

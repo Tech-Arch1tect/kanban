@@ -1,7 +1,6 @@
 package authController
 
 import (
-	"fmt"
 	"net/http"
 	"server/config"
 	"server/database"
@@ -45,7 +44,7 @@ func GenerateTOTP(c *gin.Context) {
 	}
 
 	user.TotpSecret = key.Secret()
-	if err := database.DB.UpdateUserByID(fmt.Sprint(user.ID), user); err != nil {
+	if err := database.DB.UserRepository.Update(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save TOTP secret"})
 		return
 	}
@@ -83,7 +82,7 @@ func EnableTOTP(c *gin.Context) {
 		return
 	}
 
-	user, err := database.DB.GetUserByID(userID.(string))
+	user, err := database.DB.UserRepository.GetByID(userID.(uint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
@@ -102,7 +101,7 @@ func EnableTOTP(c *gin.Context) {
 	}
 
 	user.TotpEnabled = true
-	if err := database.DB.UpdateUserByID(fmt.Sprint(user.ID), user); err != nil {
+	if err := database.DB.UserRepository.Update(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to enable TOTP"})
 		return
 	}
@@ -140,7 +139,7 @@ func DisableTOTP(c *gin.Context) {
 		return
 	}
 
-	user, err := database.DB.GetUserByID(userID.(string))
+	user, err := database.DB.UserRepository.GetByID(userID.(uint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
@@ -165,7 +164,7 @@ func DisableTOTP(c *gin.Context) {
 
 	user.TotpEnabled = false
 	user.TotpSecret = ""
-	if err := database.DB.UpdateUserByID(fmt.Sprint(user.ID), user); err != nil {
+	if err := database.DB.UserRepository.Update(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to disable TOTP"})
 		return
 	}
@@ -203,7 +202,7 @@ func ConfirmTOTP(c *gin.Context) {
 	}
 
 	// find the user by ID
-	user, err := database.DB.GetUserByID(userID.(string))
+	user, err := database.DB.UserRepository.GetByID(userID.(uint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return

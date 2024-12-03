@@ -42,7 +42,7 @@ func Register(c *gin.Context) {
 	}
 
 	// If this is the first user to register, set the role to admin
-	count, err := database.DB.CountUsers()
+	count, err := database.DB.UserRepository.Count()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
@@ -58,7 +58,7 @@ func Register(c *gin.Context) {
 	}
 
 	user.Password = string(hashedPassword)
-	if err := database.DB.CreateUser(user); err != nil {
+	if err := database.DB.UserRepository.Create(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
@@ -93,7 +93,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	user, err := database.DB.GetUserByEmail(input.Email)
+	user, err := database.DB.UserRepository.GetByEmail(input.Email)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
 			Error: "invalid credentials",
@@ -164,7 +164,7 @@ func Profile(c *gin.Context) {
 	session := sessions.Default(c)
 	userID := session.Get("userID")
 
-	user, err := database.DB.GetUserByID(userID.(string))
+	user, err := database.DB.UserRepository.GetByID(userID.(uint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
@@ -209,7 +209,7 @@ func ChangePassword(c *gin.Context) {
 		return
 	}
 
-	user, err := database.DB.GetUserByID(userID.(string))
+	user, err := database.DB.UserRepository.GetByID(userID.(uint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "internal server error"})
 		return
@@ -229,7 +229,7 @@ func ChangePassword(c *gin.Context) {
 	}
 
 	user.Password = string(hashedPassword)
-	if err := database.DB.UpdateUserByID(userID.(string), user); err != nil {
+	if err := database.DB.UserRepository.Update(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "internal server error"})
 		return
 	}

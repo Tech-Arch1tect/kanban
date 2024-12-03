@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"server/database"
 	"server/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -24,7 +25,12 @@ type RemoveUserResponse struct {
 // @Router /api/v1/admin/users/{id} [delete]
 func RemoveUser(c *gin.Context) {
 	userID := c.Param("id")
-	if err := database.DB.DeleteUserByID(userID); err != nil {
+	uintUserID, err := strconv.ParseUint(userID, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
+		return
+	}
+	if err := database.DB.UserRepository.Delete(uint(uintUserID)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to remove user"})
 		return
 	}
@@ -61,7 +67,7 @@ func ListUsers(c *gin.Context) {
 		return
 	}
 
-	users, totalRecords, err := database.DB.GetUsers(req.Page, req.PageSize, req.Search)
+	users, totalRecords, err := database.DB.UserRepository.PaginatedSearch(req.Page, req.PageSize, req.Search)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list users"})
 		return
@@ -109,7 +115,12 @@ func UpdateUserRole(c *gin.Context) {
 	}
 
 	userID := c.Param("id")
-	user, err := database.DB.GetUserByID(userID)
+	uintUserID, err := strconv.ParseUint(userID, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
+		return
+	}
+	user, err := database.DB.UserRepository.GetByID(uint(uintUserID))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
@@ -123,7 +134,7 @@ func UpdateUserRole(c *gin.Context) {
 
 	user.Role = newrole
 
-	if err := database.DB.UpdateUserByID(userID, user); err != nil {
+	if err := database.DB.UserRepository.Update(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user role"})
 		return
 	}

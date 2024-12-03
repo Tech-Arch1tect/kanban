@@ -12,27 +12,41 @@ import (
 )
 
 func NewSqlite() (Database, error) {
-	r := &GormDB{}
 	db, err := gorm.Open(sqlite.Open(config.CFG.SQLite.FilePath), &gorm.Config{})
 	if err != nil {
-		return nil, err
+		return Database{}, err
 	}
-	r.db = db
-	db.AutoMigrate(&models.User{})
-	return r, nil
+
+	err = db.AutoMigrate(&models.User{})
+	if err != nil {
+		return Database{}, err
+	}
+
+	userRepo := NewUserRepository(db)
+
+	return Database{
+		UserRepository: userRepo,
+	}, nil
 }
 
 func NewMySQL() (Database, error) {
-	r := &GormDB{}
 	if config.CFG.MySQL.User == "" || config.CFG.MySQL.Password == "" || config.CFG.MySQL.Host == "" || config.CFG.MySQL.Port == "" || config.CFG.MySQL.Database == "" {
-		return nil, errors.New("missing mysql config")
+		return Database{}, errors.New("missing mysql config")
 	}
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", config.CFG.MySQL.User, config.CFG.MySQL.Password, config.CFG.MySQL.Host, config.CFG.MySQL.Port, config.CFG.MySQL.Database)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return nil, err
+		return Database{}, err
 	}
-	r.db = db
-	db.AutoMigrate(&models.User{})
-	return r, nil
+
+	err = db.AutoMigrate(&models.User{})
+	if err != nil {
+		return Database{}, err
+	}
+
+	userRepo := NewUserRepository(db)
+
+	return Database{
+		UserRepository: userRepo,
+	}, nil
 }

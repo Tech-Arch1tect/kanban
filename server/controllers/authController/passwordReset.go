@@ -1,7 +1,6 @@
 package authController
 
 import (
-	"fmt"
 	"log"
 	"server/database"
 	"server/email"
@@ -40,7 +39,7 @@ func PasswordReset(c *gin.Context) {
 	}
 
 	// find user by email
-	user, err := database.DB.GetUserByEmail(req.Email)
+	user, err := database.DB.UserRepository.GetByEmail(req.Email)
 	if err != nil {
 		// respond with 200 and message
 		c.JSON(200, PasswordResetResponse{Message: "If you have an account with us, you will receive a password reset link shortly."})
@@ -50,7 +49,7 @@ func PasswordReset(c *gin.Context) {
 	// update user with reset token
 	user.PasswordResetToken = token
 	user.PasswordResetSentAt = time.Now()
-	if err := database.DB.UpdateUserByID(fmt.Sprint(user.ID), user); err != nil {
+	if err := database.DB.UserRepository.Update(&user); err != nil {
 		c.JSON(500, PasswordResetResponse{Message: "Internal server error"})
 		return
 	}
@@ -95,7 +94,7 @@ func ResetPassword(c *gin.Context) {
 	}
 
 	// find user by email
-	user, err := database.DB.GetUserByEmail(req.Email)
+	user, err := database.DB.UserRepository.GetByEmail(req.Email)
 	if err != nil {
 		c.JSON(500, PasswordResetResponse{Message: "Invalid code"})
 		return
@@ -120,7 +119,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 	user.Password = string(hashedPassword)
-	if err := database.DB.UpdateUserByID(fmt.Sprint(user.ID), user); err != nil {
+	if err := database.DB.UserRepository.Update(&user); err != nil {
 		c.JSON(500, PasswordResetResponse{Message: "Internal server error"})
 		return
 	}
