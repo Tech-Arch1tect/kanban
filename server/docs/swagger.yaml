@@ -191,6 +191,8 @@ definitions:
     type: object
 info:
   contact: {}
+  title: Server API
+  version: 1.0.0
 paths:
   /api/v1/admin/users:
     get:

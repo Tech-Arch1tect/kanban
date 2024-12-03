@@ -12,6 +12,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @title Server API
+// @version 1.0.0
+
 // @SecurityDefinitions.apikey csrf
 // @in header
 // @name X-CSRF-Token
