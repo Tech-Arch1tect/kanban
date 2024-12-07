@@ -13,7 +13,7 @@ The interaction between client <--> server is all based around an  OpenAPI spec.
 
 * ~~Better database module - generic interface to create/edit/update/delete which each model repository can implement or extend~~ <https://github.com/Tech-Arch1tect/go_react_web_app_template/commit/716160a06ec414233113c8097088582fccea5175>
 * Cleaner code
-* Security enhancements (brute force protection, CSRF, etc)
+* ~~Security enhancements~~ (~~brute force protection~~, ~~CSRF~~, etc?)
 
 ## Client
 * Authentication (login, register, forgot-password, 2fa (totp))
