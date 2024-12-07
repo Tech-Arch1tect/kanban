@@ -1,11 +1,13 @@
 package main
 
 import (
+	"server/config"
 	"server/controllers/adminController"
 	"server/controllers/authController"
 	"server/controllers/miscController"
 	"server/middleware"
 	"server/models"
+	"time"
 
 	_ "server/docs"
 
@@ -26,13 +28,23 @@ func routes(r *gin.Engine) {
 		auth := api.Group("/auth")
 		{
 			auth.POST("/register", authController.Register)
-			auth.POST("/login", authController.Login)
+			if config.CFG.RateLimit.Enabled {
+				auth.POST("/login", middleware.RateLimit(config.CFG.RateLimit.LoginLimit, time.Duration(config.CFG.RateLimit.LoginWindow)*time.Minute), authController.Login)
+			} else {
+				auth.POST("/login", authController.Login)
+			}
 			auth.POST("/logout", middleware.AuthRequired(), middleware.CSRFTokenRequired(), authController.Logout)
 			auth.GET("/profile", middleware.AuthRequired(), authController.Profile)
 			auth.GET("/csrf-token", middleware.AuthRequired(), authController.GetCSRFToken)
 			auth.POST("/change-password", middleware.AuthRequired(), middleware.CSRFTokenRequired(), authController.ChangePassword)
-			auth.POST("/password-reset", authController.PasswordReset)
-			auth.POST("/reset-password", authController.ResetPassword)
+			if config.CFG.RateLimit.Enabled {
+				auth.POST("/password-reset", middleware.RateLimit(config.CFG.RateLimit.PasswordResetLimit, time.Duration(config.CFG.RateLimit.PasswordResetWindow)*time.Minute), authController.PasswordReset)
+				auth.POST("/reset-password", middleware.RateLimit(config.CFG.RateLimit.PasswordResetLimit, time.Duration(config.CFG.RateLimit.PasswordResetWindow)*time.Minute), authController.ResetPassword)
+			} else {
+				auth.POST("/password-reset", authController.PasswordReset)
+				auth.POST("/reset-password", authController.ResetPassword)
+			}
+
 		}
 
 		authtotpLoginRequired := api.Group("/auth")

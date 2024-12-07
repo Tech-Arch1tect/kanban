@@ -29,9 +29,13 @@ type Config struct {
 }
 
 type RateLimitConfig struct {
-	Enabled bool
-	Limit   int
-	Window  int
+	Enabled             bool
+	Limit               int
+	Window              int
+	LoginLimit          int
+	LoginWindow         int
+	PasswordResetLimit  int
+	PasswordResetWindow int
 }
 
 type MySQLConfig struct {
@@ -69,9 +73,13 @@ func LoadConfig() {
 		SmtpFrom:     os.Getenv("SMTP_FROM"),
 		SmtpNoTLS:    os.Getenv("SMTP_NO_TLS") == "true",
 		RateLimit: RateLimitConfig{
-			Enabled: os.Getenv("RATE_LIMIT_ENABLED") != "false",
-			Limit:   getIntEnv("RATE_LIMIT_LIMIT", 100), // default 100 requests per IP
-			Window:  getIntEnv("RATE_LIMIT_WINDOW", 1),  // default 1 minute
+			Enabled:             os.Getenv("RATE_LIMIT_ENABLED") != "false",
+			Limit:               getIntEnv("RATE_LIMIT_LIMIT", 100),                // default 100 requests per IP
+			Window:              getIntEnv("RATE_LIMIT_WINDOW", 1),                 // default 1 minute
+			LoginLimit:          getIntEnv("RATE_LIMIT_LOGIN_LIMIT", 20),           // default 20 requests per IP
+			LoginWindow:         getIntEnv("RATE_LIMIT_LOGIN_WINDOW", 10),          // default 10 minute
+			PasswordResetLimit:  getIntEnv("RATE_LIMIT_PASSWORD_RESET_LIMIT", 5),   // default 5 requests per IP
+			PasswordResetWindow: getIntEnv("RATE_LIMIT_PASSWORD_RESET_WINDOW", 10), // default 10 minute
 		},
 	}
 
