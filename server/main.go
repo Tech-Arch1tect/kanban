@@ -7,6 +7,7 @@ import (
 	"server/database"
 	"server/email"
 	"server/middleware"
+	"time"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -32,6 +33,12 @@ func main() {
 	r := gin.Default()
 	// add cors headers
 	r.Use(middleware.Cors())
+
+	// Rate limiting
+	if config.CFG.RateLimit.Enabled {
+		log.Printf("Rate limiting enabled with %d requests per %d minutes", config.CFG.RateLimit.Limit, config.CFG.RateLimit.Window)
+		r.Use(middleware.RateLimit(config.CFG.RateLimit.Limit, time.Duration(config.CFG.RateLimit.Window)*time.Minute))
+	}
 
 	// Session middleware
 	store := sessions.NewCookieStore([]byte(config.CFG.CookieSecret))

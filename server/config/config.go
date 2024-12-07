@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 )
 
 var (
@@ -24,6 +25,13 @@ type Config struct {
 	SmtpAuth     string
 	SmtpFrom     string
 	SmtpNoTLS    bool
+	RateLimit    RateLimitConfig
+}
+
+type RateLimitConfig struct {
+	Enabled bool
+	Limit   int
+	Window  int
 }
 
 type MySQLConfig struct {
@@ -60,6 +68,11 @@ func LoadConfig() {
 		SmtpAuth:     os.Getenv("SMTP_AUTH"),
 		SmtpFrom:     os.Getenv("SMTP_FROM"),
 		SmtpNoTLS:    os.Getenv("SMTP_NO_TLS") == "true",
+		RateLimit: RateLimitConfig{
+			Enabled: os.Getenv("RATE_LIMIT_ENABLED") != "false",
+			Limit:   getIntEnv("RATE_LIMIT_LIMIT", 100), // default 100 requests per IP
+			Window:  getIntEnv("RATE_LIMIT_WINDOW", 1),  // default 1 minute
+		},
 	}
 
 	if cfg.DBType == "" {
@@ -109,4 +122,16 @@ func LoadConfig() {
 	}
 
 	CFG = cfg
+}
+
+func getIntEnv(key string, defaultValue int) int {
+	value, ok := os.LookupEnv(key)
+	if !ok {
+		return defaultValue
+	}
+	intValue, err := strconv.Atoi(value)
+	if err != nil {
+		return defaultValue
+	}
+	return intValue
 }
