@@ -21,6 +21,8 @@ type DeleteBoardResponse struct {
 // @Summary Delete a board
 // @Description Delete a board by ID
 // @Tags boards
+// @Security cookieAuth
+// @Security csrf
 // @Accept json
 // @Produce json
 // @Param request body DeleteBoardRequest true "Board ID"

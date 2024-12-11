@@ -21,6 +21,7 @@ type GetBoardResponse struct {
 // @Summary Get a board
 // @Description Get a board by ID
 // @Tags boards
+// @Security cookieAuth
 // @Accept json
 // @Produce json
 // @Param id path int true "Board ID"
