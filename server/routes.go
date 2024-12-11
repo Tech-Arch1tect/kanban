@@ -4,6 +4,7 @@ import (
 	"server/config"
 	"server/controllers/adminController"
 	"server/controllers/authController"
+	"server/controllers/boardController"
 	"server/controllers/miscController"
 	"server/middleware"
 	"server/models"
@@ -67,6 +68,15 @@ func routes(r *gin.Engine) {
 			admin.DELETE("/users/:id", middleware.CSRFTokenRequired(), adminController.RemoveUser)
 			admin.GET("/users", adminController.ListUsers)
 			admin.PUT("/users/:id/role", middleware.CSRFTokenRequired(), adminController.UpdateUserRole)
+		}
+
+		board := api.Group("/boards")
+		board.Use(middleware.AuthRequired())
+		{
+			board.POST("/create", middleware.CSRFTokenRequired(), middleware.EnsureRole(models.RoleAdmin), boardController.CreateBoard)
+			board.GET("/:id", boardController.GetBoard)
+			board.GET("/", boardController.ListBoards)
+			board.POST("/:id/delete", middleware.CSRFTokenRequired(), boardController.DeleteBoard)
 		}
 	}
 }
