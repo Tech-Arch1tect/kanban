@@ -17,9 +17,16 @@ func NewSqlite() (Database, error) {
 	}
 
 	userRepo := NewUserRepository(db)
-
+	boardRepo := NewBoardRepository(db)
+	boardPermRepo := NewBoardPermissionRepository(db)
+	taskRepo := NewTaskRepository(db)
+	swimlaneRepo := NewSwimlaneRepository(db)
 	return Database{
-		UserRepository: userRepo,
+		UserRepository:            userRepo,
+		BoardRepository:           boardRepo,
+		BoardPermissionRepository: boardPermRepo,
+		TaskRepository:            taskRepo,
+		SwimlaneRepository:        swimlaneRepo,
 	}, nil
 }
 
@@ -34,12 +41,45 @@ func NewMySQL() (Database, error) {
 	}
 
 	userRepo := NewUserRepository(db)
-
+	boardRepo := NewBoardRepository(db)
+	boardPermRepo := NewBoardPermissionRepository(db)
+	taskRepo := NewTaskRepository(db)
+	swimlaneRepo := NewSwimlaneRepository(db)
 	return Database{
-		UserRepository: userRepo,
+		UserRepository:            userRepo,
+		BoardRepository:           boardRepo,
+		BoardPermissionRepository: boardPermRepo,
+		TaskRepository:            taskRepo,
+		SwimlaneRepository:        swimlaneRepo,
 	}, nil
 }
 
 func (d *Database) Migrate() error {
-	return d.UserRepository.Migrate()
+	// migrate all models
+	err := d.UserRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = d.BoardRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = d.BoardPermissionRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = d.TaskRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = d.SwimlaneRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

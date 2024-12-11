@@ -16,7 +16,11 @@ type Repository[T any] interface {
 }
 
 type Database struct {
-	UserRepository UserRepository
+	UserRepository            UserRepository
+	BoardRepository           BoardRepository
+	BoardPermissionRepository BoardPermissionRepository
+	TaskRepository            TaskRepository
+	SwimlaneRepository        SwimlaneRepository
 }
 
 var DB Database
