@@ -44,7 +44,7 @@ func CreateBoard(c *gin.Context) {
 
 	swimlanes := make([]models.Swimlane, len(request.Swimlanes))
 	for i, name := range request.Swimlanes {
-		swimlanes[i] = models.Swimlane{Name: name}
+		swimlanes[i] = models.Swimlane{Name: name, Order: i}
 	}
 
 	board := models.Board{

@@ -44,7 +44,7 @@ func GetBoard(c *gin.Context) {
 		return
 	}
 
-	board, err := database.DB.BoardRepository.GetByID(req.ID)
+	board, err := database.DB.BoardRepository.GetWithPreload(req.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unauthorised"})
 		return

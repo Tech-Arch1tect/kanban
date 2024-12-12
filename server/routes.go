@@ -6,6 +6,7 @@ import (
 	"server/controllers/authController"
 	"server/controllers/boardController"
 	"server/controllers/miscController"
+	"server/controllers/swimlaneController"
 	"server/middleware"
 	"server/models"
 	"time"
@@ -77,6 +78,14 @@ func routes(r *gin.Engine) {
 			board.GET("/:id", boardController.GetBoard)
 			board.GET("/", boardController.ListBoards)
 			board.POST("/:id/delete", middleware.CSRFTokenRequired(), boardController.DeleteBoard)
+		}
+
+		swimlane := api.Group("/swimlanes")
+		swimlane.Use(middleware.AuthRequired())
+		{
+			swimlane.POST("/create", middleware.CSRFTokenRequired(), swimlaneController.CreateSwimlane)
+			swimlane.POST("/:id/delete", middleware.CSRFTokenRequired(), swimlaneController.DeleteSwimlane)
+			swimlane.POST("/:id/edit", middleware.CSRFTokenRequired(), swimlaneController.EditSwimlane)
 		}
 	}
 }
