@@ -3,8 +3,8 @@ package swimlaneController
 import (
 	"net/http"
 	"server/database"
-	"server/helpers"
 	"server/models"
+	"server/permissions"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,38 +38,23 @@ func DeleteSwimlane(c *gin.Context) {
 		return
 	}
 
-	user, err := helpers.GetUserFromSession(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
 	swimlane, err := database.DB.SwimlaneRepository.GetByID(request.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	board, err := database.DB.BoardRepository.GetByID(swimlane.BoardID)
+	can, _ := permissions.Can(c, permissions.CanEditBoard, swimlane.BoardID)
+	if !can {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+		return
+	}
+
+	err = database.DB.SwimlaneRepository.Delete(swimlane.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	if board.OwnerID != user.ID && user.Role != models.RoleAdmin {
-		permission, err := database.DB.BoardRepository.GetPermission(user.ID, board.ID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		if !permission.Edit {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
-			return
-		}
-	}
-
-	database.DB.SwimlaneRepository.Delete(swimlane.ID)
 
 	c.JSON(http.StatusOK, DeleteSwimlaneResponse{Swimlane: swimlane})
 }

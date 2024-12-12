@@ -3,8 +3,7 @@ package boardController
 import (
 	"net/http"
 	"server/database"
-	"server/helpers"
-	"server/models"
+	"server/permissions"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,32 +38,13 @@ func DeleteBoard(c *gin.Context) {
 		return
 	}
 
-	user, err := helpers.GetUserFromSession(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	can, _ := permissions.Can(c, permissions.CanDeleteBoard, req.ID)
+	if !can {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 		return
 	}
 
-	board, err := database.DB.BoardRepository.GetByID(req.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Board not found"})
-		return
-	}
-
-	if board.OwnerID != user.ID && user.Role != models.RoleAdmin {
-		permission, err := database.DB.BoardRepository.GetPermission(user.ID, req.ID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "No permission to delete this board"})
-			return
-		}
-
-		if !permission.Delete {
-			c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to delete this board"})
-			return
-		}
-	}
-
-	err = database.DB.BoardRepository.Delete(req.ID)
+	err := database.DB.BoardRepository.Delete(req.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete board"})
 		return

@@ -3,8 +3,8 @@ package swimlaneController
 import (
 	"net/http"
 	"server/database"
-	"server/helpers"
 	"server/models"
+	"server/permissions"
 
 	"github.com/gin-gonic/gin"
 )
@@ -40,29 +40,10 @@ func CreateSwimlane(c *gin.Context) {
 		return
 	}
 
-	user, err := helpers.GetUserFromSession(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	can, _ := permissions.Can(c, permissions.CanEditBoard, request.BoardID)
+	if !can {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 		return
-	}
-
-	board, err := database.DB.BoardRepository.GetByID(request.BoardID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if board.OwnerID != user.ID && user.Role != models.RoleAdmin {
-		permission, err := database.DB.BoardRepository.GetPermission(user.ID, request.BoardID)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-			return
-		}
-
-		if !permission.Edit {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
-			return
-		}
 	}
 
 	swimlane := models.Swimlane{
@@ -71,7 +52,7 @@ func CreateSwimlane(c *gin.Context) {
 		Order:   request.Order,
 	}
 
-	err = database.DB.SwimlaneRepository.Create(&swimlane)
+	err := database.DB.SwimlaneRepository.Create(&swimlane)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -3,8 +3,8 @@ package boardController
 import (
 	"net/http"
 	"server/database"
-	"server/helpers"
 	"server/models"
+	"server/permissions"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,15 +32,15 @@ type GetBoardResponse struct {
 // @Failure 500 {object} models.ErrorResponse
 // @Router /api/v1/boards/{id} [get]
 func GetBoard(c *gin.Context) {
-	user, err := helpers.GetUserFromSession(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
 	var req GetBoardRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	can, _ := permissions.Can(c, permissions.CanAccessBoard, req.ID)
+	if !can {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 		return
 	}
 
@@ -48,19 +48,6 @@ func GetBoard(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unauthorised"})
 		return
-	}
-
-	if board.OwnerID != user.ID && user.Role != models.RoleAdmin {
-		permission, err := database.DB.BoardRepository.GetPermission(user.ID, req.ID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unauthorised"})
-			return
-		}
-
-		if permission.UserID != user.ID {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorised"})
-			return
-		}
 	}
 
 	c.JSON(http.StatusOK, GetBoardResponse{Board: board})

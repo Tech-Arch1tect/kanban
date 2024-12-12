@@ -3,8 +3,8 @@ package boardController
 import (
 	"net/http"
 	"server/database"
-	"server/helpers"
 	"server/models"
+	"server/permissions"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,9 +36,9 @@ func CreateBoard(c *gin.Context) {
 		return
 	}
 
-	user, err := helpers.GetUserFromSession(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	can, user := permissions.Can(c, permissions.CanCreateBoard, 0)
+	if !can {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 		return
 	}
 
@@ -53,7 +53,7 @@ func CreateBoard(c *gin.Context) {
 		Swimlanes: swimlanes,
 	}
 
-	err = database.DB.BoardRepository.Create(&board)
+	err := database.DB.BoardRepository.Create(&board)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
