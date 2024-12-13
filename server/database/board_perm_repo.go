@@ -8,6 +8,7 @@ import (
 
 type BoardPermissionRepository interface {
 	Repository[models.BoardPermission]
+	GetPermissionsByUserID(userID uint) ([]models.BoardPermission, error)
 }
 
 type GormBoardPermissionRepository struct {
@@ -22,4 +23,10 @@ func NewBoardPermissionRepository(db *gorm.DB) BoardPermissionRepository {
 
 func (r *GormBoardPermissionRepository) Migrate() error {
 	return r.db.AutoMigrate(&models.BoardPermission{})
+}
+
+func (r *GormBoardPermissionRepository) GetPermissionsByUserID(userID uint) ([]models.BoardPermission, error) {
+	var permissions []models.BoardPermission
+	result := r.db.Where("user_id = ?", userID).Find(&permissions)
+	return permissions, result.Error
 }
