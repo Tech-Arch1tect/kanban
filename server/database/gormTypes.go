@@ -21,12 +21,14 @@ func NewSqlite() (Database, error) {
 	boardPermRepo := NewBoardPermissionRepository(db)
 	taskRepo := NewTaskRepository(db)
 	swimlaneRepo := NewSwimlaneRepository(db)
+	commentRepo := NewCommentRepository(db)
 	return Database{
 		UserRepository:            userRepo,
 		BoardRepository:           boardRepo,
 		BoardPermissionRepository: boardPermRepo,
 		TaskRepository:            taskRepo,
 		SwimlaneRepository:        swimlaneRepo,
+		CommentRepository:         commentRepo,
 	}, nil
 }
 
@@ -45,11 +47,13 @@ func NewMySQL() (Database, error) {
 	boardPermRepo := NewBoardPermissionRepository(db)
 	taskRepo := NewTaskRepository(db)
 	swimlaneRepo := NewSwimlaneRepository(db)
+	commentRepo := NewCommentRepository(db)
 	return Database{
 		UserRepository:            userRepo,
 		BoardRepository:           boardRepo,
 		BoardPermissionRepository: boardPermRepo,
 		TaskRepository:            taskRepo,
+		CommentRepository:         commentRepo,
 		SwimlaneRepository:        swimlaneRepo,
 	}, nil
 }
@@ -77,6 +81,11 @@ func (d *Database) Migrate() error {
 	}
 
 	err = d.SwimlaneRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = d.CommentRepository.Migrate()
 	if err != nil {
 		return err
 	}

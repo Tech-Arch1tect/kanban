@@ -5,6 +5,7 @@ import (
 	"server/controllers/adminController"
 	"server/controllers/authController"
 	"server/controllers/boardController"
+	"server/controllers/commentController"
 	"server/controllers/miscController"
 	"server/controllers/swimlaneController"
 	"server/controllers/taskController"
@@ -97,6 +98,14 @@ func routes(r *gin.Engine) {
 			task.GET("/get/:id", taskController.GetTask)
 			task.POST("/edit/:id", middleware.CSRFTokenRequired(), taskController.EditTask)
 			task.POST("/delete/:id", middleware.CSRFTokenRequired(), taskController.DeleteTask)
+		}
+
+		comment := api.Group("/comments")
+		comment.Use(middleware.AuthRequired())
+		{
+			comment.POST("/create", middleware.CSRFTokenRequired(), commentController.CreateComment)
+			comment.POST("/edit", middleware.CSRFTokenRequired(), commentController.EditComment)
+			comment.POST("/delete", middleware.CSRFTokenRequired(), commentController.DeleteComment)
 		}
 	}
 }
