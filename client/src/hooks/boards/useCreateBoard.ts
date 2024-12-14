@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { boardApi } from "../lib/api";
+import { boardApi } from "../../lib/api";
 import {
   ApiV1BoardsCreatePostRequest,
   BoardControllerCreateBoardResponse,
-} from "../typescript-fetch-client";
+} from "../../typescript-fetch-client";
 
 export const useCreateBoard = () => {
   const queryClient = useQueryClient();

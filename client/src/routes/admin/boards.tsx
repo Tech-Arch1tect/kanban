@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useBoards } from "../../hooks/useBoards";
-import { useCreateBoard } from "../../hooks/useCreateBoard";
+import { useBoards } from "../../hooks/boards/useBoards";
+import { useCreateBoard } from "../../hooks/boards/useCreateBoard";
 import { useState } from "react";
 
 export const Route = createFileRoute("/admin/boards")({
