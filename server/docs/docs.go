@@ -730,40 +730,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/boards": {
-            "get": {
-                "security": [
-                    {
-                        "cookieAuth": []
-                    }
-                ],
-                "description": "List all boards for the current user",
-                "tags": [
-                    "board"
-                ],
-                "summary": "List all boards",
-                "responses": {
-                    "200": {
-                        "description": "Boards",
-                        "schema": {
-                            "$ref": "#/definitions/boardController.ListBoardsResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/boards/create": {
             "post": {
                 "security": [
@@ -812,66 +778,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/boards/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "cookieAuth": []
-                    }
-                ],
-                "description": "Get a board by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "boards"
-                ],
-                "summary": "Get a board",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Board ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/boardController.GetBoardResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            },
+        "/api/v1/boards/delete": {
             "post": {
                 "security": [
                     {
@@ -937,6 +844,103 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/boards/get": {
+            "get": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "description": "Get a board by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "boards"
+                ],
+                "summary": "Get a board",
+                "parameters": [
+                    {
+                        "description": "Board ID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/boardController.GetBoardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/boardController.GetBoardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/boards/list": {
+            "get": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "description": "List all boards for the current user",
+                "tags": [
+                    "board"
+                ],
+                "summary": "List all boards",
+                "responses": {
+                    "200": {
+                        "description": "Boards",
+                        "schema": {
+                            "$ref": "#/definitions/boardController.ListBoardsResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/comments/create": {
             "post": {
                 "security": [
@@ -961,7 +965,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Comment details",
-                        "name": "comment",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1155,7 +1159,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/swimlanes": {
+        "/api/v1/swimlanes/create": {
             "post": {
                 "security": [
                     {
@@ -1221,7 +1225,73 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/swimlanes/{id}": {
+        "/api/v1/swimlanes/delete": {
+            "post": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
+                    }
+                ],
+                "description": "Delete a swimlane by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "swimlanes"
+                ],
+                "summary": "Delete a swimlane",
+                "parameters": [
+                    {
+                        "description": "Swimlane ID",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/swimlaneController.DeleteSwimlaneRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/swimlaneController.DeleteSwimlaneResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/swimlanes/edit": {
             "post": {
                 "security": [
                     {
@@ -1353,7 +1423,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/tasks/delete/{id}": {
+        "/api/v1/tasks/delete": {
             "post": {
                 "security": [
                     {
@@ -1419,7 +1489,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/tasks/edit/{id}": {
+        "/api/v1/tasks/edit": {
             "post": {
                 "security": [
                     {
@@ -1442,13 +1512,6 @@ const docTemplate = `{
                 "summary": "Edit a task",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Task ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
                         "description": "Edit task request",
                         "name": "request",
                         "in": "body",
@@ -1463,6 +1526,69 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/taskController.EditTaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tasks/get": {
+            "get": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "description": "Get a task",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Get a task",
+                "parameters": [
+                    {
+                        "description": "Get task request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/taskController.GetTaskRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/taskController.GetTaskResponse"
                         }
                     },
                     "400": {
@@ -1513,7 +1639,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Query",
-                        "name": "query",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1526,69 +1652,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/taskController.GetTaskQueryResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/tasks/get/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "cookieAuth": []
-                    }
-                ],
-                "description": "Get a task",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tasks"
-                ],
-                "summary": "Get a task",
-                "parameters": [
-                    {
-                        "description": "Get task request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/taskController.GetTaskRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/taskController.GetTaskResponse"
                         }
                     },
                     "400": {
@@ -1881,6 +1944,17 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "boardController.GetBoardRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
                 }
             }
         },
