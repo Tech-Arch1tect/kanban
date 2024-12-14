@@ -33,7 +33,6 @@ models/BoardControllerCreateBoardRequest.ts
 models/BoardControllerCreateBoardResponse.ts
 models/BoardControllerDeleteBoardRequest.ts
 models/BoardControllerDeleteBoardResponse.ts
-models/BoardControllerGetBoardRequest.ts
 models/BoardControllerGetBoardResponse.ts
 models/BoardControllerListBoardsResponse.ts
 models/CommentControllerCreateCommentRequest.ts

@@ -25,7 +25,6 @@ export * from './BoardControllerCreateBoardRequest';
 export * from './BoardControllerCreateBoardResponse';
 export * from './BoardControllerDeleteBoardRequest';
 export * from './BoardControllerDeleteBoardResponse';
-export * from './BoardControllerGetBoardRequest';
 export * from './BoardControllerGetBoardResponse';
 export * from './BoardControllerListBoardsResponse';
 export * from './CommentControllerCreateCommentRequest';

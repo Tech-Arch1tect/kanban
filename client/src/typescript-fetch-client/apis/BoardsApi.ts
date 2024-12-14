@@ -19,7 +19,6 @@ import type {
   BoardControllerCreateBoardResponse,
   BoardControllerDeleteBoardRequest,
   BoardControllerDeleteBoardResponse,
-  BoardControllerGetBoardRequest,
   BoardControllerGetBoardResponse,
   BoardControllerListBoardsResponse,
   ModelsErrorResponse,
@@ -33,8 +32,6 @@ import {
     BoardControllerDeleteBoardRequestToJSON,
     BoardControllerDeleteBoardResponseFromJSON,
     BoardControllerDeleteBoardResponseToJSON,
-    BoardControllerGetBoardRequestFromJSON,
-    BoardControllerGetBoardRequestToJSON,
     BoardControllerGetBoardResponseFromJSON,
     BoardControllerGetBoardResponseToJSON,
     BoardControllerListBoardsResponseFromJSON,
@@ -51,8 +48,8 @@ export interface ApiV1BoardsDeletePostRequest {
     request: BoardControllerDeleteBoardRequest;
 }
 
-export interface ApiV1BoardsGetGetRequest {
-    request: BoardControllerGetBoardRequest;
+export interface ApiV1BoardsGetIdGetRequest {
+    id: string;
 }
 
 /**
@@ -148,11 +145,11 @@ export class BoardsApi extends runtime.BaseAPI {
      * Get a board by ID
      * Get a board
      */
-    async apiV1BoardsGetGetRaw(requestParameters: ApiV1BoardsGetGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BoardControllerGetBoardResponse>> {
-        if (requestParameters['request'] == null) {
+    async apiV1BoardsGetIdGetRaw(requestParameters: ApiV1BoardsGetIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BoardControllerGetBoardResponse>> {
+        if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
-                'request',
-                'Required parameter "request" was null or undefined when calling apiV1BoardsGetGet().'
+                'id',
+                'Required parameter "id" was null or undefined when calling apiV1BoardsGetIdGet().'
             );
         }
 
@@ -160,14 +157,11 @@ export class BoardsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        headerParameters['Content-Type'] = 'application/json';
-
         const response = await this.request({
-            path: `/api/v1/boards/get`,
+            path: `/api/v1/boards/get/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-            body: BoardControllerGetBoardRequestToJSON(requestParameters['request']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => BoardControllerGetBoardResponseFromJSON(jsonValue));
@@ -177,8 +171,8 @@ export class BoardsApi extends runtime.BaseAPI {
      * Get a board by ID
      * Get a board
      */
-    async apiV1BoardsGetGet(requestParameters: ApiV1BoardsGetGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BoardControllerGetBoardResponse> {
-        const response = await this.apiV1BoardsGetGetRaw(requestParameters, initOverrides);
+    async apiV1BoardsGetIdGet(requestParameters: ApiV1BoardsGetIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BoardControllerGetBoardResponse> {
+        const response = await this.apiV1BoardsGetIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
