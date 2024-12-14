@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { authApi } from "../../lib/api";
+import { useChangePassword } from "../../hooks/useChangePassword";
 
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -8,7 +8,9 @@ const ChangePassword = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleChangePassword = async () => {
+  const changePasswordMutation = useChangePassword();
+
+  const handleChangePassword = () => {
     setError("");
     setSuccess("");
 
@@ -22,22 +24,20 @@ const ChangePassword = () => {
       return;
     }
 
-    try {
-      const response = await authApi.apiV1AuthChangePasswordPost({
-        passwordChange: {
-          currentPassword: currentPassword,
-          newPassword: newPassword,
+    changePasswordMutation.mutate(
+      { currentPassword, newPassword },
+      {
+        onSuccess: () => {
+          setSuccess("Password changed successfully!");
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmNewPassword("");
         },
-      });
-
-      setSuccess("Password changed successfully!");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmNewPassword("");
-    } catch (error) {
-      setError("An error occurred while changing the password.");
-      console.error("Change password error:", error);
-    }
+        onError: () => {
+          setError("An error occurred while changing the password.");
+        },
+      }
+    );
   };
 
   return (

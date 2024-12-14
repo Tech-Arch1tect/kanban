@@ -1,8 +1,8 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useUserProfile } from '../hooks/useUserProfile';
-import { useAuth } from '../hooks/useAuth';
-import { useDropdown } from '../hooks/useDropdown';
+import { useUserProfile } from '../../hooks/useUserProfile';
+import { useAuth } from '../../hooks/auth/useAuth';
+import { useDropdown } from '../../hooks/useDropdown';
 
 const Navbar = () => {
   const navigate = useNavigate();

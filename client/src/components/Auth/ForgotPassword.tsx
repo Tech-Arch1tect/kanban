@@ -1,54 +1,43 @@
 import React, { useState } from "react";
-import { authApi } from "../lib/api";
+import { useSendResetCode } from "../../hooks/auth/useSendResetCode";
+import { useResetPassword } from "../../hooks/auth/useResetPassword";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
-  const [stage, setStage] = useState(1); // 1: Email input, 2: Code & Password input
+  const [stage, setStage] = useState(1); 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const submitStageOne = async (email: string) => {
-    try {
-      const response = await authApi.apiV1AuthPasswordResetPost({
-        passwordReset: {
-          email: email,
-        },
-      });
-      setStage(2);
-      setError("");
-    } catch (error) {
-      setError("Failed to send reset code. Please try again.");
-    }
-  };
-
-  const submitStageTwo = async (
-    email: string,
-    code: string,
-    password: string
-  ) => {
-    try {
-      const response = await authApi.apiV1AuthResetPasswordPost({
-        resetPassword: {
-          email: email,
-          code: code,
-          password: password,
-        },
-      });
-      setSuccess(true);
-      setError("");
-    } catch (error) {
-      setError("Failed to reset password. Please try again.");
-    }
-  };
+  const sendResetCodeMutation = useSendResetCode();
+  const resetPasswordMutation = useResetPassword();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    setError("");
+    
     if (stage === 1) {
-      submitStageOne(email);
+      sendResetCodeMutation.mutate(email, {
+        onSuccess: () => {
+          setStage(2);
+        },
+        onError: () => {
+          setError("Failed to send reset code. Please try again.");
+        }
+      });
     } else if (stage === 2) {
-      submitStageTwo(email, code, password);
+      resetPasswordMutation.mutate(
+        { email, code, password },
+        {
+          onSuccess: () => {
+            setSuccess(true);
+          },
+          onError: () => {
+            setError("Failed to reset password. Please try again.");
+          }
+        }
+      );
     }
   };
 
