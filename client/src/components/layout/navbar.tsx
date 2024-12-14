@@ -1,13 +1,14 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useUserProfile } from '../../hooks/useUserProfile';
-import { useAuth } from '../../hooks/auth/useAuth';
-import { useDropdown } from '../../hooks/useDropdown';
+import { useUserProfile } from "../../hooks/useUserProfile";
+import { useAuth } from "../../hooks/auth/useAuth";
+import { useDropdown } from "../../hooks/useDropdown";
+import BoardsSelect from "./BoardsSelect";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const { profile, error } = useUserProfile();
 
   const { handleLogout, isAdmin } = useAuth(profile);
@@ -47,6 +48,9 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="flex items-center space-x-4">
+          <BoardsSelect />
+        </div>
+        <div className="flex items-center space-x-4">
           {/* User Profile Dropdown */}
           <div className="relative" ref={profileDropdown.ref}>
             <button
@@ -61,7 +65,12 @@ const Navbar = () => {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
             {profileDropdown.isOpen && (
@@ -99,7 +108,12 @@ const Navbar = () => {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </button>
               {adminDropdown.isOpen && (
@@ -110,6 +124,13 @@ const Navbar = () => {
                     className="dropdown-item block px-4 py-2 hover:bg-gray-100"
                   >
                     Users
+                  </Link>
+                  <Link
+                    to="/admin/boards"
+                    onClick={adminDropdown.closeDropdown}
+                    className="dropdown-item block px-4 py-2 hover:bg-gray-100"
+                  >
+                    Boards
                   </Link>
                 </div>
               )}
