@@ -24,13 +24,13 @@ type GetBoardResponse struct {
 // @Security cookieAuth
 // @Accept json
 // @Produce json
-// @Param id path int true "Board ID"
+// @Param request body GetBoardRequest true "Board ID"
 // @Success 200 {object} GetBoardResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/boards/{id} [get]
+// @Router /api/v1/boards/get [get]
 func GetBoard(c *gin.Context) {
 	var req GetBoardRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

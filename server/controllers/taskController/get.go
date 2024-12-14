@@ -29,7 +29,7 @@ type GetTaskResponse struct {
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/tasks/get/{id} [get]
+// @Router /api/v1/tasks/get [get]
 func GetTask(c *gin.Context) {
 	var request GetTaskRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

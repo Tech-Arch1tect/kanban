@@ -30,7 +30,7 @@ type DeleteBoardResponse struct {
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/boards/{id} [post]
+// @Router /api/v1/boards/delete [post]
 func DeleteBoard(c *gin.Context) {
 	var req DeleteBoardRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

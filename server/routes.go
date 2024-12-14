@@ -77,17 +77,17 @@ func routes(r *gin.Engine) {
 		board.Use(middleware.AuthRequired())
 		{
 			board.POST("/create", middleware.CSRFTokenRequired(), middleware.EnsureRole(models.RoleAdmin), boardController.CreateBoard)
-			board.GET("/:id", boardController.GetBoard)
-			board.GET("/", boardController.ListBoards)
-			board.POST("/:id/delete", middleware.CSRFTokenRequired(), boardController.DeleteBoard)
+			board.GET("/get", boardController.GetBoard)
+			board.GET("/list", boardController.ListBoards)
+			board.POST("/delete", middleware.CSRFTokenRequired(), boardController.DeleteBoard)
 		}
 
 		swimlane := api.Group("/swimlanes")
 		swimlane.Use(middleware.AuthRequired())
 		{
 			swimlane.POST("/create", middleware.CSRFTokenRequired(), swimlaneController.CreateSwimlane)
-			swimlane.POST("/:id/delete", middleware.CSRFTokenRequired(), swimlaneController.DeleteSwimlane)
-			swimlane.POST("/:id/edit", middleware.CSRFTokenRequired(), swimlaneController.EditSwimlane)
+			swimlane.POST("/delete", middleware.CSRFTokenRequired(), swimlaneController.DeleteSwimlane)
+			swimlane.POST("/edit", middleware.CSRFTokenRequired(), swimlaneController.EditSwimlane)
 		}
 
 		task := api.Group("/tasks")
@@ -95,9 +95,9 @@ func routes(r *gin.Engine) {
 		{
 			task.POST("/create", middleware.CSRFTokenRequired(), taskController.CreateTask)
 			task.GET("/get-query", taskController.GetTaskQuery)
-			task.GET("/get/:id", taskController.GetTask)
-			task.POST("/edit/:id", middleware.CSRFTokenRequired(), taskController.EditTask)
-			task.POST("/delete/:id", middleware.CSRFTokenRequired(), taskController.DeleteTask)
+			task.GET("/get", taskController.GetTask)
+			task.POST("/edit", middleware.CSRFTokenRequired(), taskController.EditTask)
+			task.POST("/delete", middleware.CSRFTokenRequired(), taskController.DeleteTask)
 		}
 
 		comment := api.Group("/comments")

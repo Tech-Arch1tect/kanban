@@ -26,7 +26,7 @@ type CreateCommentResponse struct {
 // @Security csrf
 // @Accept json
 // @Produce json
-// @Param comment body CreateCommentRequest true "Comment details"
+// @Param request body CreateCommentRequest true "Comment details"
 // @Success 200 {object} CreateCommentResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse

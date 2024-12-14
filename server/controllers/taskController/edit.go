@@ -28,14 +28,13 @@ type EditTaskResponse struct {
 // @Security csrf
 // @Accept json
 // @Produce json
-// @Param id path int true "Task ID"
 // @Param request body EditTaskRequest true "Edit task request"
 // @Success 200 {object} EditTaskResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/tasks/edit/{id} [post]
+// @Router /api/v1/tasks/edit [post]
 func EditTask(c *gin.Context) {
 	var request EditTaskRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

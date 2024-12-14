@@ -32,7 +32,7 @@ type CreateSwimlaneResponse struct {
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/swimlanes [post]
+// @Router /api/v1/swimlanes/create [post]
 func CreateSwimlane(c *gin.Context) {
 	var request CreateSwimlaneRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

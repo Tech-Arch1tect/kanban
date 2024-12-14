@@ -23,7 +23,7 @@ type GetTaskQueryResponse struct {
 // @Security cookieAuth
 // @Accept json
 // @Produce json
-// @Param query body GetTaskQueryRequest true "Query"
+// @Param request body GetTaskQueryRequest true "Query"
 // @Success 200 {object} GetTaskQueryResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse

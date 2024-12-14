@@ -30,7 +30,7 @@ type DeleteTaskResponse struct {
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/tasks/delete/{id} [post]
+// @Router /api/v1/tasks/delete [post]
 func DeleteTask(c *gin.Context) {
 	var request DeleteTaskRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

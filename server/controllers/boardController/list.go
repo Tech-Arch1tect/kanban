@@ -21,7 +21,7 @@ type ListBoardsResponse struct {
 // @Success 200 {object} ListBoardsResponse "Boards"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
-// @Router /api/v1/boards [get]
+// @Router /api/v1/boards/list [get]
 func ListBoards(c *gin.Context) {
 	user, err := helpers.GetUserFromSession(c)
 	if err != nil {
