@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { boardApi } from "../../lib/api";
+import { boardsApi } from "../../lib/api";
 import {
   ApiV1BoardsCreatePostRequest,
   BoardControllerCreateBoardResponse,
@@ -13,7 +13,7 @@ export const useCreateBoard = () => {
     Error,
     ApiV1BoardsCreatePostRequest
   >({
-    mutationFn: async (board) => boardApi.apiV1BoardsCreatePost(board),
+    mutationFn: async (board) => boardsApi.apiV1BoardsCreatePost(board),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["boards"] });
     },

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { boardApi } from "../../lib/api";
+import { boardsApi } from "../../lib/api";
 
 export const useBoards = () => {
   const {
@@ -9,7 +9,7 @@ export const useBoards = () => {
   } = useQuery({
     queryKey: ["boards"],
     queryFn: async () => {
-      return await boardApi.apiV1BoardsListGet();
+      return await boardsApi.apiV1BoardsListGet();
     },
   });
 
