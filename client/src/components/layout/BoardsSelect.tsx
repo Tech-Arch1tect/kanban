@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Select, { SingleValue } from "react-select";
-import { useBoards } from "../../hooks/useBoards";
+import { useBoards } from "../../hooks/boards/useBoards";
 import { ModelsBoard } from "../../typescript-fetch-client";
 import { useNavigate } from "@tanstack/react-router";
 

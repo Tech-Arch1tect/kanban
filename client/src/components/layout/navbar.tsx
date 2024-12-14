@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useUserProfile } from "../../hooks/useUserProfile";
+import { useUserProfile } from "../../hooks/profile/useUserProfile";
 import { useAuth } from "../../hooks/auth/useAuth";
 import { useDropdown } from "../../hooks/useDropdown";
 import BoardsSelect from "./BoardsSelect";
