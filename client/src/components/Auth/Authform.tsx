@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { authApi } from "../lib/api";
 import { useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useLogin } from "../../hooks/auth/useLogin";
+import { useRegister } from "../../hooks/auth/useRegister";
+import { useConfirmTOTP } from "../../hooks/auth/useConfirmTOTP";
 
 const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
   const [mode, setMode] = useState(initialMode);
@@ -10,55 +11,60 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
   const [totpCode, setTotpCode] = useState("");
   const [error, setError] = useState("");
   const [totpRequired, setTotpRequired] = useState(false);
+  
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+
+  const loginMutation = useLogin();
+  const registerMutation = useRegister();
+  const confirmTOTP = useConfirmTOTP();
 
   const handleTotp = async () => {
-    try {
-      const totp = await authApi.apiV1AuthTotpConfirmPost({
-        request: {
-          code: totpCode,
-        },
-      });
-      if (totp.message === "totp_confirmed") {
-        queryClient.invalidateQueries({ queryKey: ['userProfile'] });
-        navigate({ to: "/" });
-      } else {
+    setError("");
+    confirmTOTP.mutate(totpCode, {
+      onSuccess: (data) => {
+        if (data.message === "totp_confirmed") {
+          navigate({ to: "/" });
+        } else {
+          setError("Invalid TOTP code");
+        }
+      },
+      onError: () => {
         setError("Invalid TOTP code");
-      }
-    } catch (error) {
-      setError("Invalid TOTP code");
-    }
+      },
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      if (mode === "login") {
-        const auth = await authApi.apiV1AuthLoginPost({
-          user: {
-            email,
-            password,
+    setError("");
+
+    if (mode === "login") {
+      loginMutation.mutate(
+        { email, password },
+        {
+          onSuccess: (data) => {
+            if (data.message === "totp_required") {
+              setTotpRequired(true);
+            } else {
+              navigate({ to: "/" });
+            }
           },
-        });
-        if (auth.message === "totp_required") {
-          setTotpRequired(true);
-        } else {
-          queryClient.invalidateQueries({ queryKey: ['userProfile'] });
-          navigate({ to: "/" });
+          onError: () => {
+            setError("Invalid email or password");
+          },
         }
-      } else if (mode === "register") {
-        const auth = await authApi.apiV1AuthRegisterPost({
-          user: {
-            email,
-            password,
+      );
+    } else if (mode === "register") {
+      registerMutation.mutate(
+        { email, password },
+        {
+          onSuccess: () => {
+            navigate({ to: "/login" });
           },
-        });
-        navigate({ to: "/login" });
-      }
-    } catch (error) {
-      setError(
-        mode === "login" ? "Invalid email or password" : "Registration failed"
+          onError: () => {
+            setError("Registration failed");
+          },
+        }
       );
     }
   };
