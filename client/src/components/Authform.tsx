@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { authApi } from "../lib/api";
 import { useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
   const [mode, setMode] = useState(initialMode);
@@ -10,6 +11,7 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
   const [error, setError] = useState("");
   const [totpRequired, setTotpRequired] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleTotp = async () => {
     try {
@@ -19,6 +21,7 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
         },
       });
       if (totp.message === "totp_confirmed") {
+        queryClient.invalidateQueries({ queryKey: ['userProfile'] });
         navigate({ to: "/" });
       } else {
         setError("Invalid TOTP code");
@@ -41,6 +44,7 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
         if (auth.message === "totp_required") {
           setTotpRequired(true);
         } else {
+          queryClient.invalidateQueries({ queryKey: ['userProfile'] });
           navigate({ to: "/" });
         }
       } else if (mode === "register") {

@@ -31,7 +31,7 @@ async function csrfFetch(input: RequestInfo, init?: RequestInit): Promise<Respon
   const methodsRequiringCSRF = ["POST", "PUT", "DELETE", "PATCH"];
   const method = (init?.method || "GET").toUpperCase();
 
-  if (methodsRequiringCSRF.includes(method)) {
+  if (methodsRequiringCSRF.includes(method) && !input.toString().includes("api/v1/auth/register") && !input.toString().includes("api/v1/auth/login") && !input.toString().includes("api/v1/auth/totp/confirm")) {
     const csrfToken = await GetCSRFToken();
     if (csrfToken) {
       init = {
