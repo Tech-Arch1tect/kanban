@@ -1,7 +1,6 @@
 .openapi-generator-ignore
 apis/AdminApi.ts
 apis/AuthApi.ts
-apis/BoardApi.ts
 apis/BoardsApi.ts
 apis/CommentsApi.ts
 apis/MiscApi.ts

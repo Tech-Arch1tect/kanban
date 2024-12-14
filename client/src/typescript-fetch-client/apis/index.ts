@@ -2,7 +2,6 @@
 /* eslint-disable */
 export * from './AdminApi';
 export * from './AuthApi';
-export * from './BoardApi';
 export * from './BoardsApi';
 export * from './CommentsApi';
 export * from './MiscApi';

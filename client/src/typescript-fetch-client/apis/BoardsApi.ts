@@ -15,13 +15,20 @@
 
 import * as runtime from '../runtime';
 import type {
+  BoardControllerCreateBoardRequest,
+  BoardControllerCreateBoardResponse,
   BoardControllerDeleteBoardRequest,
   BoardControllerDeleteBoardResponse,
   BoardControllerGetBoardRequest,
   BoardControllerGetBoardResponse,
+  BoardControllerListBoardsResponse,
   ModelsErrorResponse,
 } from '../models/index';
 import {
+    BoardControllerCreateBoardRequestFromJSON,
+    BoardControllerCreateBoardRequestToJSON,
+    BoardControllerCreateBoardResponseFromJSON,
+    BoardControllerCreateBoardResponseToJSON,
     BoardControllerDeleteBoardRequestFromJSON,
     BoardControllerDeleteBoardRequestToJSON,
     BoardControllerDeleteBoardResponseFromJSON,
@@ -30,9 +37,15 @@ import {
     BoardControllerGetBoardRequestToJSON,
     BoardControllerGetBoardResponseFromJSON,
     BoardControllerGetBoardResponseToJSON,
+    BoardControllerListBoardsResponseFromJSON,
+    BoardControllerListBoardsResponseToJSON,
     ModelsErrorResponseFromJSON,
     ModelsErrorResponseToJSON,
 } from '../models/index';
+
+export interface ApiV1BoardsCreatePostRequest {
+    request: BoardControllerCreateBoardRequest;
+}
 
 export interface ApiV1BoardsDeletePostRequest {
     request: BoardControllerDeleteBoardRequest;
@@ -46,6 +59,48 @@ export interface ApiV1BoardsGetGetRequest {
  * 
  */
 export class BoardsApi extends runtime.BaseAPI {
+
+    /**
+     * Create a new board with the given name
+     * Create a new board
+     */
+    async apiV1BoardsCreatePostRaw(requestParameters: ApiV1BoardsCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BoardControllerCreateBoardResponse>> {
+        if (requestParameters['request'] == null) {
+            throw new runtime.RequiredError(
+                'request',
+                'Required parameter "request" was null or undefined when calling apiV1BoardsCreatePost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-CSRF-Token"] = await this.configuration.apiKey("X-CSRF-Token"); // csrf authentication
+        }
+
+        const response = await this.request({
+            path: `/api/v1/boards/create`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: BoardControllerCreateBoardRequestToJSON(requestParameters['request']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => BoardControllerCreateBoardResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Create a new board with the given name
+     * Create a new board
+     */
+    async apiV1BoardsCreatePost(requestParameters: ApiV1BoardsCreatePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BoardControllerCreateBoardResponse> {
+        const response = await this.apiV1BoardsCreatePostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Delete a board by ID
@@ -124,6 +179,34 @@ export class BoardsApi extends runtime.BaseAPI {
      */
     async apiV1BoardsGetGet(requestParameters: ApiV1BoardsGetGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BoardControllerGetBoardResponse> {
         const response = await this.apiV1BoardsGetGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * List all boards for the current user
+     * List all boards
+     */
+    async apiV1BoardsListGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BoardControllerListBoardsResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/v1/boards/list`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => BoardControllerListBoardsResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * List all boards for the current user
+     * List all boards
+     */
+    async apiV1BoardsListGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BoardControllerListBoardsResponse> {
+        const response = await this.apiV1BoardsListGetRaw(initOverrides);
         return await response.value();
     }
 
