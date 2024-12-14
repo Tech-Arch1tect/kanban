@@ -10,7 +10,7 @@ import (
 )
 
 type GetBoardRequest struct {
-	ID uint `json:"id" binding:"required"`
+	ID uint `uri:"id" binding:"required"`
 }
 
 type GetBoardResponse struct {
@@ -24,16 +24,16 @@ type GetBoardResponse struct {
 // @Security cookieAuth
 // @Accept json
 // @Produce json
-// @Param request body GetBoardRequest true "Board ID"
+// @Param id path string true "Board ID"
 // @Success 200 {object} GetBoardResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/boards/get [get]
+// @Router /api/v1/boards/get/{id} [get]
 func GetBoard(c *gin.Context) {
 	var req GetBoardRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindUri(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}

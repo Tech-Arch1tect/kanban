@@ -844,7 +844,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/boards/get": {
+        "/api/v1/boards/get/{id}": {
             "get": {
                 "security": [
                     {
@@ -864,13 +864,11 @@ const docTemplate = `{
                 "summary": "Get a board",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "Board ID",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/boardController.GetBoardRequest"
-                        }
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1944,17 +1942,6 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
-                }
-            }
-        },
-        "boardController.GetBoardRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "integer"
                 }
             }
         },

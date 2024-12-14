@@ -168,13 +168,6 @@ definitions:
       message:
         type: string
     type: object
-  boardController.GetBoardRequest:
-    properties:
-      id:
-        type: integer
-    required:
-    - id
-    type: object
   boardController.GetBoardResponse:
     properties:
       board:
@@ -1017,18 +1010,17 @@ paths:
       summary: Delete a board
       tags:
       - boards
-  /api/v1/boards/get:
+  /api/v1/boards/get/{id}:
     get:
       consumes:
       - application/json
       description: Get a board by ID
       parameters:
       - description: Board ID
-        in: body
-        name: request
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/boardController.GetBoardRequest'
+        type: string
       produces:
       - application/json
       responses:

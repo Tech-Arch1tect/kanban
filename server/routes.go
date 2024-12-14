@@ -77,7 +77,7 @@ func routes(r *gin.Engine) {
 		board.Use(middleware.AuthRequired())
 		{
 			board.POST("/create", middleware.CSRFTokenRequired(), middleware.EnsureRole(models.RoleAdmin), boardController.CreateBoard)
-			board.GET("/get", boardController.GetBoard)
+			board.GET("/get/:id", boardController.GetBoard)
 			board.GET("/list", boardController.ListBoards)
 			board.POST("/delete", middleware.CSRFTokenRequired(), boardController.DeleteBoard)
 		}
