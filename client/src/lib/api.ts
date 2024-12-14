@@ -5,6 +5,10 @@ import {
   AdminApi,
   MiscApi,
   AuthControllerGetCSRFTokenResponse,
+  BoardApi,
+  SwimlanesApi,
+  TasksApi,
+  CommentsApi,
 } from "../typescript-fetch-client";
 
 // @ts-ignore
@@ -21,6 +25,10 @@ export const api = new BaseAPI(configuration);
 export const authApi = new AuthApi(configuration);
 export const adminApi = new AdminApi(configuration);
 export const miscApi = new MiscApi(configuration);
+export const boardApi = new BoardApi(configuration);
+export const swimlanesApi = new SwimlanesApi(configuration);
+export const tasksApi = new TasksApi(configuration);
+export const commentsApi = new CommentsApi(configuration);
 
 async function GetCSRFToken(): Promise<string | undefined> {
   const response: AuthControllerGetCSRFTokenResponse = await authApi.apiV1AuthCsrfTokenGet();
