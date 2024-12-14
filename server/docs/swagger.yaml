@@ -142,6 +142,78 @@ definitions:
       message:
         type: string
     type: object
+  boardController.CreateBoardRequest:
+    properties:
+      name:
+        type: string
+      swimlanes:
+        items:
+          type: string
+        type: array
+    type: object
+  boardController.CreateBoardResponse:
+    properties:
+      board:
+        $ref: '#/definitions/models.Board'
+    type: object
+  boardController.DeleteBoardRequest:
+    properties:
+      id:
+        type: integer
+    required:
+    - id
+    type: object
+  boardController.DeleteBoardResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  boardController.GetBoardResponse:
+    properties:
+      board:
+        $ref: '#/definitions/models.Board'
+    type: object
+  boardController.ListBoardsResponse:
+    properties:
+      boards:
+        items:
+          $ref: '#/definitions/models.Board'
+        type: array
+    type: object
+  commentController.CreateCommentRequest:
+    properties:
+      task_id:
+        type: integer
+      text:
+        type: string
+    type: object
+  commentController.CreateCommentResponse:
+    properties:
+      comment:
+        $ref: '#/definitions/models.Comment'
+    type: object
+  commentController.DeleteCommentRequest:
+    properties:
+      id:
+        type: integer
+    type: object
+  commentController.DeleteCommentResponse:
+    properties:
+      comment:
+        $ref: '#/definitions/models.Comment'
+    type: object
+  commentController.EditCommentRequest:
+    properties:
+      id:
+        type: integer
+      text:
+        type: string
+    type: object
+  commentController.EditCommentResponse:
+    properties:
+      comment:
+        $ref: '#/definitions/models.Comment'
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -154,6 +226,79 @@ definitions:
     properties:
       app_name:
         type: string
+    type: object
+  models.Board:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      name:
+        type: string
+      owner:
+        $ref: '#/definitions/models.User'
+      owner_id:
+        type: integer
+      permissions:
+        items:
+          $ref: '#/definitions/models.BoardPermission'
+        type: array
+      swimlanes:
+        items:
+          $ref: '#/definitions/models.Swimlane'
+        type: array
+      tasks:
+        items:
+          $ref: '#/definitions/models.Task'
+        type: array
+      updated_at:
+        type: string
+    required:
+    - name
+    type: object
+  models.BoardPermission:
+    properties:
+      board_id:
+        type: integer
+      created_at:
+        type: string
+      delete:
+        type: boolean
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      edit:
+        type: boolean
+      general_access:
+        type: boolean
+      id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.Comment:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      task_id:
+        type: integer
+      text:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
     type: object
   models.ErrorResponse:
     properties:
@@ -170,6 +315,50 @@ definitions:
     - RoleUser
     - RoleAdmin
     - RoleDisabled
+  models.Swimlane:
+    properties:
+      board_id:
+        type: integer
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      name:
+        type: string
+      order:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.Task:
+    properties:
+      board_id:
+        type: integer
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      swimlane:
+        $ref: '#/definitions/models.Swimlane'
+      swimlane_id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
   models.User:
     properties:
       created_at:
@@ -188,6 +377,112 @@ definitions:
         type: string
     required:
     - email
+    type: object
+  swimlaneController.CreateSwimlaneRequest:
+    properties:
+      board_id:
+        type: integer
+      name:
+        type: string
+      order:
+        type: integer
+    type: object
+  swimlaneController.CreateSwimlaneResponse:
+    properties:
+      swimlane:
+        $ref: '#/definitions/models.Swimlane'
+    type: object
+  swimlaneController.DeleteSwimlaneRequest:
+    properties:
+      id:
+        type: integer
+    type: object
+  swimlaneController.DeleteSwimlaneResponse:
+    properties:
+      swimlane:
+        $ref: '#/definitions/models.Swimlane'
+    type: object
+  swimlaneController.EditSwimlaneRequest:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      order:
+        type: integer
+    type: object
+  swimlaneController.EditSwimlaneResponse:
+    properties:
+      swimlane:
+        $ref: '#/definitions/models.Swimlane'
+    type: object
+  taskController.CreateTaskRequest:
+    properties:
+      board_id:
+        type: integer
+      description:
+        type: string
+      status:
+        type: string
+      swimlane_id:
+        type: integer
+      title:
+        type: string
+    type: object
+  taskController.CreateTaskResponse:
+    properties:
+      task:
+        $ref: '#/definitions/models.Task'
+    type: object
+  taskController.DeleteTaskRequest:
+    properties:
+      id:
+        type: integer
+    type: object
+  taskController.DeleteTaskResponse:
+    properties:
+      task:
+        $ref: '#/definitions/models.Task'
+    type: object
+  taskController.EditTaskRequest:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      swimlane_id:
+        type: integer
+      title:
+        type: string
+    type: object
+  taskController.EditTaskResponse:
+    properties:
+      task:
+        $ref: '#/definitions/models.Task'
+    type: object
+  taskController.GetTaskQueryRequest:
+    properties:
+      query:
+        type: string
+    type: object
+  taskController.GetTaskQueryResponse:
+    properties:
+      tasks:
+        items:
+          $ref: '#/definitions/models.Task'
+        type: array
+    type: object
+  taskController.GetTaskRequest:
+    properties:
+      id:
+        type: integer
+    type: object
+  taskController.GetTaskResponse:
+    properties:
+      task:
+        $ref: '#/definitions/models.Task'
     type: object
 info:
   contact: {}
@@ -645,6 +940,258 @@ paths:
       summary: Generate TOTP secret
       tags:
       - auth
+  /api/v1/boards:
+    get:
+      description: List all boards for the current user
+      responses:
+        "200":
+          description: Boards
+          schema:
+            $ref: '#/definitions/boardController.ListBoardsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: List all boards
+      tags:
+      - board
+  /api/v1/boards/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a board by ID
+      parameters:
+      - description: Board ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/boardController.GetBoardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Get a board
+      tags:
+      - boards
+    post:
+      consumes:
+      - application/json
+      description: Delete a board by ID
+      parameters:
+      - description: Board ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/boardController.DeleteBoardRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/boardController.DeleteBoardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Delete a board
+      tags:
+      - boards
+  /api/v1/boards/create:
+    post:
+      description: Create a new board with the given name
+      parameters:
+      - description: Board name
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/boardController.CreateBoardRequest'
+      responses:
+        "200":
+          description: Board created
+          schema:
+            $ref: '#/definitions/boardController.CreateBoardResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Create a new board
+      tags:
+      - board
+  /api/v1/comments/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a comment for a task
+      parameters:
+      - description: Comment details
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/commentController.CreateCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/commentController.CreateCommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Create a comment
+      tags:
+      - comments
+  /api/v1/comments/delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete a comment
+      parameters:
+      - description: Delete comment request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/commentController.DeleteCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/commentController.DeleteCommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Delete a comment
+      tags:
+      - comments
+  /api/v1/comments/edit:
+    post:
+      consumes:
+      - application/json
+      description: Edit a comment
+      parameters:
+      - description: Edit comment request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/commentController.EditCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/commentController.EditCommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Edit a comment
+      tags:
+      - comments
   /api/v1/misc/appname:
     get:
       description: Get the app name
@@ -658,6 +1205,296 @@ paths:
       summary: Get the app name
       tags:
       - misc
+  /api/v1/swimlanes:
+    post:
+      consumes:
+      - application/json
+      description: Create a swimlane for a board
+      parameters:
+      - description: Swimlane details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/swimlaneController.CreateSwimlaneRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/swimlaneController.CreateSwimlaneResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Create a swimlane
+      tags:
+      - swimlanes
+  /api/v1/swimlanes/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Edit a swimlane by ID
+      parameters:
+      - description: Swimlane details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/swimlaneController.EditSwimlaneRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/swimlaneController.EditSwimlaneResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Edit a swimlane
+      tags:
+      - swimlanes
+  /api/v1/tasks/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a task
+      parameters:
+      - description: Create task request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/taskController.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/taskController.CreateTaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Create a task
+      tags:
+      - tasks
+  /api/v1/tasks/delete/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Delete a task
+      parameters:
+      - description: Delete task request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/taskController.DeleteTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/taskController.DeleteTaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Delete a task
+      tags:
+      - tasks
+  /api/v1/tasks/edit/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Edit a task
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Edit task request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/taskController.EditTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/taskController.EditTaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Edit a task
+      tags:
+      - tasks
+  /api/v1/tasks/get-query:
+    get:
+      consumes:
+      - application/json
+      description: Get tasks with a query
+      parameters:
+      - description: Query
+        in: body
+        name: query
+        required: true
+        schema:
+          $ref: '#/definitions/taskController.GetTaskQueryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/taskController.GetTaskQueryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Get tasks with a query
+      tags:
+      - tasks
+  /api/v1/tasks/get/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a task
+      parameters:
+      - description: Get task request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/taskController.GetTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/taskController.GetTaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Get a task
+      tags:
+      - tasks
 securityDefinitions:
   csrf:
     in: header
