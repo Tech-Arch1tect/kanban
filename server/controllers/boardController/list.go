@@ -16,7 +16,7 @@ type ListBoardsResponse struct {
 // ListBoards godoc
 // @Summary List all boards
 // @Description List all boards for the current user
-// @Tags board
+// @Tags boards
 // @Security cookieAuth
 // @Success 200 {object} ListBoardsResponse "Boards"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"

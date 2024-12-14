@@ -21,7 +21,7 @@ type CreateBoardResponse struct {
 // CreateBoard godoc
 // @Summary Create a new board
 // @Description Create a new board with the given name
-// @Tags board
+// @Tags boards
 // @Security cookieAuth
 // @Security csrf
 // @Param request body CreateBoardRequest true "Board name"

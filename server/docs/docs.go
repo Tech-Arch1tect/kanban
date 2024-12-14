@@ -742,7 +742,7 @@ const docTemplate = `{
                 ],
                 "description": "Create a new board with the given name",
                 "tags": [
-                    "board"
+                    "boards"
                 ],
                 "summary": "Create a new board",
                 "parameters": [
@@ -916,7 +916,7 @@ const docTemplate = `{
                 ],
                 "description": "List all boards for the current user",
                 "tags": [
-                    "board"
+                    "boards"
                 ],
                 "summary": "List all boards",
                 "responses": {

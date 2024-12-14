@@ -975,7 +975,7 @@ paths:
       - csrf: []
       summary: Create a new board
       tags:
-      - board
+      - boards
   /api/v1/boards/delete:
     post:
       consumes:
@@ -1077,7 +1077,7 @@ paths:
       - cookieAuth: []
       summary: List all boards
       tags:
-      - board
+      - boards
   /api/v1/comments/create:
     post:
       consumes:
