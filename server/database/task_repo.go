@@ -3,6 +3,7 @@ package database
 import (
 	"errors"
 	"server/models"
+	"slices"
 	"strings"
 
 	"gorm.io/gorm"
@@ -52,6 +53,18 @@ func (r *GormTaskRepository) GetWithQuery(query string, user models.User) ([]mod
 	for _, p := range permissions {
 		if p.GeneralAccess || p.Edit || p.Delete {
 			boardIDs = append(boardIDs, p.BoardID)
+		}
+	}
+
+	// find board id's where the user is owner
+	ownerBoardIDs, err := DB.BoardRepository.GetAllByAccess(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, board := range ownerBoardIDs {
+		if !slices.Contains(boardIDs, board.ID) {
+			boardIDs = append(boardIDs, board.ID)
 		}
 	}
 
