@@ -21,6 +21,7 @@ import { Route as Profile2faImport } from './routes/profile/2fa'
 import { Route as BoardsBoardIdImport } from './routes/boards/$boardId'
 import { Route as AdminUsersImport } from './routes/admin/users'
 import { Route as AdminBoardsImport } from './routes/admin/boards'
+import { Route as BoardsAdministrateBoardIdImport } from './routes/boards/administrate/$boardId'
 
 // Create/Update Routes
 
@@ -81,6 +82,12 @@ const AdminUsersRoute = AdminUsersImport.update({
 const AdminBoardsRoute = AdminBoardsImport.update({
   id: '/admin/boards',
   path: '/admin/boards',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const BoardsAdministrateBoardIdRoute = BoardsAdministrateBoardIdImport.update({
+  id: '/boards/administrate/$boardId',
+  path: '/boards/administrate/$boardId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -158,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileProfileImport
       parentRoute: typeof rootRoute
     }
+    '/boards/administrate/$boardId': {
+      id: '/boards/administrate/$boardId'
+      path: '/boards/administrate/$boardId'
+      fullPath: '/boards/administrate/$boardId'
+      preLoaderRoute: typeof BoardsAdministrateBoardIdImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -174,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/boards/$boardId': typeof BoardsBoardIdRoute
   '/profile/2fa': typeof Profile2faRoute
   '/profile/profile': typeof ProfileProfileRoute
+  '/boards/administrate/$boardId': typeof BoardsAdministrateBoardIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -187,6 +202,7 @@ export interface FileRoutesByTo {
   '/boards/$boardId': typeof BoardsBoardIdRoute
   '/profile/2fa': typeof Profile2faRoute
   '/profile/profile': typeof ProfileProfileRoute
+  '/boards/administrate/$boardId': typeof BoardsAdministrateBoardIdRoute
 }
 
 export interface FileRoutesById {
@@ -201,6 +217,7 @@ export interface FileRoutesById {
   '/boards/$boardId': typeof BoardsBoardIdRoute
   '/profile/2fa': typeof Profile2faRoute
   '/profile/profile': typeof ProfileProfileRoute
+  '/boards/administrate/$boardId': typeof BoardsAdministrateBoardIdRoute
 }
 
 export interface FileRouteTypes {
@@ -216,6 +233,7 @@ export interface FileRouteTypes {
     | '/boards/$boardId'
     | '/profile/2fa'
     | '/profile/profile'
+    | '/boards/administrate/$boardId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -228,6 +246,7 @@ export interface FileRouteTypes {
     | '/boards/$boardId'
     | '/profile/2fa'
     | '/profile/profile'
+    | '/boards/administrate/$boardId'
   id:
     | '__root__'
     | '/'
@@ -240,6 +259,7 @@ export interface FileRouteTypes {
     | '/boards/$boardId'
     | '/profile/2fa'
     | '/profile/profile'
+    | '/boards/administrate/$boardId'
   fileRoutesById: FileRoutesById
 }
 
@@ -254,6 +274,7 @@ export interface RootRouteChildren {
   BoardsBoardIdRoute: typeof BoardsBoardIdRoute
   Profile2faRoute: typeof Profile2faRoute
   ProfileProfileRoute: typeof ProfileProfileRoute
+  BoardsAdministrateBoardIdRoute: typeof BoardsAdministrateBoardIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -267,6 +288,7 @@ const rootRouteChildren: RootRouteChildren = {
   BoardsBoardIdRoute: BoardsBoardIdRoute,
   Profile2faRoute: Profile2faRoute,
   ProfileProfileRoute: ProfileProfileRoute,
+  BoardsAdministrateBoardIdRoute: BoardsAdministrateBoardIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -288,7 +310,8 @@ export const routeTree = rootRoute
         "/admin/users",
         "/boards/$boardId",
         "/profile/2fa",
-        "/profile/profile"
+        "/profile/profile",
+        "/boards/administrate/$boardId"
       ]
     },
     "/": {
@@ -320,6 +343,9 @@ export const routeTree = rootRoute
     },
     "/profile/profile": {
       "filePath": "profile/profile.tsx"
+    },
+    "/boards/administrate/$boardId": {
+      "filePath": "boards/administrate/$boardId.tsx"
     }
   }
 }

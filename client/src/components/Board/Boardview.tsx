@@ -5,6 +5,7 @@ import BoardColumns from "./BoardColumns";
 import { ModelsSwimlane } from "../../typescript-fetch-client";
 import BoardSwimlanes from "./BoardSwimlanes";
 import { useGetTaskQuery } from "../../hooks/tasks/useTaskQuery";
+import AdminLinks from "./AdminLinks";
 
 export default function BoardView() {
   const { boardId } = useParams({ from: "/boards/$boardId" });
@@ -26,6 +27,7 @@ export default function BoardView() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">{board?.name}</h1>
+      <AdminLinks board={board!} />
 
       <div className="mb-4">
         <label className="mr-2 font-semibold">Filter tasks by query:</label>
