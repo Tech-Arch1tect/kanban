@@ -27,6 +27,13 @@ import {
     ModelsUserToJSON,
     ModelsUserToJSONTyped,
 } from './ModelsUser';
+import type { ModelsColumn } from './ModelsColumn';
+import {
+    ModelsColumnFromJSON,
+    ModelsColumnFromJSONTyped,
+    ModelsColumnToJSON,
+    ModelsColumnToJSONTyped,
+} from './ModelsColumn';
 import type { ModelsSwimlane } from './ModelsSwimlane';
 import {
     ModelsSwimlaneFromJSON,
@@ -55,6 +62,12 @@ import {
  * @interface ModelsBoard
  */
 export interface ModelsBoard {
+    /**
+     * 
+     * @type {Array<ModelsColumn>}
+     * @memberof ModelsBoard
+     */
+    columns?: Array<ModelsColumn>;
     /**
      * 
      * @type {string}
@@ -135,6 +148,7 @@ export function ModelsBoardFromJSONTyped(json: any, ignoreDiscriminator: boolean
     }
     return {
         
+        'columns': json['columns'] == null ? undefined : ((json['columns'] as Array<any>).map(ModelsColumnFromJSON)),
         'createdAt': json['created_at'] == null ? undefined : json['created_at'],
         'deletedAt': json['deleted_at'] == null ? undefined : GormDeletedAtFromJSON(json['deleted_at']),
         'id': json['id'] == null ? undefined : json['id'],
@@ -159,6 +173,7 @@ export function ModelsBoardToJSONTyped(value?: ModelsBoard | null, ignoreDiscrim
 
     return {
         
+        'columns': value['columns'] == null ? undefined : ((value['columns'] as Array<any>).map(ModelsColumnToJSON)),
         'created_at': value['createdAt'],
         'deleted_at': GormDeletedAtToJSON(value['deletedAt']),
         'id': value['id'],

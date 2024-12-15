@@ -27,6 +27,13 @@ import {
     ModelsCommentToJSON,
     ModelsCommentToJSONTyped,
 } from './ModelsComment';
+import type { ModelsColumn } from './ModelsColumn';
+import {
+    ModelsColumnFromJSON,
+    ModelsColumnFromJSONTyped,
+    ModelsColumnToJSON,
+    ModelsColumnToJSONTyped,
+} from './ModelsColumn';
 import type { ModelsSwimlane } from './ModelsSwimlane';
 import {
     ModelsSwimlaneFromJSON,
@@ -47,6 +54,18 @@ export interface ModelsTask {
      * @memberof ModelsTask
      */
     boardId?: number;
+    /**
+     * 
+     * @type {ModelsColumn}
+     * @memberof ModelsTask
+     */
+    column?: ModelsColumn;
+    /**
+     * 
+     * @type {number}
+     * @memberof ModelsTask
+     */
+    columnId?: number;
     /**
      * 
      * @type {Array<ModelsComment>}
@@ -127,6 +146,8 @@ export function ModelsTaskFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     return {
         
         'boardId': json['board_id'] == null ? undefined : json['board_id'],
+        'column': json['column'] == null ? undefined : ModelsColumnFromJSON(json['column']),
+        'columnId': json['column_id'] == null ? undefined : json['column_id'],
         'comments': json['comments'] == null ? undefined : ((json['comments'] as Array<any>).map(ModelsCommentFromJSON)),
         'createdAt': json['created_at'] == null ? undefined : json['created_at'],
         'deletedAt': json['deleted_at'] == null ? undefined : GormDeletedAtFromJSON(json['deleted_at']),
@@ -152,6 +173,8 @@ export function ModelsTaskToJSONTyped(value?: ModelsTask | null, ignoreDiscrimin
     return {
         
         'board_id': value['boardId'],
+        'column': ModelsColumnToJSON(value['column']),
+        'column_id': value['columnId'],
         'comments': value['comments'] == null ? undefined : ((value['comments'] as Array<any>).map(ModelsCommentToJSON)),
         'created_at': value['createdAt'],
         'deleted_at': GormDeletedAtToJSON(value['deletedAt']),

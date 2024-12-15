@@ -21,6 +21,12 @@ import { mapValues } from '../runtime';
 export interface BoardControllerCreateBoardRequest {
     /**
      * 
+     * @type {Array<string>}
+     * @memberof BoardControllerCreateBoardRequest
+     */
+    columns?: Array<string>;
+    /**
+     * 
      * @type {string}
      * @memberof BoardControllerCreateBoardRequest
      */
@@ -50,6 +56,7 @@ export function BoardControllerCreateBoardRequestFromJSONTyped(json: any, ignore
     }
     return {
         
+        'columns': json['columns'] == null ? undefined : json['columns'],
         'name': json['name'] == null ? undefined : json['name'],
         'swimlanes': json['swimlanes'] == null ? undefined : json['swimlanes'],
     };
@@ -66,6 +73,7 @@ export function BoardControllerCreateBoardRequestToJSONTyped(value?: BoardContro
 
     return {
         
+        'columns': value['columns'],
         'name': value['name'],
         'swimlanes': value['swimlanes'],
     };

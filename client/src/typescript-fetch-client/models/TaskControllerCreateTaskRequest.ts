@@ -27,6 +27,12 @@ export interface TaskControllerCreateTaskRequest {
     boardId?: number;
     /**
      * 
+     * @type {number}
+     * @memberof TaskControllerCreateTaskRequest
+     */
+    columnId?: number;
+    /**
+     * 
      * @type {string}
      * @memberof TaskControllerCreateTaskRequest
      */
@@ -69,6 +75,7 @@ export function TaskControllerCreateTaskRequestFromJSONTyped(json: any, ignoreDi
     return {
         
         'boardId': json['board_id'] == null ? undefined : json['board_id'],
+        'columnId': json['column_id'] == null ? undefined : json['column_id'],
         'description': json['description'] == null ? undefined : json['description'],
         'status': json['status'] == null ? undefined : json['status'],
         'swimlaneId': json['swimlane_id'] == null ? undefined : json['swimlane_id'],
@@ -88,6 +95,7 @@ export function TaskControllerCreateTaskRequestToJSONTyped(value?: TaskControlle
     return {
         
         'board_id': value['boardId'],
+        'column_id': value['columnId'],
         'description': value['description'],
         'status': value['status'],
         'swimlane_id': value['swimlaneId'],

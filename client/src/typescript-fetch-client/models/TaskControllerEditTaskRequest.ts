@@ -21,6 +21,12 @@ import { mapValues } from '../runtime';
 export interface TaskControllerEditTaskRequest {
     /**
      * 
+     * @type {number}
+     * @memberof TaskControllerEditTaskRequest
+     */
+    columnId?: number;
+    /**
+     * 
      * @type {string}
      * @memberof TaskControllerEditTaskRequest
      */
@@ -68,6 +74,7 @@ export function TaskControllerEditTaskRequestFromJSONTyped(json: any, ignoreDisc
     }
     return {
         
+        'columnId': json['column_id'] == null ? undefined : json['column_id'],
         'description': json['description'] == null ? undefined : json['description'],
         'id': json['id'] == null ? undefined : json['id'],
         'status': json['status'] == null ? undefined : json['status'],
@@ -87,6 +94,7 @@ export function TaskControllerEditTaskRequestToJSONTyped(value?: TaskControllerE
 
     return {
         
+        'column_id': value['columnId'],
         'description': value['description'],
         'id': value['id'],
         'status': value['status'],

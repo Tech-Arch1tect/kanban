@@ -35,6 +35,12 @@ models/BoardControllerDeleteBoardRequest.ts
 models/BoardControllerDeleteBoardResponse.ts
 models/BoardControllerGetBoardResponse.ts
 models/BoardControllerListBoardsResponse.ts
+models/ColumnControllerCreateColumnRequest.ts
+models/ColumnControllerCreateColumnResponse.ts
+models/ColumnControllerDeleteColumnRequest.ts
+models/ColumnControllerDeleteColumnResponse.ts
+models/ColumnControllerEditColumnRequest.ts
+models/ColumnControllerEditColumnResponse.ts
 models/CommentControllerCreateCommentRequest.ts
 models/CommentControllerCreateCommentResponse.ts
 models/CommentControllerDeleteCommentRequest.ts
@@ -45,6 +51,7 @@ models/GormDeletedAt.ts
 models/MiscControllerAppNameResponse.ts
 models/ModelsBoard.ts
 models/ModelsBoardPermission.ts
+models/ModelsColumn.ts
 models/ModelsComment.ts
 models/ModelsErrorResponse.ts
 models/ModelsRole.ts
