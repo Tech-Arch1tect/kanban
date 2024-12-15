@@ -20,7 +20,8 @@ const AdminBoards = () => {
     createBoard({
       request: {
         name: newBoardName,
-        swimlanes: ["To Do", "In Progress", "Done", "Review"],
+        swimlanes: ["Default"],
+        columns: ["Backlog", "Todo", "In Progress", "Done"],
       },
     });
   };
