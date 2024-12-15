@@ -34,4 +34,3 @@ func clearTOTPSession(c *gin.Context) {
 func generateRandomToken() string {
 	return uuid.New().String()
 }
-

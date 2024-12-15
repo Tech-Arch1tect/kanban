@@ -38,7 +38,7 @@ func (r *GormTaskRepository) Migrate() error {
 
 func (r *GormTaskRepository) GetWithPreload(id uint) (models.Task, error) {
 	var task models.Task
-	result := r.db.Preload("Swimlane").Preload("Comments").First(&task, id)
+	result := r.db.Preload("Swimlane").Preload("Column").Preload("Comments").First(&task, id)
 	return task, result.Error
 }
 

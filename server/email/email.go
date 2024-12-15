@@ -8,7 +8,6 @@ import (
 	"github.com/wneessen/go-mail"
 )
 
-
 var c *mail.Client
 
 func Init() error {
@@ -28,7 +27,7 @@ func Init() error {
 	tlspolicy := mail.TLSMandatory
 	if config.CFG.SmtpNoTLS {
 		tlspolicy = mail.NoTLS
-	} 
+	}
 	client, err := mail.NewClient(config.CFG.SmtpHost, mail.WithSMTPAuth(auth),
 		mail.WithUsername(config.CFG.SmtpUser), mail.WithPassword(config.CFG.SmtpPassword), mail.WithPort(port), mail.WithTLSPolicy(tlspolicy))
 	if err != nil {

@@ -12,6 +12,7 @@ import (
 type CreateBoardRequest struct {
 	Name      string   `json:"name"`
 	Swimlanes []string `json:"swimlanes"`
+	Columns   []string `json:"columns"`
 }
 
 type CreateBoardResponse struct {
@@ -47,10 +48,16 @@ func CreateBoard(c *gin.Context) {
 		swimlanes[i] = models.Swimlane{Name: name, Order: i}
 	}
 
+	columns := make([]models.Column, len(request.Columns))
+	for i, name := range request.Columns {
+		columns[i] = models.Column{Name: name, Order: i}
+	}
+
 	board := models.Board{
 		Name:      request.Name,
 		OwnerID:   user.ID,
 		Swimlanes: swimlanes,
+		Columns:   columns,
 	}
 
 	err := database.DB.BoardRepository.Create(&board)

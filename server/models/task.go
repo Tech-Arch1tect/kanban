@@ -10,6 +10,8 @@ type Task struct {
 	BoardID     uint      `json:"board_id"`
 	Swimlane    Swimlane  `gorm:"foreignKey:SwimlaneID" json:"swimlane"`
 	SwimlaneID  uint      `json:"swimlane_id"`
+	ColumnID    uint      `json:"column_id"`
+	Column      Column    `gorm:"foreignKey:ColumnID" json:"column"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Status      string    `json:"status"`

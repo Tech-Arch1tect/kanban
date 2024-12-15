@@ -14,6 +14,7 @@ type CreateTaskRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	SwimlaneID  uint   `json:"swimlane_id"`
+	ColumnID    uint   `json:"column_id"`
 	Status      string `json:"status"`
 }
 
@@ -54,12 +55,19 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
+	_, err = database.DB.ColumnRepository.GetByID(request.ColumnID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	task := models.Task{
 		BoardID:     request.BoardID,
 		Title:       request.Title,
 		Description: request.Description,
 		SwimlaneID:  request.SwimlaneID,
 		Status:      request.Status,
+		ColumnID:    request.ColumnID,
 	}
 
 	err = task.Validate()

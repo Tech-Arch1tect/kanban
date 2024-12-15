@@ -8,6 +8,7 @@ type Board struct {
 	OwnerID     uint              `gorm:"not null" json:"owner_id"`
 	Swimlanes   []Swimlane        `gorm:"foreignKey:BoardID" json:"swimlanes"`
 	Tasks       []Task            `gorm:"foreignKey:BoardID" json:"tasks"`
+	Columns     []Column          `gorm:"foreignKey:BoardID" json:"columns"`
 }
 
 type BoardPermission struct {

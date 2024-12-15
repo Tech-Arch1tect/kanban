@@ -22,6 +22,7 @@ type Database struct {
 	TaskRepository            TaskRepository
 	SwimlaneRepository        SwimlaneRepository
 	CommentRepository         CommentRepository
+	ColumnRepository          ColumnRepository
 }
 
 var DB Database

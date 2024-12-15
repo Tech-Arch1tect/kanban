@@ -15,6 +15,7 @@ type EditTaskRequest struct {
 	Description string `json:"description"`
 	SwimlaneID  uint   `json:"swimlane_id"`
 	Status      string `json:"status"`
+	ColumnID    uint   `json:"column_id"`
 }
 
 type EditTaskResponse struct {
@@ -54,11 +55,33 @@ func EditTask(c *gin.Context) {
 		return
 	}
 
+	column, err := database.DB.ColumnRepository.GetByID(request.ColumnID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if column.BoardID != task.BoardID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+		return
+	}
+
+	swimlane, err := database.DB.SwimlaneRepository.GetByID(request.SwimlaneID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if swimlane.BoardID != task.BoardID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+		return
+	}
+
 	task.Title = request.Title
 	task.Description = request.Description
 	task.SwimlaneID = request.SwimlaneID
 	task.Status = request.Status
-
+	task.ColumnID = request.ColumnID
 	err = task.Validate()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

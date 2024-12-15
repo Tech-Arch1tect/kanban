@@ -36,7 +36,7 @@ func (r *GormBoardRepository) GetWithPreload(id uint) (models.Board, error) {
 
 func (r *GormBoardRepository) GetAllByAccess(userID uint) ([]models.Board, error) {
 	var boards []models.Board
-	result := r.db.Preload("Permissions").Preload("Swimlanes").Preload("Owner").Joins("LEFT JOIN board_permissions ON boards.id = board_permissions.board_id").Where("board_permissions.user_id = ?", userID).Or("boards.owner_id = ?", userID).Find(&boards)
+	result := r.db.Preload("Permissions").Preload("Swimlanes").Preload("Columns").Preload("Owner").Joins("LEFT JOIN board_permissions ON boards.id = board_permissions.board_id").Where("board_permissions.user_id = ?", userID).Or("boards.owner_id = ?", userID).Find(&boards)
 	return boards, result.Error
 }
 
