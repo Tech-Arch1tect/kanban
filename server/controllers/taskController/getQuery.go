@@ -10,7 +10,7 @@ import (
 )
 
 type GetTaskQueryRequest struct {
-	Query string `json:"query"`
+	Query string `uri:"query" binding:"required"`
 }
 
 type GetTaskQueryResponse struct {
