@@ -30,7 +30,7 @@ func (r *GormBoardRepository) Migrate() error {
 
 func (r *GormBoardRepository) GetWithPreload(id uint) (models.Board, error) {
 	var board models.Board
-	result := r.db.Preload("Permissions").Preload("Swimlanes").Preload("Owner").First(&board, id)
+	result := r.db.Preload("Permissions").Preload("Swimlanes").Preload("Columns").Preload("Owner").First(&board, id)
 	return board, result.Error
 }
 
