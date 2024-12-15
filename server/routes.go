@@ -95,8 +95,8 @@ func routes(r *gin.Engine) {
 		task.Use(middleware.AuthRequired())
 		{
 			task.POST("/create", middleware.CSRFTokenRequired(), taskController.CreateTask)
-			task.GET("/get-query", taskController.GetTaskQuery)
-			task.GET("/get", taskController.GetTask)
+			task.GET("/get-query/:query", taskController.GetTaskQuery)
+			task.GET("/get/:id", taskController.GetTask)
 			task.POST("/edit", middleware.CSRFTokenRequired(), taskController.EditTask)
 			task.POST("/delete", middleware.CSRFTokenRequired(), taskController.DeleteTask)
 		}

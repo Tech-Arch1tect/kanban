@@ -23,16 +23,16 @@ type GetTaskResponse struct {
 // @Security cookieAuth
 // @Accept json
 // @Produce json
-// @Param request body GetTaskRequest true "Get task request"
+// @Param id path uint true "Task ID"
 // @Success 200 {object} GetTaskResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/tasks/get [get]
+// @Router /api/v1/tasks/get/{id} [get]
 func GetTask(c *gin.Context) {
 	var request GetTaskRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBindUri(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
