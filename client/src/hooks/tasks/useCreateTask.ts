@@ -1,0 +1,22 @@
+import { useMutation } from "@tanstack/react-query";
+import { tasksApi } from "../../lib/api";
+import { TaskControllerCreateTaskRequest } from "../../typescript-fetch-client/models";
+
+export const useCreateTask = () => {
+  const { mutate, error, isError, isSuccess, data, isPending } = useMutation({
+    mutationFn: async (task: TaskControllerCreateTaskRequest) => {
+      return await tasksApi.apiV1TasksCreatePost({
+        request: {
+          boardId: task.boardId,
+          title: task.title,
+          description: task.description,
+          status: task.status,
+          swimlaneId: task.swimlaneId,
+          columnId: task.columnId,
+        },
+      });
+    },
+  });
+
+  return { mutate, error, isError, isSuccess, data, isPending };
+};

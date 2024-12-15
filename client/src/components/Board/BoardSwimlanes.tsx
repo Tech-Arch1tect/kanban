@@ -1,12 +1,18 @@
 import ColumnTasks from "./ColumnTasks";
-import { ModelsColumn, ModelsSwimlane } from "../../typescript-fetch-client";
+import {
+  ModelsColumn,
+  ModelsSwimlane,
+  ModelsTask,
+} from "../../typescript-fetch-client";
 
 export default function BoardSwimlanes({
   swimlane,
   columns,
+  tasks,
 }: {
   swimlane: ModelsSwimlane;
   columns: ModelsColumn[];
+  tasks: ModelsTask[];
 }) {
   return (
     <div className="mb-6">
@@ -20,7 +26,12 @@ export default function BoardSwimlanes({
         }}
       >
         {columns?.map((column) => (
-          <ColumnTasks key={column.id} column={column} />
+          <ColumnTasks
+            key={column.id}
+            column={column}
+            swimlane={swimlane}
+            tasks={tasks}
+          />
         ))}
       </div>
     </div>

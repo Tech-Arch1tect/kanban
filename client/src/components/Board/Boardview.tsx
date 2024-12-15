@@ -4,12 +4,19 @@ import { useBoardData } from "../../hooks/boards/useBoardData";
 import BoardColumns from "./BoardColumns";
 import { ModelsSwimlane } from "../../typescript-fetch-client";
 import BoardSwimlanes from "./BoardSwimlanes";
+import { useGetTaskQuery } from "../../hooks/tasks/useTaskQuery";
 
 export default function BoardView() {
   const { boardId } = useParams({ from: "/boards/$boardId" });
   const { data, isLoading, error } = useBoardData(boardId);
 
   const [taskQuery, setTaskQuery] = useState("status:open");
+
+  const {
+    data: tasks,
+    isLoading: tasksLoading,
+    error: tasksError,
+  } = useGetTaskQuery(`board_id:${boardId} ${taskQuery}`);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading board</div>;
@@ -29,6 +36,9 @@ export default function BoardView() {
           className="border p-1"
           placeholder='e.g. "status:open"'
         />
+        {tasksLoading && <div>Loading tasks...</div>}
+        {tasksError && <div>Error loading tasks</div>}
+        {tasks && <div>{tasks?.tasks?.length ?? 0}</div>}
       </div>
 
       <BoardColumns columns={board?.columns ?? []} />
@@ -37,6 +47,7 @@ export default function BoardView() {
           key={swimlane.id}
           swimlane={swimlane}
           columns={board?.columns ?? []}
+          tasks={tasks?.tasks ?? []}
         />
       ))}
     </div>
