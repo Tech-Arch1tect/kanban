@@ -1907,6 +1907,12 @@ const docTemplate = `{
         "boardController.CreateBoardRequest": {
             "type": "object",
             "properties": {
+                "columns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "name": {
                     "type": "string"
                 },
@@ -1961,6 +1967,66 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.Board"
                     }
+                }
+            }
+        },
+        "columnController.CreateColumnRequest": {
+            "type": "object",
+            "properties": {
+                "board_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "integer"
+                }
+            }
+        },
+        "columnController.CreateColumnResponse": {
+            "type": "object",
+            "properties": {
+                "column": {
+                    "$ref": "#/definitions/models.Column"
+                }
+            }
+        },
+        "columnController.DeleteColumnRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "columnController.DeleteColumnResponse": {
+            "type": "object",
+            "properties": {
+                "column": {
+                    "$ref": "#/definitions/models.Column"
+                }
+            }
+        },
+        "columnController.EditColumnRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "integer"
+                }
+            }
+        },
+        "columnController.EditColumnResponse": {
+            "type": "object",
+            "properties": {
+                "column": {
+                    "$ref": "#/definitions/models.Column"
                 }
             }
         },
@@ -2044,6 +2110,12 @@ const docTemplate = `{
                 "name"
             ],
             "properties": {
+                "columns": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Column"
+                    }
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -2117,6 +2189,35 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.Column": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "board_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -2200,6 +2301,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "board_id": {
+                    "type": "integer"
+                },
+                "column": {
+                    "$ref": "#/definitions/models.Column"
+                },
+                "column_id": {
                     "type": "integer"
                 },
                 "comments": {
@@ -2332,6 +2439,9 @@ const docTemplate = `{
                 "board_id": {
                     "type": "integer"
                 },
+                "column_id": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -2373,6 +2483,9 @@ const docTemplate = `{
         "taskController.EditTaskRequest": {
             "type": "object",
             "properties": {
+                "column_id": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
