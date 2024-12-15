@@ -535,22 +535,12 @@ definitions:
       task:
         $ref: '#/definitions/models.Task'
     type: object
-  taskController.GetTaskQueryRequest:
-    properties:
-      query:
-        type: string
-    type: object
   taskController.GetTaskQueryResponse:
     properties:
       tasks:
         items:
           $ref: '#/definitions/models.Task'
         type: array
-    type: object
-  taskController.GetTaskRequest:
-    properties:
-      id:
-        type: integer
     type: object
   taskController.GetTaskResponse:
     properties:
@@ -1525,58 +1515,17 @@ paths:
       summary: Edit a task
       tags:
       - tasks
-  /api/v1/tasks/get:
-    get:
-      consumes:
-      - application/json
-      description: Get a task
-      parameters:
-      - description: Get task request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/taskController.GetTaskRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/taskController.GetTaskResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      security:
-      - cookieAuth: []
-      summary: Get a task
-      tags:
-      - tasks
-  /api/v1/tasks/get-query:
+  /api/v1/tasks/get-query/{query}:
     get:
       consumes:
       - application/json
       description: Get tasks with a query
       parameters:
       - description: Query
-        in: body
-        name: request
+        in: path
+        name: query
         required: true
-        schema:
-          $ref: '#/definitions/taskController.GetTaskQueryRequest'
+        type: string
       produces:
       - application/json
       responses:
@@ -1603,6 +1552,45 @@ paths:
       security:
       - cookieAuth: []
       summary: Get tasks with a query
+      tags:
+      - tasks
+  /api/v1/tasks/get/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a task
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/taskController.GetTaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Get a task
       tags:
       - tasks
 securityDefinitions:

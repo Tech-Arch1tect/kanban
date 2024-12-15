@@ -1553,14 +1553,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/tasks/get": {
+        "/api/v1/tasks/get-query/{query}": {
             "get": {
                 "security": [
                     {
                         "cookieAuth": []
                     }
                 ],
-                "description": "Get a task",
+                "description": "Get tasks with a query",
                 "consumes": [
                     "application/json"
                 ],
@@ -1570,23 +1570,21 @@ const docTemplate = `{
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Get a task",
+                "summary": "Get tasks with a query",
                 "parameters": [
                     {
-                        "description": "Get task request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/taskController.GetTaskRequest"
-                        }
+                        "type": "string",
+                        "description": "Query",
+                        "name": "query",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/taskController.GetTaskResponse"
+                            "$ref": "#/definitions/taskController.GetTaskQueryResponse"
                         }
                     },
                     "400": {
@@ -1616,14 +1614,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/tasks/get-query": {
+        "/api/v1/tasks/get/{id}": {
             "get": {
                 "security": [
                     {
                         "cookieAuth": []
                     }
                 ],
-                "description": "Get tasks with a query",
+                "description": "Get a task",
                 "consumes": [
                     "application/json"
                 ],
@@ -1633,23 +1631,21 @@ const docTemplate = `{
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Get tasks with a query",
+                "summary": "Get a task",
                 "parameters": [
                     {
-                        "description": "Query",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/taskController.GetTaskQueryRequest"
-                        }
+                        "type": "integer",
+                        "description": "Task ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/taskController.GetTaskQueryResponse"
+                            "$ref": "#/definitions/taskController.GetTaskResponse"
                         }
                     },
                     "400": {
@@ -2511,14 +2507,6 @@ const docTemplate = `{
                 }
             }
         },
-        "taskController.GetTaskQueryRequest": {
-            "type": "object",
-            "properties": {
-                "query": {
-                    "type": "string"
-                }
-            }
-        },
         "taskController.GetTaskQueryResponse": {
             "type": "object",
             "properties": {
@@ -2527,14 +2515,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.Task"
                     }
-                }
-            }
-        },
-        "taskController.GetTaskRequest": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
                 }
             }
         },
