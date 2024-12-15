@@ -22,9 +22,7 @@ import type {
   TaskControllerDeleteTaskResponse,
   TaskControllerEditTaskRequest,
   TaskControllerEditTaskResponse,
-  TaskControllerGetTaskQueryRequest,
   TaskControllerGetTaskQueryResponse,
-  TaskControllerGetTaskRequest,
   TaskControllerGetTaskResponse,
 } from '../models/index';
 import {
@@ -42,12 +40,8 @@ import {
     TaskControllerEditTaskRequestToJSON,
     TaskControllerEditTaskResponseFromJSON,
     TaskControllerEditTaskResponseToJSON,
-    TaskControllerGetTaskQueryRequestFromJSON,
-    TaskControllerGetTaskQueryRequestToJSON,
     TaskControllerGetTaskQueryResponseFromJSON,
     TaskControllerGetTaskQueryResponseToJSON,
-    TaskControllerGetTaskRequestFromJSON,
-    TaskControllerGetTaskRequestToJSON,
     TaskControllerGetTaskResponseFromJSON,
     TaskControllerGetTaskResponseToJSON,
 } from '../models/index';
@@ -64,12 +58,12 @@ export interface ApiV1TasksEditPostRequest {
     request: TaskControllerEditTaskRequest;
 }
 
-export interface ApiV1TasksGetGetRequest {
-    request: TaskControllerGetTaskRequest;
+export interface ApiV1TasksGetIdGetRequest {
+    id: number;
 }
 
-export interface ApiV1TasksGetQueryGetRequest {
-    request: TaskControllerGetTaskQueryRequest;
+export interface ApiV1TasksGetQueryQueryGetRequest {
+    query: string;
 }
 
 /**
@@ -207,11 +201,11 @@ export class TasksApi extends runtime.BaseAPI {
      * Get a task
      * Get a task
      */
-    async apiV1TasksGetGetRaw(requestParameters: ApiV1TasksGetGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TaskControllerGetTaskResponse>> {
-        if (requestParameters['request'] == null) {
+    async apiV1TasksGetIdGetRaw(requestParameters: ApiV1TasksGetIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TaskControllerGetTaskResponse>> {
+        if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
-                'request',
-                'Required parameter "request" was null or undefined when calling apiV1TasksGetGet().'
+                'id',
+                'Required parameter "id" was null or undefined when calling apiV1TasksGetIdGet().'
             );
         }
 
@@ -219,14 +213,11 @@ export class TasksApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        headerParameters['Content-Type'] = 'application/json';
-
         const response = await this.request({
-            path: `/api/v1/tasks/get`,
+            path: `/api/v1/tasks/get/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-            body: TaskControllerGetTaskRequestToJSON(requestParameters['request']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => TaskControllerGetTaskResponseFromJSON(jsonValue));
@@ -236,8 +227,8 @@ export class TasksApi extends runtime.BaseAPI {
      * Get a task
      * Get a task
      */
-    async apiV1TasksGetGet(requestParameters: ApiV1TasksGetGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TaskControllerGetTaskResponse> {
-        const response = await this.apiV1TasksGetGetRaw(requestParameters, initOverrides);
+    async apiV1TasksGetIdGet(requestParameters: ApiV1TasksGetIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TaskControllerGetTaskResponse> {
+        const response = await this.apiV1TasksGetIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -245,11 +236,11 @@ export class TasksApi extends runtime.BaseAPI {
      * Get tasks with a query
      * Get tasks with a query
      */
-    async apiV1TasksGetQueryGetRaw(requestParameters: ApiV1TasksGetQueryGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TaskControllerGetTaskQueryResponse>> {
-        if (requestParameters['request'] == null) {
+    async apiV1TasksGetQueryQueryGetRaw(requestParameters: ApiV1TasksGetQueryQueryGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TaskControllerGetTaskQueryResponse>> {
+        if (requestParameters['query'] == null) {
             throw new runtime.RequiredError(
-                'request',
-                'Required parameter "request" was null or undefined when calling apiV1TasksGetQueryGet().'
+                'query',
+                'Required parameter "query" was null or undefined when calling apiV1TasksGetQueryQueryGet().'
             );
         }
 
@@ -257,14 +248,11 @@ export class TasksApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        headerParameters['Content-Type'] = 'application/json';
-
         const response = await this.request({
-            path: `/api/v1/tasks/get-query`,
+            path: `/api/v1/tasks/get-query/{query}`.replace(`{${"query"}}`, encodeURIComponent(String(requestParameters['query']))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-            body: TaskControllerGetTaskQueryRequestToJSON(requestParameters['request']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => TaskControllerGetTaskQueryResponseFromJSON(jsonValue));
@@ -274,8 +262,8 @@ export class TasksApi extends runtime.BaseAPI {
      * Get tasks with a query
      * Get tasks with a query
      */
-    async apiV1TasksGetQueryGet(requestParameters: ApiV1TasksGetQueryGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TaskControllerGetTaskQueryResponse> {
-        const response = await this.apiV1TasksGetQueryGetRaw(requestParameters, initOverrides);
+    async apiV1TasksGetQueryQueryGet(requestParameters: ApiV1TasksGetQueryQueryGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TaskControllerGetTaskQueryResponse> {
+        const response = await this.apiV1TasksGetQueryQueryGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -70,9 +70,7 @@ models/TaskControllerDeleteTaskRequest.ts
 models/TaskControllerDeleteTaskResponse.ts
 models/TaskControllerEditTaskRequest.ts
 models/TaskControllerEditTaskResponse.ts
-models/TaskControllerGetTaskQueryRequest.ts
 models/TaskControllerGetTaskQueryResponse.ts
-models/TaskControllerGetTaskRequest.ts
 models/TaskControllerGetTaskResponse.ts
 models/index.ts
 runtime.ts

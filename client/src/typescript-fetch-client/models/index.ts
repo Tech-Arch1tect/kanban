@@ -62,7 +62,5 @@ export * from './TaskControllerDeleteTaskRequest';
 export * from './TaskControllerDeleteTaskResponse';
 export * from './TaskControllerEditTaskRequest';
 export * from './TaskControllerEditTaskResponse';
-export * from './TaskControllerGetTaskQueryRequest';
 export * from './TaskControllerGetTaskQueryResponse';
-export * from './TaskControllerGetTaskRequest';
 export * from './TaskControllerGetTaskResponse';
