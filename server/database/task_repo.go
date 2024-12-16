@@ -107,11 +107,12 @@ type TaskQuery struct {
 // Example: "status:open title:test" -> {"status": "open", "title": "test"}
 func (q *TaskQuery) Parse() (map[string]string, error) {
 	filters := make(map[string]string)
+	q.Query = strings.TrimSpace(q.Query)
 	if q.Query == "" {
 		return filters, nil
 	}
 
-	parts := strings.Split(q.Query, " ")
+	parts := strings.Fields(q.Query)
 	for _, part := range parts {
 		pair := strings.SplitN(part, ":", 2)
 		if len(pair) != 2 {
