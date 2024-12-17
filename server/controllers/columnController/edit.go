@@ -32,7 +32,7 @@ type EditColumnResponse struct {
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/swimlanes/edit [post]
+// @Router /api/v1/columns/edit [post]
 func EditColumn(c *gin.Context) {
 	var request EditColumnRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
