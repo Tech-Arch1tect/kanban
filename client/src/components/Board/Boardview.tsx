@@ -40,7 +40,12 @@ export default function BoardView() {
         />
         {tasksLoading && <div>Loading tasks...</div>}
         {tasksError && <div>Error loading tasks</div>}
-        {tasks && <div>{tasks?.tasks?.length ?? 0}</div>}
+        {tasks && (
+          <div>
+            Found <strong>{tasks?.tasks?.length ?? 0}</strong> tasks for query
+            <strong> "{taskQuery}"</strong>
+          </div>
+        )}
       </div>
 
       <BoardColumns columns={board?.columns ?? []} />
