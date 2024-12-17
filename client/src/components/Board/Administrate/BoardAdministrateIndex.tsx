@@ -3,6 +3,8 @@ import { useBoardData } from "../../../hooks/boards/useBoardData";
 import BoardDelete from "./BoardDelete";
 import { BoardSwimlaneCreate } from "./BoardSwimlaneCreate";
 import { BoardSwimlaneList } from "./BoardSwimlaneList";
+import { BoardColumnsList } from "./BoardColumnsList";
+import { BoardColumnCreate } from "./BoardColumnCreate";
 
 export default function BoardAdministrateIndex() {
   const { boardId } = useParams({ from: "/boards/administrate/$boardId" });
@@ -22,6 +24,8 @@ export default function BoardAdministrateIndex() {
       <BoardDelete board={board} />
       <BoardSwimlaneCreate boardId={boardId} />
       <BoardSwimlaneList board={board} />
+      <BoardColumnCreate boardId={boardId} />
+      <BoardColumnsList board={board} />
     </div>
   );
 }

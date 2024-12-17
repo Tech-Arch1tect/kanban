@@ -9,6 +9,7 @@ import {
   SwimlanesApi,
   TasksApi,
   CommentsApi,
+  ColumnsApi,
 } from "../typescript-fetch-client";
 
 // @ts-ignore
@@ -28,6 +29,7 @@ export const boardsApi = new BoardsApi(configuration);
 export const swimlanesApi = new SwimlanesApi(configuration);
 export const tasksApi = new TasksApi(configuration);
 export const commentsApi = new CommentsApi(configuration);
+export const columnsApi = new ColumnsApi(configuration);
 
 async function GetCSRFToken(): Promise<string | undefined> {
   const response: AuthControllerGetCSRFTokenResponse =
