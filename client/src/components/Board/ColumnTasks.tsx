@@ -41,7 +41,7 @@ export default function ColumnTasks({
     <div className="bg-gray-100 rounded shadow min-h-[10px]">
       {!isFormVisible && (
         <button
-          className="flex items-center justify-center w-4 h-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition mt-[-10px] float-right"
+          className="flex items-center justify-center w-full p-2 bg-gray-200 rounded"
           onClick={() => setFormVisible(true)}
           aria-label="Add Task"
         >
@@ -86,7 +86,7 @@ export default function ColumnTasks({
         {tasks
           .filter(
             (task) =>
-              task.swimlaneId === swimlane.id && task.columnId === column.id
+              task.swimlaneId === swimlane.id && task.columnId === column.id,
           )
           .map((task) => (
             <Task key={task.id} task={task} />
