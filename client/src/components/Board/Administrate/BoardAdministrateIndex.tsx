@@ -1,6 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import { useBoardData } from "../../../hooks/boards/useBoardData";
 import BoardDelete from "./BoardDelete";
+import { BoardSwimlaneCreate } from "./BoardSwimlaneCreate";
 
 export default function BoardAdministrateIndex() {
   const { boardId } = useParams({ from: "/boards/administrate/$boardId" });
@@ -18,6 +19,7 @@ export default function BoardAdministrateIndex() {
     <div>
       <h1 className="text-2xl font-bold">Board Administration: {board.name}</h1>
       <BoardDelete board={board} />
+      <BoardSwimlaneCreate boardId={boardId} />
     </div>
   );
 }
