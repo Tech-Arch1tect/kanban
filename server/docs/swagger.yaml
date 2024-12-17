@@ -1133,6 +1133,129 @@ paths:
       summary: List all boards
       tags:
       - boards
+  /api/v1/columns/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a column for a board
+      parameters:
+      - description: Column details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/columnController.CreateColumnRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/columnController.CreateColumnResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Create a column
+      tags:
+      - columns
+  /api/v1/columns/delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete a column by ID
+      parameters:
+      - description: Column ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/columnController.DeleteColumnRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/columnController.DeleteColumnResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Delete a column
+      tags:
+      - columns
+  /api/v1/columns/edit:
+    post:
+      consumes:
+      - application/json
+      description: Edit a column by ID
+      parameters:
+      - description: Column details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/columnController.EditColumnRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/columnController.EditColumnResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Edit a column
+      tags:
+      - columns
   /api/v1/comments/create:
     post:
       consumes:
