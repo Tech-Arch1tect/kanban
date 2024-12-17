@@ -12,7 +12,7 @@ export const useCreateSwimlane = () => {
         })
         .then(() => {
           queryClient.invalidateQueries({
-            queryKey: ["boardData", swimlane.boardId],
+            queryKey: ["boardData", String(swimlane.boardId)],
           });
         }),
     onError: (error) => {
