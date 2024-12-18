@@ -52,6 +52,7 @@ func GetBoard(c *gin.Context) {
 	}
 
 	sort.Slice(board.Swimlanes, func(i, j int) bool { return board.Swimlanes[i].Order < board.Swimlanes[j].Order })
+	sort.Slice(board.Columns, func(i, j int) bool { return board.Columns[i].Order < board.Columns[j].Order })
 
 	c.JSON(http.StatusOK, GetBoardResponse{Board: board})
 }

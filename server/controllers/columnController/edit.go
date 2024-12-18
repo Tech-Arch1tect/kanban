@@ -12,7 +12,6 @@ import (
 type EditColumnRequest struct {
 	ID    uint   `json:"id"`
 	Name  string `json:"name"`
-	Order int    `json:"order"`
 }
 
 type EditColumnResponse struct {
@@ -53,7 +52,6 @@ func EditColumn(c *gin.Context) {
 	}
 
 	column.Name = request.Name
-	column.Order = request.Order
 
 	err = database.DB.ColumnRepository.Update(&column)
 	if err != nil {

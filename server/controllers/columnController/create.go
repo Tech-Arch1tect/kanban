@@ -12,7 +12,6 @@ import (
 type CreateColumnRequest struct {
 	BoardID uint   `json:"board_id"`
 	Name    string `json:"name"`
-	Order   int    `json:"order"`
 }
 
 type CreateColumnResponse struct {
@@ -46,13 +45,19 @@ func CreateColumn(c *gin.Context) {
 		return
 	}
 
+	nextOrder, err := database.DB.ColumnRepository.GetNextOrder(request.BoardID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	column := models.Column{
 		BoardID: request.BoardID,
 		Name:    request.Name,
-		Order:   request.Order,
+		Order:   nextOrder,
 	}
 
-	err := database.DB.ColumnRepository.Create(&column)
+	err = database.DB.ColumnRepository.Create(&column)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

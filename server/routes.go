@@ -116,6 +116,7 @@ func routes(r *gin.Engine) {
 			column.POST("/create", middleware.CSRFTokenRequired(), columnController.CreateColumn)
 			column.POST("/edit", middleware.CSRFTokenRequired(), columnController.EditColumn)
 			column.POST("/delete", middleware.CSRFTokenRequired(), columnController.DeleteColumn)
+			column.POST("/move", middleware.CSRFTokenRequired(), columnController.MoveColumn)
 		}
 	}
 }
