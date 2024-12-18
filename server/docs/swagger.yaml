@@ -453,8 +453,6 @@ definitions:
         type: integer
       name:
         type: string
-      order:
-        type: integer
     type: object
   swimlaneController.CreateSwimlaneResponse:
     properties:
@@ -477,10 +475,29 @@ definitions:
         type: integer
       name:
         type: string
-      order:
-        type: integer
     type: object
   swimlaneController.EditSwimlaneResponse:
+    properties:
+      swimlane:
+        $ref: '#/definitions/models.Swimlane'
+    type: object
+  swimlaneController.MoveSwimlaneRequest:
+    properties:
+      direction:
+        enum:
+        - before
+        - after
+        type: string
+      id:
+        type: integer
+      relative_id:
+        type: integer
+    required:
+    - direction
+    - id
+    - relative_id
+    type: object
+  swimlaneController.MoveSwimlaneResponse:
     properties:
       swimlane:
         $ref: '#/definitions/models.Swimlane'
@@ -1513,6 +1530,47 @@ paths:
       - cookieAuth: []
       - csrf: []
       summary: Edit a swimlane
+      tags:
+      - swimlanes
+  /api/v1/swimlanes/move:
+    post:
+      consumes:
+      - application/json
+      description: Move a swimlane relative to another swimlane
+      parameters:
+      - description: Swimlane ID and relative swimlane ID and direction
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/swimlaneController.MoveSwimlaneRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/swimlaneController.MoveSwimlaneResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Move a swimlane
       tags:
       - swimlanes
   /api/v1/tasks/create:

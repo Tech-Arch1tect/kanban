@@ -1553,6 +1553,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/swimlanes/move": {
+            "post": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
+                    }
+                ],
+                "description": "Move a swimlane relative to another swimlane",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "swimlanes"
+                ],
+                "summary": "Move a swimlane",
+                "parameters": [
+                    {
+                        "description": "Swimlane ID and relative swimlane ID and direction",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/swimlaneController.MoveSwimlaneRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/swimlaneController.MoveSwimlaneResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/tasks/create": {
             "post": {
                 "security": [
@@ -2575,9 +2641,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "order": {
-                    "type": "integer"
                 }
             }
         },
@@ -2613,13 +2676,41 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "order": {
-                    "type": "integer"
                 }
             }
         },
         "swimlaneController.EditSwimlaneResponse": {
+            "type": "object",
+            "properties": {
+                "swimlane": {
+                    "$ref": "#/definitions/models.Swimlane"
+                }
+            }
+        },
+        "swimlaneController.MoveSwimlaneRequest": {
+            "type": "object",
+            "required": [
+                "direction",
+                "id",
+                "relative_id"
+            ],
+            "properties": {
+                "direction": {
+                    "type": "string",
+                    "enum": [
+                        "before",
+                        "after"
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "relative_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "swimlaneController.MoveSwimlaneResponse": {
             "type": "object",
             "properties": {
                 "swimlane": {
