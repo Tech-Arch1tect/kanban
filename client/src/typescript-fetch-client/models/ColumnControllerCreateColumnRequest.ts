@@ -31,12 +31,6 @@ export interface ColumnControllerCreateColumnRequest {
      * @memberof ColumnControllerCreateColumnRequest
      */
     name?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ColumnControllerCreateColumnRequest
-     */
-    order?: number;
 }
 
 /**
@@ -58,7 +52,6 @@ export function ColumnControllerCreateColumnRequestFromJSONTyped(json: any, igno
         
         'boardId': json['board_id'] == null ? undefined : json['board_id'],
         'name': json['name'] == null ? undefined : json['name'],
-        'order': json['order'] == null ? undefined : json['order'],
     };
 }
 
@@ -75,7 +68,6 @@ export function ColumnControllerCreateColumnRequestToJSONTyped(value?: ColumnCon
         
         'board_id': value['boardId'],
         'name': value['name'],
-        'order': value['order'],
     };
 }
 

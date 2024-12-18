@@ -31,12 +31,6 @@ export interface ColumnControllerEditColumnRequest {
      * @memberof ColumnControllerEditColumnRequest
      */
     name?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ColumnControllerEditColumnRequest
-     */
-    order?: number;
 }
 
 /**
@@ -58,7 +52,6 @@ export function ColumnControllerEditColumnRequestFromJSONTyped(json: any, ignore
         
         'id': json['id'] == null ? undefined : json['id'],
         'name': json['name'] == null ? undefined : json['name'],
-        'order': json['order'] == null ? undefined : json['order'],
     };
 }
 
@@ -75,7 +68,6 @@ export function ColumnControllerEditColumnRequestToJSONTyped(value?: ColumnContr
         
         'id': value['id'],
         'name': value['name'],
-        'order': value['order'],
     };
 }
 

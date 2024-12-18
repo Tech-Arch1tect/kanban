@@ -33,6 +33,8 @@ export * from './ColumnControllerDeleteColumnRequest';
 export * from './ColumnControllerDeleteColumnResponse';
 export * from './ColumnControllerEditColumnRequest';
 export * from './ColumnControllerEditColumnResponse';
+export * from './ColumnControllerMoveColumnRequest';
+export * from './ColumnControllerMoveColumnResponse';
 export * from './CommentControllerCreateCommentRequest';
 export * from './CommentControllerCreateCommentResponse';
 export * from './CommentControllerDeleteCommentRequest';

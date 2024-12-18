@@ -42,6 +42,8 @@ models/ColumnControllerDeleteColumnRequest.ts
 models/ColumnControllerDeleteColumnResponse.ts
 models/ColumnControllerEditColumnRequest.ts
 models/ColumnControllerEditColumnResponse.ts
+models/ColumnControllerMoveColumnRequest.ts
+models/ColumnControllerMoveColumnResponse.ts
 models/CommentControllerCreateCommentRequest.ts
 models/CommentControllerCreateCommentResponse.ts
 models/CommentControllerDeleteCommentRequest.ts

@@ -21,6 +21,8 @@ import type {
   ColumnControllerDeleteColumnResponse,
   ColumnControllerEditColumnRequest,
   ColumnControllerEditColumnResponse,
+  ColumnControllerMoveColumnRequest,
+  ColumnControllerMoveColumnResponse,
   ModelsErrorResponse,
 } from '../models/index';
 import {
@@ -36,6 +38,10 @@ import {
     ColumnControllerEditColumnRequestToJSON,
     ColumnControllerEditColumnResponseFromJSON,
     ColumnControllerEditColumnResponseToJSON,
+    ColumnControllerMoveColumnRequestFromJSON,
+    ColumnControllerMoveColumnRequestToJSON,
+    ColumnControllerMoveColumnResponseFromJSON,
+    ColumnControllerMoveColumnResponseToJSON,
     ModelsErrorResponseFromJSON,
     ModelsErrorResponseToJSON,
 } from '../models/index';
@@ -50,6 +56,10 @@ export interface ApiV1ColumnsDeletePostRequest {
 
 export interface ApiV1ColumnsEditPostRequest {
     request: ColumnControllerEditColumnRequest;
+}
+
+export interface ApiV1ColumnsMovePostRequest {
+    request: ColumnControllerMoveColumnRequest;
 }
 
 /**
@@ -180,6 +190,48 @@ export class ColumnsApi extends runtime.BaseAPI {
      */
     async apiV1ColumnsEditPost(requestParameters: ApiV1ColumnsEditPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ColumnControllerEditColumnResponse> {
         const response = await this.apiV1ColumnsEditPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Move a column relative to another column
+     * Move a column
+     */
+    async apiV1ColumnsMovePostRaw(requestParameters: ApiV1ColumnsMovePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ColumnControllerMoveColumnResponse>> {
+        if (requestParameters['request'] == null) {
+            throw new runtime.RequiredError(
+                'request',
+                'Required parameter "request" was null or undefined when calling apiV1ColumnsMovePost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-CSRF-Token"] = await this.configuration.apiKey("X-CSRF-Token"); // csrf authentication
+        }
+
+        const response = await this.request({
+            path: `/api/v1/columns/move`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ColumnControllerMoveColumnRequestToJSON(requestParameters['request']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ColumnControllerMoveColumnResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Move a column relative to another column
+     * Move a column
+     */
+    async apiV1ColumnsMovePost(requestParameters: ApiV1ColumnsMovePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ColumnControllerMoveColumnResponse> {
+        const response = await this.apiV1ColumnsMovePostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
