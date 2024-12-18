@@ -56,6 +56,8 @@ export * from './SwimlaneControllerDeleteSwimlaneRequest';
 export * from './SwimlaneControllerDeleteSwimlaneResponse';
 export * from './SwimlaneControllerEditSwimlaneRequest';
 export * from './SwimlaneControllerEditSwimlaneResponse';
+export * from './SwimlaneControllerMoveSwimlaneRequest';
+export * from './SwimlaneControllerMoveSwimlaneResponse';
 export * from './TaskControllerCreateTaskRequest';
 export * from './TaskControllerCreateTaskResponse';
 export * from './TaskControllerDeleteTaskRequest';

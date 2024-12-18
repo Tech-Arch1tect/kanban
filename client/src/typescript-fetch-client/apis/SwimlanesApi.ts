@@ -22,6 +22,8 @@ import type {
   SwimlaneControllerDeleteSwimlaneResponse,
   SwimlaneControllerEditSwimlaneRequest,
   SwimlaneControllerEditSwimlaneResponse,
+  SwimlaneControllerMoveSwimlaneRequest,
+  SwimlaneControllerMoveSwimlaneResponse,
 } from '../models/index';
 import {
     ModelsErrorResponseFromJSON,
@@ -38,6 +40,10 @@ import {
     SwimlaneControllerEditSwimlaneRequestToJSON,
     SwimlaneControllerEditSwimlaneResponseFromJSON,
     SwimlaneControllerEditSwimlaneResponseToJSON,
+    SwimlaneControllerMoveSwimlaneRequestFromJSON,
+    SwimlaneControllerMoveSwimlaneRequestToJSON,
+    SwimlaneControllerMoveSwimlaneResponseFromJSON,
+    SwimlaneControllerMoveSwimlaneResponseToJSON,
 } from '../models/index';
 
 export interface ApiV1SwimlanesCreatePostRequest {
@@ -50,6 +56,10 @@ export interface ApiV1SwimlanesDeletePostRequest {
 
 export interface ApiV1SwimlanesEditPostRequest {
     request: SwimlaneControllerEditSwimlaneRequest;
+}
+
+export interface ApiV1SwimlanesMovePostRequest {
+    request: SwimlaneControllerMoveSwimlaneRequest;
 }
 
 /**
@@ -180,6 +190,48 @@ export class SwimlanesApi extends runtime.BaseAPI {
      */
     async apiV1SwimlanesEditPost(requestParameters: ApiV1SwimlanesEditPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SwimlaneControllerEditSwimlaneResponse> {
         const response = await this.apiV1SwimlanesEditPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Move a swimlane relative to another swimlane
+     * Move a swimlane
+     */
+    async apiV1SwimlanesMovePostRaw(requestParameters: ApiV1SwimlanesMovePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SwimlaneControllerMoveSwimlaneResponse>> {
+        if (requestParameters['request'] == null) {
+            throw new runtime.RequiredError(
+                'request',
+                'Required parameter "request" was null or undefined when calling apiV1SwimlanesMovePost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-CSRF-Token"] = await this.configuration.apiKey("X-CSRF-Token"); // csrf authentication
+        }
+
+        const response = await this.request({
+            path: `/api/v1/swimlanes/move`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SwimlaneControllerMoveSwimlaneRequestToJSON(requestParameters['request']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SwimlaneControllerMoveSwimlaneResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Move a swimlane relative to another swimlane
+     * Move a swimlane
+     */
+    async apiV1SwimlanesMovePost(requestParameters: ApiV1SwimlanesMovePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SwimlaneControllerMoveSwimlaneResponse> {
+        const response = await this.apiV1SwimlanesMovePostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

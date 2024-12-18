@@ -31,12 +31,6 @@ export interface SwimlaneControllerEditSwimlaneRequest {
      * @memberof SwimlaneControllerEditSwimlaneRequest
      */
     name?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof SwimlaneControllerEditSwimlaneRequest
-     */
-    order?: number;
 }
 
 /**
@@ -58,7 +52,6 @@ export function SwimlaneControllerEditSwimlaneRequestFromJSONTyped(json: any, ig
         
         'id': json['id'] == null ? undefined : json['id'],
         'name': json['name'] == null ? undefined : json['name'],
-        'order': json['order'] == null ? undefined : json['order'],
     };
 }
 
@@ -75,7 +68,6 @@ export function SwimlaneControllerEditSwimlaneRequestToJSONTyped(value?: Swimlan
         
         'id': value['id'],
         'name': value['name'],
-        'order': value['order'],
     };
 }
 

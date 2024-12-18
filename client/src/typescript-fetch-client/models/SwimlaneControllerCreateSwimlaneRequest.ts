@@ -31,12 +31,6 @@ export interface SwimlaneControllerCreateSwimlaneRequest {
      * @memberof SwimlaneControllerCreateSwimlaneRequest
      */
     name?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof SwimlaneControllerCreateSwimlaneRequest
-     */
-    order?: number;
 }
 
 /**
@@ -58,7 +52,6 @@ export function SwimlaneControllerCreateSwimlaneRequestFromJSONTyped(json: any, 
         
         'boardId': json['board_id'] == null ? undefined : json['board_id'],
         'name': json['name'] == null ? undefined : json['name'],
-        'order': json['order'] == null ? undefined : json['order'],
     };
 }
 
@@ -75,7 +68,6 @@ export function SwimlaneControllerCreateSwimlaneRequestToJSONTyped(value?: Swiml
         
         'board_id': value['boardId'],
         'name': value['name'],
-        'order': value['order'],
     };
 }
 
