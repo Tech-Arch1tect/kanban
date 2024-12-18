@@ -10,8 +10,8 @@ import (
 )
 
 type EditColumnRequest struct {
-	ID    uint   `json:"id"`
-	Name  string `json:"name"`
+	ID   uint   `json:"id"`
+	Name string `json:"name"`
 }
 
 type EditColumnResponse struct {

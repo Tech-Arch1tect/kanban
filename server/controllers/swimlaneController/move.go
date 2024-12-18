@@ -97,4 +97,3 @@ func MoveSwimlane(c *gin.Context) {
 
 	c.JSON(http.StatusOK, MoveSwimlaneResponse{Swimlane: swimlane})
 }
-
