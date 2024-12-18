@@ -12,7 +12,6 @@ import (
 type CreateSwimlaneRequest struct {
 	BoardID uint   `json:"board_id"`
 	Name    string `json:"name"`
-	Order   int    `json:"order"`
 }
 
 type CreateSwimlaneResponse struct {
@@ -46,13 +45,19 @@ func CreateSwimlane(c *gin.Context) {
 		return
 	}
 
+	order, err := database.DB.SwimlaneRepository.GetNextOrder(request.BoardID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	swimlane := models.Swimlane{
 		BoardID: request.BoardID,
 		Name:    request.Name,
-		Order:   request.Order,
+		Order:   order,
 	}
 
-	err := database.DB.SwimlaneRepository.Create(&swimlane)
+	err = database.DB.SwimlaneRepository.Create(&swimlane)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

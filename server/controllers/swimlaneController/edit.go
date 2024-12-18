@@ -10,9 +10,8 @@ import (
 )
 
 type EditSwimlaneRequest struct {
-	ID    uint   `json:"id"`
-	Name  string `json:"name"`
-	Order int    `json:"order"`
+	ID   uint   `json:"id"`
+	Name string `json:"name"`
 }
 
 type EditSwimlaneResponse struct {
@@ -53,7 +52,6 @@ func EditSwimlane(c *gin.Context) {
 	}
 
 	swimlane.Name = request.Name
-	swimlane.Order = request.Order
 
 	err = database.DB.SwimlaneRepository.Update(&swimlane)
 	if err != nil {

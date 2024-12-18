@@ -89,6 +89,7 @@ func routes(r *gin.Engine) {
 			swimlane.POST("/create", middleware.CSRFTokenRequired(), swimlaneController.CreateSwimlane)
 			swimlane.POST("/delete", middleware.CSRFTokenRequired(), swimlaneController.DeleteSwimlane)
 			swimlane.POST("/edit", middleware.CSRFTokenRequired(), swimlaneController.EditSwimlane)
+			swimlane.POST("/move", middleware.CSRFTokenRequired(), swimlaneController.MoveSwimlane)
 		}
 
 		task := api.Group("/tasks")
