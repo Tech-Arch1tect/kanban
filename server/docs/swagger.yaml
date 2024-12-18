@@ -190,8 +190,6 @@ definitions:
         type: integer
       name:
         type: string
-      order:
-        type: integer
     type: object
   columnController.CreateColumnResponse:
     properties:
@@ -214,10 +212,29 @@ definitions:
         type: integer
       name:
         type: string
-      order:
-        type: integer
     type: object
   columnController.EditColumnResponse:
+    properties:
+      column:
+        $ref: '#/definitions/models.Column'
+    type: object
+  columnController.MoveColumnRequest:
+    properties:
+      direction:
+        enum:
+        - before
+        - after
+        type: string
+      id:
+        type: integer
+      relative_id:
+        type: integer
+    required:
+    - direction
+    - id
+    - relative_id
+    type: object
+  columnController.MoveColumnResponse:
     properties:
       column:
         $ref: '#/definitions/models.Column'
@@ -1271,6 +1288,47 @@ paths:
       - cookieAuth: []
       - csrf: []
       summary: Edit a column
+      tags:
+      - columns
+  /api/v1/columns/move:
+    post:
+      consumes:
+      - application/json
+      description: Move a column relative to another column
+      parameters:
+      - description: Column ID and relative column ID and direction
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/columnController.MoveColumnRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/columnController.MoveColumnResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Move a column
       tags:
       - columns
   /api/v1/comments/create:

@@ -1137,6 +1137,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/columns/move": {
+            "post": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
+                    }
+                ],
+                "description": "Move a column relative to another column",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "columns"
+                ],
+                "summary": "Move a column",
+                "parameters": [
+                    {
+                        "description": "Column ID and relative column ID and direction",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/columnController.MoveColumnRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/columnController.MoveColumnResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/comments/create": {
             "post": {
                 "security": [
@@ -2238,9 +2304,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "order": {
-                    "type": "integer"
                 }
             }
         },
@@ -2276,13 +2339,41 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "order": {
-                    "type": "integer"
                 }
             }
         },
         "columnController.EditColumnResponse": {
+            "type": "object",
+            "properties": {
+                "column": {
+                    "$ref": "#/definitions/models.Column"
+                }
+            }
+        },
+        "columnController.MoveColumnRequest": {
+            "type": "object",
+            "required": [
+                "direction",
+                "id",
+                "relative_id"
+            ],
+            "properties": {
+                "direction": {
+                    "type": "string",
+                    "enum": [
+                        "before",
+                        "after"
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "relative_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "columnController.MoveColumnResponse": {
             "type": "object",
             "properties": {
                 "column": {
