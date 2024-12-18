@@ -5,6 +5,7 @@ import (
 	"server/database"
 	"server/models"
 	"server/permissions"
+	"sort"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,6 +50,8 @@ func GetBoard(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unauthorised"})
 		return
 	}
+
+	sort.Slice(board.Swimlanes, func(i, j int) bool { return board.Swimlanes[i].Order < board.Swimlanes[j].Order })
 
 	c.JSON(http.StatusOK, GetBoardResponse{Board: board})
 }

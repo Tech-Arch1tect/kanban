@@ -5,7 +5,6 @@ import (
 	"server/database"
 	"server/models"
 	"server/permissions"
-	"sort"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,75 +36,65 @@ type MoveSwimlaneResponse struct {
 func MoveSwimlane(c *gin.Context) {
 	var request MoveSwimlaneRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
 	swimlane, err := database.DB.SwimlaneRepository.GetByID(request.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch swimlane"})
 		return
 	}
-
 	relativeSwimlane, err := database.DB.SwimlaneRepository.GetByID(request.RelativeID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch relative swimlane"})
 		return
 	}
 
-	if relativeSwimlane.BoardID != swimlane.BoardID {
+	if swimlane.BoardID != relativeSwimlane.BoardID {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Swimlanes are not on the same board"})
 		return
 	}
 
-	can, _ := permissions.Can(c, permissions.CanEditBoard, swimlane.BoardID)
-	if !can {
+	if can, _ := permissions.Can(c, permissions.CanEditBoard, swimlane.BoardID); !can {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 		return
 	}
 
 	allBoardSwimlanes, err := database.DB.SwimlaneRepository.GetByBoardID(swimlane.BoardID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch swimlanes"})
 		return
 	}
 
-	sort.Slice(allBoardSwimlanes, func(i, j int) bool {
-		return allBoardSwimlanes[i].Order < allBoardSwimlanes[j].Order
-	})
-
-	currentIdx := -1
-	relativeIdx := -1
+	swimlaneMap := make(map[uint]int)
 	for i, s := range allBoardSwimlanes {
-		if s.ID == swimlane.ID {
-			currentIdx = i
-		}
-		if s.ID == relativeSwimlane.ID {
-			relativeIdx = i
-		}
+		swimlaneMap[s.ID] = i
 	}
 
+	currentIdx, relativeIdx := swimlaneMap[swimlane.ID], swimlaneMap[relativeSwimlane.ID]
+
 	targetIdx := relativeIdx
-	if request.Direction == "after" {
+	if request.Direction == "before" {
 		targetIdx++
 	}
 
+	allBoardSwimlanes = append(allBoardSwimlanes[:currentIdx], allBoardSwimlanes[currentIdx+1:]...)
+
 	if currentIdx < targetIdx {
-		for i := currentIdx; i < targetIdx-1; i++ {
-			allBoardSwimlanes[i].Order = allBoardSwimlanes[i+1].Order
-		}
-	} else {
-		for i := currentIdx; i > targetIdx; i-- {
-			allBoardSwimlanes[i].Order = allBoardSwimlanes[i-1].Order
-		}
+		targetIdx--
 	}
 
-	for _, s := range allBoardSwimlanes {
+	allBoardSwimlanes = append(allBoardSwimlanes[:targetIdx], append([]models.Swimlane{swimlane}, allBoardSwimlanes[targetIdx:]...)...)
+
+	for i, s := range allBoardSwimlanes {
+		s.Order = i + 1
 		if err := database.DB.SwimlaneRepository.Update(&s); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update swimlane order"})
 			return
 		}
 	}
 
 	c.JSON(http.StatusOK, MoveSwimlaneResponse{Swimlane: swimlane})
 }
+
