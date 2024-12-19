@@ -8,19 +8,18 @@ export const BoardSwimlaneList = ({ board }: { board: ModelsBoard }) => {
   );
 
   return (
-    <div>
-      <h2 className="text-xl font-bold">Swimlanes</h2>
-      <ul>
+    <div className="border border-gray-200 rounded-md bg-white">
+      <ul className="divide-y divide-gray-200">
         {swimlanes.map((swimlane) => (
           <li
             key={swimlane.id}
-            className="flex items-center gap-2"
+            className="flex items-center justify-between p-2 cursor-move"
             draggable
             onDragStart={(e) => onDragStart(e, swimlane.id!)}
             onDragOver={onDragOver}
             onDrop={(e) => onDrop(e, swimlane.id!)}
           >
-            <span>{swimlane.name}</span>
+            <span className="font-medium text-gray-700">{swimlane.name}</span>
             <BoardSwimlaneDelete swimlane={swimlane} />
           </li>
         ))}

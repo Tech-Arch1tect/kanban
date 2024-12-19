@@ -20,7 +20,7 @@ export const BoardSwimlaneCreate = ({ boardId }: { boardId: string }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 p-4 border border-gray-300 rounded-md shadow-sm bg-white"
+      className="space-y-4 p-4 border border-gray-200 rounded-md bg-gray-50"
     >
       <div>
         <label

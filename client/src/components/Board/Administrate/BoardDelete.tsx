@@ -15,22 +15,21 @@ const BoardDelete: React.FC<BoardDeleteProps> = ({ board }) => {
   };
 
   return (
-    <div>
+    <div className="space-y-2">
       <button
-        className="bg-red-500 text-white px-4 py-2 rounded-md"
+        className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
         onClick={handleDelete}
         disabled={isDeleting}
       >
         {isDeleting ? "Deleting..." : "Delete Board"}
       </button>
-
       {isError && (
-        <div style={{ color: "red" }}>
+        <div className="text-red-600">
           Error: {error?.message || "Something went wrong."}
         </div>
       )}
       {isSuccess && (
-        <div style={{ color: "green" }}>Board deleted successfully!</div>
+        <div className="text-green-600">Board deleted successfully!</div>
       )}
     </div>
   );

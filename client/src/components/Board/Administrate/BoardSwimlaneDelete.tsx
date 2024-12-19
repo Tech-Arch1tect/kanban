@@ -13,14 +13,18 @@ export const BoardSwimlaneDelete = ({
   };
 
   return (
-    <div>
+    <div className="inline-block">
       <button
-        className="bg-red-500 text-white px-2 py-1 rounded-md"
+        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
         onClick={handleDelete}
       >
         Delete
       </button>
-      {error && <div>Error deleting swimlane {error.message}</div>}
+      {error && (
+        <div className="text-red-600 mt-1">
+          Error deleting swimlane {error.message}
+        </div>
+      )}
     </div>
   );
 };
