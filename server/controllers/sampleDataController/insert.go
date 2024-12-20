@@ -14,8 +14,8 @@ import (
 // Fake tasks are inserted into the database with either status "open" or "closed"
 
 type InsertSampleDataRequest struct {
-	BoardID uint `json:"board_id"`
-	NumTasks int `json:"num_tasks"`
+	BoardID  uint `json:"board_id"`
+	NumTasks int  `json:"num_tasks"`
 }
 
 type InsertSampleDataResponse struct {
@@ -74,13 +74,13 @@ func InsertSampleData(c *gin.Context) {
 			return
 		}
 		fakeTask := models.Task{
-			Title: fmt.Sprintf("Fake Task %d", i),
-			Status: status,
-			BoardID: request.BoardID,
-			Position: position + 1,
+			Title:       fmt.Sprintf("Fake Task %d", i),
+			Status:      status,
+			BoardID:     request.BoardID,
+			Position:    position + 1,
 			Description: "This is a fake task created by the sample data controller for testing purposes. It should be deleted after testing is complete. lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-			ColumnID: column.ID,
-			SwimlaneID: swimlane.ID,
+			ColumnID:    column.ID,
+			SwimlaneID:  swimlane.ID,
 		}
 		database.DB.TaskRepository.Create(&fakeTask)
 	}
