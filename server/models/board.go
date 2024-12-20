@@ -9,6 +9,7 @@ type Board struct {
 	Swimlanes   []Swimlane        `gorm:"foreignKey:BoardID" json:"swimlanes"`
 	Tasks       []Task            `gorm:"foreignKey:BoardID" json:"tasks"`
 	Columns     []Column          `gorm:"foreignKey:BoardID" json:"columns"`
+	Slug        string            `gorm:"not null;unique" json:"slug"`
 }
 
 type BoardPermission struct {

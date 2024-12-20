@@ -13,6 +13,7 @@ type CreateBoardRequest struct {
 	Name      string   `json:"name"`
 	Swimlanes []string `json:"swimlanes"`
 	Columns   []string `json:"columns"`
+	Slug      string   `json:"slug"`
 }
 
 type CreateBoardResponse struct {
@@ -58,6 +59,7 @@ func CreateBoard(c *gin.Context) {
 		OwnerID:   user.ID,
 		Swimlanes: swimlanes,
 		Columns:   columns,
+		Slug:      request.Slug,
 	}
 
 	err := database.DB.BoardRepository.Create(&board)

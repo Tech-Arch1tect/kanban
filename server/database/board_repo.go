@@ -12,6 +12,7 @@ type BoardRepository interface {
 	GetWithPreload(id uint) (models.Board, error)
 	GetAllByAccess(userID uint) ([]models.Board, error)
 	GetPermission(userID uint, boardID uint) (models.BoardPermission, error)
+	GetBySlug(slug string) (models.Board, error)
 }
 
 type GormBoardRepository struct {
@@ -53,4 +54,10 @@ func (r *GormBoardRepository) GetPermission(userID uint, boardID uint) (models.B
 		}
 	}
 	return models.BoardPermission{}, errors.New("no permission found")
+}
+
+func (r *GormBoardRepository) GetBySlug(slug string) (models.Board, error) {
+	var board models.Board
+	result := r.db.Where("slug = ?", slug).Preload("Permissions").Preload("Swimlanes").Preload("Columns").Preload("Owner").First(&board)
+	return board, result.Error
 }
