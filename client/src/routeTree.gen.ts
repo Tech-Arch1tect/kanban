@@ -18,7 +18,7 @@ import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
 import { Route as ProfileProfileImport } from './routes/profile/profile'
 import { Route as Profile2faImport } from './routes/profile/2fa'
-import { Route as BoardsBoardIdImport } from './routes/boards/$boardId'
+import { Route as BoardsSlugImport } from './routes/boards/$slug'
 import { Route as AdminUsersImport } from './routes/admin/users'
 import { Route as AdminBoardsImport } from './routes/admin/boards'
 import { Route as BoardsAdministrateBoardIdImport } from './routes/boards/administrate/$boardId'
@@ -67,9 +67,9 @@ const Profile2faRoute = Profile2faImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const BoardsBoardIdRoute = BoardsBoardIdImport.update({
-  id: '/boards/$boardId',
-  path: '/boards/$boardId',
+const BoardsSlugRoute = BoardsSlugImport.update({
+  id: '/boards/$slug',
+  path: '/boards/$slug',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -144,11 +144,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersImport
       parentRoute: typeof rootRoute
     }
-    '/boards/$boardId': {
-      id: '/boards/$boardId'
-      path: '/boards/$boardId'
-      fullPath: '/boards/$boardId'
-      preLoaderRoute: typeof BoardsBoardIdImport
+    '/boards/$slug': {
+      id: '/boards/$slug'
+      path: '/boards/$slug'
+      fullPath: '/boards/$slug'
+      preLoaderRoute: typeof BoardsSlugImport
       parentRoute: typeof rootRoute
     }
     '/profile/2fa': {
@@ -185,7 +185,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/admin/boards': typeof AdminBoardsRoute
   '/admin/users': typeof AdminUsersRoute
-  '/boards/$boardId': typeof BoardsBoardIdRoute
+  '/boards/$slug': typeof BoardsSlugRoute
   '/profile/2fa': typeof Profile2faRoute
   '/profile/profile': typeof ProfileProfileRoute
   '/boards/administrate/$boardId': typeof BoardsAdministrateBoardIdRoute
@@ -199,7 +199,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/admin/boards': typeof AdminBoardsRoute
   '/admin/users': typeof AdminUsersRoute
-  '/boards/$boardId': typeof BoardsBoardIdRoute
+  '/boards/$slug': typeof BoardsSlugRoute
   '/profile/2fa': typeof Profile2faRoute
   '/profile/profile': typeof ProfileProfileRoute
   '/boards/administrate/$boardId': typeof BoardsAdministrateBoardIdRoute
@@ -214,7 +214,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/admin/boards': typeof AdminBoardsRoute
   '/admin/users': typeof AdminUsersRoute
-  '/boards/$boardId': typeof BoardsBoardIdRoute
+  '/boards/$slug': typeof BoardsSlugRoute
   '/profile/2fa': typeof Profile2faRoute
   '/profile/profile': typeof ProfileProfileRoute
   '/boards/administrate/$boardId': typeof BoardsAdministrateBoardIdRoute
@@ -230,7 +230,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/admin/boards'
     | '/admin/users'
-    | '/boards/$boardId'
+    | '/boards/$slug'
     | '/profile/2fa'
     | '/profile/profile'
     | '/boards/administrate/$boardId'
@@ -243,7 +243,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/admin/boards'
     | '/admin/users'
-    | '/boards/$boardId'
+    | '/boards/$slug'
     | '/profile/2fa'
     | '/profile/profile'
     | '/boards/administrate/$boardId'
@@ -256,7 +256,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/admin/boards'
     | '/admin/users'
-    | '/boards/$boardId'
+    | '/boards/$slug'
     | '/profile/2fa'
     | '/profile/profile'
     | '/boards/administrate/$boardId'
@@ -271,7 +271,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   AdminBoardsRoute: typeof AdminBoardsRoute
   AdminUsersRoute: typeof AdminUsersRoute
-  BoardsBoardIdRoute: typeof BoardsBoardIdRoute
+  BoardsSlugRoute: typeof BoardsSlugRoute
   Profile2faRoute: typeof Profile2faRoute
   ProfileProfileRoute: typeof ProfileProfileRoute
   BoardsAdministrateBoardIdRoute: typeof BoardsAdministrateBoardIdRoute
@@ -285,7 +285,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   AdminBoardsRoute: AdminBoardsRoute,
   AdminUsersRoute: AdminUsersRoute,
-  BoardsBoardIdRoute: BoardsBoardIdRoute,
+  BoardsSlugRoute: BoardsSlugRoute,
   Profile2faRoute: Profile2faRoute,
   ProfileProfileRoute: ProfileProfileRoute,
   BoardsAdministrateBoardIdRoute: BoardsAdministrateBoardIdRoute,
@@ -308,7 +308,7 @@ export const routeTree = rootRoute
         "/register",
         "/admin/boards",
         "/admin/users",
-        "/boards/$boardId",
+        "/boards/$slug",
         "/profile/2fa",
         "/profile/profile",
         "/boards/administrate/$boardId"
@@ -335,8 +335,8 @@ export const routeTree = rootRoute
     "/admin/users": {
       "filePath": "admin/users.tsx"
     },
-    "/boards/$boardId": {
-      "filePath": "boards/$boardId.tsx"
+    "/boards/$slug": {
+      "filePath": "boards/$slug.tsx"
     },
     "/profile/2fa": {
       "filePath": "profile/2fa.tsx"

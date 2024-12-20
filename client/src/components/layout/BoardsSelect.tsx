@@ -21,7 +21,7 @@ const BoardsSelect: React.FC = () => {
   const options: Option[] =
     boards && boards.boards
       ? boards.boards.map((board: ModelsBoard) => ({
-          value: board.id?.toString() ?? "error",
+          value: board.slug ?? "error",
           label: board.name ?? "error",
         }))
       : [];

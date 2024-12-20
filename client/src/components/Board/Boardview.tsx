@@ -6,10 +6,11 @@ import { ModelsSwimlane } from "../../typescript-fetch-client";
 import BoardSwimlanes from "./BoardSwimlanes";
 import { useGetTaskQuery } from "../../hooks/tasks/useTaskQuery";
 import AdminLinks from "./AdminLinks";
+import { useBoardDataBySlug } from "../../hooks/boards/useBoardDataBySlug";
 
 export default function BoardView() {
-  const { boardId } = useParams({ from: "/boards/$boardId" });
-  const { data, isLoading, error } = useBoardData(boardId);
+  const { slug } = useParams({ from: "/boards/$slug" });
+  const { data, isLoading, error } = useBoardDataBySlug(slug);
 
   const [taskQuery, setTaskQuery] = useState("status:open");
 
@@ -17,7 +18,7 @@ export default function BoardView() {
     data: tasks,
     isLoading: tasksLoading,
     error: tasksError,
-  } = useGetTaskQuery(`board_id:${boardId} ${taskQuery}`);
+  } = useGetTaskQuery(`board_id:${data?.board?.id ?? 0} ${taskQuery}`);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading board</div>;
