@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 type MoveTaskRequest struct {
 	TaskID     uint `json:"task_id" binding:"required"`
 	ColumnID   uint `json:"column_id" binding:"required"`
@@ -89,7 +88,7 @@ func MoveTask(c *gin.Context) {
 		request.Position = len(tasks)
 	}
 
-	tasks = append(tasks, models.Task{}) 
+	tasks = append(tasks, models.Task{})
 	copy(tasks[request.Position+1:], tasks[request.Position:])
 	tasks[request.Position] = task
 
@@ -114,4 +113,3 @@ func MoveTask(c *gin.Context) {
 
 	c.JSON(http.StatusOK, MoveTaskResponse{Task: updatedTask})
 }
-
