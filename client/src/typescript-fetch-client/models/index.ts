@@ -63,6 +63,8 @@ export * from './SwimlaneControllerEditSwimlaneRequest';
 export * from './SwimlaneControllerEditSwimlaneResponse';
 export * from './SwimlaneControllerMoveSwimlaneRequest';
 export * from './SwimlaneControllerMoveSwimlaneResponse';
+export * from './TaskControllerChangeAssigneeRequest';
+export * from './TaskControllerChangeAssigneeResponse';
 export * from './TaskControllerCreateTaskRequest';
 export * from './TaskControllerCreateTaskResponse';
 export * from './TaskControllerDeleteTaskRequest';

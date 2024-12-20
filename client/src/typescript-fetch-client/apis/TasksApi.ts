@@ -16,6 +16,8 @@
 import * as runtime from '../runtime';
 import type {
   ModelsErrorResponse,
+  TaskControllerChangeAssigneeRequest,
+  TaskControllerChangeAssigneeResponse,
   TaskControllerCreateTaskRequest,
   TaskControllerCreateTaskResponse,
   TaskControllerDeleteTaskRequest,
@@ -30,6 +32,10 @@ import type {
 import {
     ModelsErrorResponseFromJSON,
     ModelsErrorResponseToJSON,
+    TaskControllerChangeAssigneeRequestFromJSON,
+    TaskControllerChangeAssigneeRequestToJSON,
+    TaskControllerChangeAssigneeResponseFromJSON,
+    TaskControllerChangeAssigneeResponseToJSON,
     TaskControllerCreateTaskRequestFromJSON,
     TaskControllerCreateTaskRequestToJSON,
     TaskControllerCreateTaskResponseFromJSON,
@@ -51,6 +57,10 @@ import {
     TaskControllerMoveTaskResponseFromJSON,
     TaskControllerMoveTaskResponseToJSON,
 } from '../models/index';
+
+export interface ApiV1TasksChangeAssigneePostRequest {
+    request: TaskControllerChangeAssigneeRequest;
+}
 
 export interface ApiV1TasksCreatePostRequest {
     request: TaskControllerCreateTaskRequest;
@@ -80,6 +90,48 @@ export interface ApiV1TasksMovePostRequest {
  * 
  */
 export class TasksApi extends runtime.BaseAPI {
+
+    /**
+     * Change the assignee of a task
+     * Change assignee of a task
+     */
+    async apiV1TasksChangeAssigneePostRaw(requestParameters: ApiV1TasksChangeAssigneePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TaskControllerChangeAssigneeResponse>> {
+        if (requestParameters['request'] == null) {
+            throw new runtime.RequiredError(
+                'request',
+                'Required parameter "request" was null or undefined when calling apiV1TasksChangeAssigneePost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-CSRF-Token"] = await this.configuration.apiKey("X-CSRF-Token"); // csrf authentication
+        }
+
+        const response = await this.request({
+            path: `/api/v1/tasks/change-assignee`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: TaskControllerChangeAssigneeRequestToJSON(requestParameters['request']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => TaskControllerChangeAssigneeResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Change the assignee of a task
+     * Change assignee of a task
+     */
+    async apiV1TasksChangeAssigneePost(requestParameters: ApiV1TasksChangeAssigneePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TaskControllerChangeAssigneeResponse> {
+        const response = await this.apiV1TasksChangeAssigneePostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Create a task

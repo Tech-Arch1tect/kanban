@@ -24,6 +24,12 @@ export interface TaskControllerCreateTaskRequest {
      * @type {number}
      * @memberof TaskControllerCreateTaskRequest
      */
+    assigneeId?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof TaskControllerCreateTaskRequest
+     */
     boardId?: number;
     /**
      * 
@@ -74,6 +80,7 @@ export function TaskControllerCreateTaskRequestFromJSONTyped(json: any, ignoreDi
     }
     return {
         
+        'assigneeId': json['assignee_id'] == null ? undefined : json['assignee_id'],
         'boardId': json['board_id'] == null ? undefined : json['board_id'],
         'columnId': json['column_id'] == null ? undefined : json['column_id'],
         'description': json['description'] == null ? undefined : json['description'],
@@ -94,6 +101,7 @@ export function TaskControllerCreateTaskRequestToJSONTyped(value?: TaskControlle
 
     return {
         
+        'assignee_id': value['assigneeId'],
         'board_id': value['boardId'],
         'column_id': value['columnId'],
         'description': value['description'],

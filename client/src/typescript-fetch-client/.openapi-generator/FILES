@@ -73,6 +73,8 @@ models/SwimlaneControllerEditSwimlaneRequest.ts
 models/SwimlaneControllerEditSwimlaneResponse.ts
 models/SwimlaneControllerMoveSwimlaneRequest.ts
 models/SwimlaneControllerMoveSwimlaneResponse.ts
+models/TaskControllerChangeAssigneeRequest.ts
+models/TaskControllerChangeAssigneeResponse.ts
 models/TaskControllerCreateTaskRequest.ts
 models/TaskControllerCreateTaskResponse.ts
 models/TaskControllerDeleteTaskRequest.ts

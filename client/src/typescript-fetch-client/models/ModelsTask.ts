@@ -20,6 +20,13 @@ import {
     GormDeletedAtToJSON,
     GormDeletedAtToJSONTyped,
 } from './GormDeletedAt';
+import type { ModelsUser } from './ModelsUser';
+import {
+    ModelsUserFromJSON,
+    ModelsUserFromJSONTyped,
+    ModelsUserToJSON,
+    ModelsUserToJSONTyped,
+} from './ModelsUser';
 import type { ModelsComment } from './ModelsComment';
 import {
     ModelsCommentFromJSON,
@@ -50,6 +57,18 @@ import {
 export interface ModelsTask {
     /**
      * 
+     * @type {ModelsUser}
+     * @memberof ModelsTask
+     */
+    assignee?: ModelsUser;
+    /**
+     * 
+     * @type {number}
+     * @memberof ModelsTask
+     */
+    assigneeId?: number;
+    /**
+     * 
      * @type {number}
      * @memberof ModelsTask
      */
@@ -78,6 +97,18 @@ export interface ModelsTask {
      * @memberof ModelsTask
      */
     createdAt?: string;
+    /**
+     * 
+     * @type {ModelsUser}
+     * @memberof ModelsTask
+     */
+    creator?: ModelsUser;
+    /**
+     * 
+     * @type {number}
+     * @memberof ModelsTask
+     */
+    creatorId?: number;
     /**
      * 
      * @type {GormDeletedAt}
@@ -151,11 +182,15 @@ export function ModelsTaskFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
+        'assignee': json['assignee'] == null ? undefined : ModelsUserFromJSON(json['assignee']),
+        'assigneeId': json['assignee_id'] == null ? undefined : json['assignee_id'],
         'boardId': json['board_id'] == null ? undefined : json['board_id'],
         'column': json['column'] == null ? undefined : ModelsColumnFromJSON(json['column']),
         'columnId': json['column_id'] == null ? undefined : json['column_id'],
         'comments': json['comments'] == null ? undefined : ((json['comments'] as Array<any>).map(ModelsCommentFromJSON)),
         'createdAt': json['created_at'] == null ? undefined : json['created_at'],
+        'creator': json['creator'] == null ? undefined : ModelsUserFromJSON(json['creator']),
+        'creatorId': json['creator_id'] == null ? undefined : json['creator_id'],
         'deletedAt': json['deleted_at'] == null ? undefined : GormDeletedAtFromJSON(json['deleted_at']),
         'description': json['description'] == null ? undefined : json['description'],
         'id': json['id'] == null ? undefined : json['id'],
@@ -179,11 +214,15 @@ export function ModelsTaskToJSONTyped(value?: ModelsTask | null, ignoreDiscrimin
 
     return {
         
+        'assignee': ModelsUserToJSON(value['assignee']),
+        'assignee_id': value['assigneeId'],
         'board_id': value['boardId'],
         'column': ModelsColumnToJSON(value['column']),
         'column_id': value['columnId'],
         'comments': value['comments'] == null ? undefined : ((value['comments'] as Array<any>).map(ModelsCommentToJSON)),
         'created_at': value['createdAt'],
+        'creator': ModelsUserToJSON(value['creator']),
+        'creator_id': value['creatorId'],
         'deleted_at': GormDeletedAtToJSON(value['deletedAt']),
         'description': value['description'],
         'id': value['id'],
