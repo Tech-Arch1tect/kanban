@@ -8,6 +8,7 @@ import { useCreateTask } from "../../hooks/tasks/useCreateTask";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { Task } from "../Task/Task";
 import { useMoveTask } from "../../hooks/tasks/useMoveTask";
+import { useTaskDragDrop } from "../../hooks/tasks/useTaskDragDrop";
 
 export default function ColumnTasks({
   column,
@@ -25,7 +26,12 @@ export default function ColumnTasks({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const [hoveredPosition, setHoveredPosition] = useState<number | null>(null);
+  const { handleDragOver, handleDrop, ...dragStates } = useTaskDragDrop({
+    column,
+    swimlane,
+    moveTask,
+    tasks,
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,35 +48,9 @@ export default function ColumnTasks({
     setFormVisible(false);
   };
 
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const targetElement = (event.target as HTMLElement).closest(".task");
-    if (targetElement) {
-      const pos = targetElement.getAttribute("data-position");
-      if (pos !== null) {
-        setHoveredPosition(Number(pos));
-      }
-    } else {
-      setHoveredPosition(null);
-    }
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const data = JSON.parse(event.dataTransfer.getData("text/plain"));
-    const { taskId } = data;
-
-    if (!taskId || !column.id || !swimlane.id) return;
-
-    moveTask({
-      taskId,
-      columnId: column.id,
-      swimlaneId: swimlane.id,
-      position: hoveredPosition ?? 0,
-    });
-
-    setHoveredPosition(null);
-  };
+  const columnTasks = tasks.filter(
+    (task) => task.swimlaneId === swimlane.id && task.columnId === column.id
+  );
 
   return (
     <div
@@ -89,7 +69,10 @@ export default function ColumnTasks({
       )}
 
       {isFormVisible && (
-        <form onSubmit={handleSubmit} className="flex flex-col space-y-2 mt-4">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col space-y-2 mt-4 p-2"
+        >
           <input
             className="p-2 border rounded"
             placeholder="Task title"
@@ -122,14 +105,9 @@ export default function ColumnTasks({
       )}
 
       <div className="space-y-2">
-        {tasks
-          .filter(
-            (task) =>
-              task.swimlaneId === swimlane.id && task.columnId === column.id
-          )
-          .map((task) => (
-            <Task key={task.id} task={task} />
-          ))}
+        {columnTasks.map((task) => (
+          <Task key={task.id} task={task} {...dragStates} />
+        ))}
       </div>
     </div>
   );
