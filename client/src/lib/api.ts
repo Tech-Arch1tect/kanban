@@ -10,6 +10,7 @@ import {
   TasksApi,
   CommentsApi,
   ColumnsApi,
+  SampleDataApi,
 } from "../typescript-fetch-client";
 
 // @ts-ignore
@@ -30,6 +31,7 @@ export const swimlanesApi = new SwimlanesApi(configuration);
 export const tasksApi = new TasksApi(configuration);
 export const commentsApi = new CommentsApi(configuration);
 export const columnsApi = new ColumnsApi(configuration);
+export const sampleDataApi = new SampleDataApi(configuration);
 
 async function GetCSRFToken(): Promise<string | undefined> {
   const response: AuthControllerGetCSRFTokenResponse =

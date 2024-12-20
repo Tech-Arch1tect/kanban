@@ -5,6 +5,7 @@ import { BoardSwimlaneCreate } from "./BoardSwimlaneCreate";
 import { BoardSwimlaneList } from "./BoardSwimlaneList";
 import { BoardColumnsList } from "./BoardColumnsList";
 import { BoardColumnCreate } from "./BoardColumnCreate";
+import { BoardSampleDataInsert } from "./BoardSampleDataInsert";
 
 export default function BoardAdministrateIndex() {
   const { boardId } = useParams({ from: "/boards/administrate/$boardId" });
@@ -20,8 +21,13 @@ export default function BoardAdministrateIndex() {
     <div className="max-w-4xl mx-auto p-4 space-y-8">
       <h1 className="text-3xl font-bold">{board.name} - Administration</h1>
       <div className="bg-white p-4 rounded shadow space-y-4">
+        <BoardSampleDataInsert boardId={boardId} />
+      </div>
+
+      <div className="bg-white p-4 rounded shadow space-y-4">
         <BoardDelete board={board} />
       </div>
+
       <div className="grid grid-cols-2 gap-8">
         <div className="bg-white p-4 rounded shadow space-y-4">
           <h2 className="text-2xl font-semibold">Swimlanes</h2>
