@@ -7,6 +7,7 @@ import {
 import { useCreateTask } from "../../hooks/tasks/useCreateTask";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { Task } from "../Task/Task";
+import { useMoveTask } from "../../hooks/tasks/useMoveTask";
 
 export default function ColumnTasks({
   column,
@@ -18,6 +19,7 @@ export default function ColumnTasks({
   tasks: ModelsTask[];
 }) {
   const { mutate: createTask } = useCreateTask();
+  const { mutate: moveTask } = useMoveTask();
   const [isFormVisible, setFormVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -37,8 +39,46 @@ export default function ColumnTasks({
     setFormVisible(false);
   };
 
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const data = JSON.parse(event.dataTransfer.getData("text/plain"));
+    const { taskId } = data;
+
+    const target = event.currentTarget;
+    const taskElements = target.querySelectorAll(".task");
+    let newPosition = taskElements.length;
+
+    taskElements.forEach((taskElement, index) => {
+      const rect = taskElement.getBoundingClientRect();
+      if (
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom &&
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right
+      ) {
+        newPosition = index;
+      }
+    });
+
+    if (!taskId || !column.id || !swimlane.id) return;
+    moveTask({
+      taskId,
+      columnId: column.id,
+      swimlaneId: swimlane.id,
+      position: newPosition,
+    });
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
   return (
-    <div className="bg-gray-100 rounded shadow min-h-[10px]">
+    <div
+      className="bg-gray-100 rounded shadow min-h-[10px]"
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
       {!isFormVisible && (
         <button
           className="flex items-center justify-center w-full p-2 bg-gray-200 rounded"
@@ -86,7 +126,7 @@ export default function ColumnTasks({
         {tasks
           .filter(
             (task) =>
-              task.swimlaneId === swimlane.id && task.columnId === column.id,
+              task.swimlaneId === swimlane.id && task.columnId === column.id
           )
           .map((task) => (
             <Task key={task.id} task={task} />
