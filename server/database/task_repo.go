@@ -81,7 +81,7 @@ func (r *GormTaskRepository) GetWithQuery(query string, user models.User) ([]mod
 		return nil, err
 	}
 
-	tx := r.db.Model(&models.Task{}).Where("board_id IN ?", boardIDs)
+	tx := r.db.Model(&models.Task{}).Where("board_id IN ?", boardIDs).Preload("Assignee").Preload("Creator")
 
 	for key, value := range filters {
 		if column, ok := queryMap[key]; ok {
