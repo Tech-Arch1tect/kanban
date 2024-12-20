@@ -4,10 +4,10 @@ export function Task({ task }: { task: ModelsTask }) {
   return (
     <div
       draggable
+      data-position={task.position}
       onDragStart={(event: React.DragEvent<HTMLDivElement>) => {
         const data = JSON.stringify({
           taskId: task.id,
-          position: task.position,
         });
         event.dataTransfer.setData("text/plain", data);
       }}
