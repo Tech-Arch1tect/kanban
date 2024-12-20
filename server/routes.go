@@ -109,6 +109,7 @@ func routes(r *gin.Engine) {
 			task.POST("/edit", middleware.CSRFTokenRequired(), taskController.EditTask)
 			task.POST("/delete", middleware.CSRFTokenRequired(), taskController.DeleteTask)
 			task.POST("/move", middleware.CSRFTokenRequired(), taskController.MoveTask)
+			task.POST("/change-assignee", middleware.CSRFTokenRequired(), taskController.ChangeAssignee)
 		}
 
 		comment := api.Group("/comments")

@@ -16,6 +16,7 @@ type CreateTaskRequest struct {
 	SwimlaneID  uint   `json:"swimlane_id"`
 	ColumnID    uint   `json:"column_id"`
 	Status      string `json:"status"`
+	AssigneeID  uint   `json:"assignee_id"`
 }
 
 type CreateTaskResponse struct {
@@ -43,7 +44,7 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	can, _ := permissions.Can(c, permissions.CanCreateTask, request.BoardID)
+	can, user := permissions.Can(c, permissions.CanCreateTask, request.BoardID)
 	if !can {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 		return
@@ -67,6 +68,15 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
+	var assignee models.User
+	if request.AssigneeID != 0 {
+		assignee, err = database.DB.UserRepository.GetByID(request.AssigneeID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
 	task := models.Task{
 		BoardID:     request.BoardID,
 		Title:       request.Title,
@@ -75,6 +85,8 @@ func CreateTask(c *gin.Context) {
 		Status:      request.Status,
 		ColumnID:    request.ColumnID,
 		Position:    position + 1,
+		CreatorID:   user.ID,
+		AssigneeID:  assignee.ID,
 	}
 
 	err = task.Validate()

@@ -17,6 +17,10 @@ type Task struct {
 	Status      string    `json:"status"`
 	Comments    []Comment `gorm:"foreignKey:TaskID" json:"comments"`
 	Position    int       `json:"position"`
+	CreatorID   uint      `json:"creator_id"`
+	Creator     User      `gorm:"foreignKey:CreatorID" json:"creator"`
+	AssigneeID  uint      `json:"assignee_id"`
+	Assignee    User      `gorm:"foreignKey:AssigneeID" json:"assignee"`
 }
 
 var allowedStatuses = []string{"open", "closed"}
