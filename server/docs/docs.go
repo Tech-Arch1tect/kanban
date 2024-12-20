@@ -844,6 +844,67 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/boards/get-by-slug/{slug}": {
+            "get": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ],
+                "description": "Get a board by slug",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "boards"
+                ],
+                "summary": "Get a board by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Board Slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/boardController.GetBoardBySlugResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/boards/get/{id}": {
             "get": {
                 "security": [
@@ -2374,6 +2435,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "slug": {
+                    "type": "string"
+                },
                 "swimlanes": {
                     "type": "array",
                     "items": {
@@ -2406,6 +2470,14 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "boardController.GetBoardBySlugResponse": {
+            "type": "object",
+            "properties": {
+                "board": {
+                    "$ref": "#/definitions/models.Board"
                 }
             }
         },
@@ -2622,6 +2694,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.BoardPermission"
                     }
+                },
+                "slug": {
+                    "type": "string"
                 },
                 "swimlanes": {
                     "type": "array",

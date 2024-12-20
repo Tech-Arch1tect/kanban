@@ -150,6 +150,8 @@ definitions:
         type: array
       name:
         type: string
+      slug:
+        type: string
       swimlanes:
         items:
           type: string
@@ -171,6 +173,11 @@ definitions:
     properties:
       message:
         type: string
+    type: object
+  boardController.GetBoardBySlugResponse:
+    properties:
+      board:
+        $ref: '#/definitions/models.Board'
     type: object
   boardController.GetBoardResponse:
     properties:
@@ -308,6 +315,8 @@ definitions:
         items:
           $ref: '#/definitions/models.BoardPermission'
         type: array
+      slug:
+        type: string
       swimlanes:
         items:
           $ref: '#/definitions/models.Swimlane'
@@ -1139,6 +1148,45 @@ paths:
       - cookieAuth: []
       - csrf: []
       summary: Delete a board
+      tags:
+      - boards
+  /api/v1/boards/get-by-slug/{slug}:
+    get:
+      consumes:
+      - application/json
+      description: Get a board by slug
+      parameters:
+      - description: Board Slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/boardController.GetBoardBySlugResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      summary: Get a board by slug
       tags:
       - boards
   /api/v1/boards/get/{id}:
