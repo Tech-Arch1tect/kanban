@@ -425,6 +425,10 @@ definitions:
     type: object
   models.Task:
     properties:
+      assignee:
+        $ref: '#/definitions/models.User'
+      assignee_id:
+        type: integer
       board_id:
         type: integer
       column:
@@ -437,6 +441,10 @@ definitions:
         type: array
       created_at:
         type: string
+      creator:
+        $ref: '#/definitions/models.User'
+      creator_id:
+        type: integer
       deleted_at:
         $ref: '#/definitions/gorm.DeletedAt'
       description:
@@ -542,8 +550,22 @@ definitions:
       swimlane:
         $ref: '#/definitions/models.Swimlane'
     type: object
+  taskController.ChangeAssigneeRequest:
+    properties:
+      assignee_id:
+        type: integer
+      id:
+        type: integer
+    type: object
+  taskController.ChangeAssigneeResponse:
+    properties:
+      task:
+        $ref: '#/definitions/models.Task'
+    type: object
   taskController.CreateTaskRequest:
     properties:
+      assignee_id:
+        type: integer
       board_id:
         type: integer
       column_id:
@@ -1754,6 +1776,47 @@ paths:
       summary: Move a swimlane
       tags:
       - swimlanes
+  /api/v1/tasks/change-assignee:
+    post:
+      consumes:
+      - application/json
+      description: Change the assignee of a task
+      parameters:
+      - description: Change assignee request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/taskController.ChangeAssigneeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/taskController.ChangeAssigneeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Change assignee of a task
+      tags:
+      - tasks
   /api/v1/tasks/create:
     post:
       consumes:

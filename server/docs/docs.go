@@ -1812,6 +1812,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/tasks/change-assignee": {
+            "post": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
+                    }
+                ],
+                "description": "Change the assignee of a task",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Change assignee of a task",
+                "parameters": [
+                    {
+                        "description": "Change assignee request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/taskController.ChangeAssigneeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/taskController.ChangeAssigneeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/tasks/create": {
             "post": {
                 "security": [
@@ -2858,6 +2924,12 @@ const docTemplate = `{
         "models.Task": {
             "type": "object",
             "properties": {
+                "assignee": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "assignee_id": {
+                    "type": "integer"
+                },
                 "board_id": {
                     "type": "integer"
                 },
@@ -2875,6 +2947,12 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "creator": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "creator_id": {
+                    "type": "integer"
                 },
                 "deleted_at": {
                     "$ref": "#/definitions/gorm.DeletedAt"
@@ -3038,9 +3116,31 @@ const docTemplate = `{
                 }
             }
         },
+        "taskController.ChangeAssigneeRequest": {
+            "type": "object",
+            "properties": {
+                "assignee_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "taskController.ChangeAssigneeResponse": {
+            "type": "object",
+            "properties": {
+                "task": {
+                    "$ref": "#/definitions/models.Task"
+                }
+            }
+        },
         "taskController.CreateTaskRequest": {
             "type": "object",
             "properties": {
+                "assignee_id": {
+                    "type": "integer"
+                },
                 "board_id": {
                     "type": "integer"
                 },
