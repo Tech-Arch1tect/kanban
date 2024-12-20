@@ -25,6 +25,7 @@ export * from './BoardControllerCreateBoardRequest';
 export * from './BoardControllerCreateBoardResponse';
 export * from './BoardControllerDeleteBoardRequest';
 export * from './BoardControllerDeleteBoardResponse';
+export * from './BoardControllerGetBoardBySlugResponse';
 export * from './BoardControllerGetBoardResponse';
 export * from './BoardControllerListBoardsResponse';
 export * from './ColumnControllerCreateColumnRequest';

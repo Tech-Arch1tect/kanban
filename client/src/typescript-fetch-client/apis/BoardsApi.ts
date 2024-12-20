@@ -19,6 +19,7 @@ import type {
   BoardControllerCreateBoardResponse,
   BoardControllerDeleteBoardRequest,
   BoardControllerDeleteBoardResponse,
+  BoardControllerGetBoardBySlugResponse,
   BoardControllerGetBoardResponse,
   BoardControllerListBoardsResponse,
   ModelsErrorResponse,
@@ -32,6 +33,8 @@ import {
     BoardControllerDeleteBoardRequestToJSON,
     BoardControllerDeleteBoardResponseFromJSON,
     BoardControllerDeleteBoardResponseToJSON,
+    BoardControllerGetBoardBySlugResponseFromJSON,
+    BoardControllerGetBoardBySlugResponseToJSON,
     BoardControllerGetBoardResponseFromJSON,
     BoardControllerGetBoardResponseToJSON,
     BoardControllerListBoardsResponseFromJSON,
@@ -46,6 +49,10 @@ export interface ApiV1BoardsCreatePostRequest {
 
 export interface ApiV1BoardsDeletePostRequest {
     request: BoardControllerDeleteBoardRequest;
+}
+
+export interface ApiV1BoardsGetBySlugSlugGetRequest {
+    slug: string;
 }
 
 export interface ApiV1BoardsGetIdGetRequest {
@@ -138,6 +145,41 @@ export class BoardsApi extends runtime.BaseAPI {
      */
     async apiV1BoardsDeletePost(requestParameters: ApiV1BoardsDeletePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BoardControllerDeleteBoardResponse> {
         const response = await this.apiV1BoardsDeletePostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get a board by slug
+     * Get a board by slug
+     */
+    async apiV1BoardsGetBySlugSlugGetRaw(requestParameters: ApiV1BoardsGetBySlugSlugGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BoardControllerGetBoardBySlugResponse>> {
+        if (requestParameters['slug'] == null) {
+            throw new runtime.RequiredError(
+                'slug',
+                'Required parameter "slug" was null or undefined when calling apiV1BoardsGetBySlugSlugGet().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/v1/boards/get-by-slug/{slug}`.replace(`{${"slug"}}`, encodeURIComponent(String(requestParameters['slug']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => BoardControllerGetBoardBySlugResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get a board by slug
+     * Get a board by slug
+     */
+    async apiV1BoardsGetBySlugSlugGet(requestParameters: ApiV1BoardsGetBySlugSlugGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BoardControllerGetBoardBySlugResponse> {
+        const response = await this.apiV1BoardsGetBySlugSlugGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

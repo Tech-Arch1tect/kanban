@@ -35,6 +35,7 @@ models/BoardControllerCreateBoardRequest.ts
 models/BoardControllerCreateBoardResponse.ts
 models/BoardControllerDeleteBoardRequest.ts
 models/BoardControllerDeleteBoardResponse.ts
+models/BoardControllerGetBoardBySlugResponse.ts
 models/BoardControllerGetBoardResponse.ts
 models/BoardControllerListBoardsResponse.ts
 models/ColumnControllerCreateColumnRequest.ts

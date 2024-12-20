@@ -112,6 +112,12 @@ export interface ModelsBoard {
     permissions?: Array<ModelsBoardPermission>;
     /**
      * 
+     * @type {string}
+     * @memberof ModelsBoard
+     */
+    slug?: string;
+    /**
+     * 
      * @type {Array<ModelsSwimlane>}
      * @memberof ModelsBoard
      */
@@ -156,6 +162,7 @@ export function ModelsBoardFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'owner': json['owner'] == null ? undefined : ModelsUserFromJSON(json['owner']),
         'ownerId': json['owner_id'] == null ? undefined : json['owner_id'],
         'permissions': json['permissions'] == null ? undefined : ((json['permissions'] as Array<any>).map(ModelsBoardPermissionFromJSON)),
+        'slug': json['slug'] == null ? undefined : json['slug'],
         'swimlanes': json['swimlanes'] == null ? undefined : ((json['swimlanes'] as Array<any>).map(ModelsSwimlaneFromJSON)),
         'tasks': json['tasks'] == null ? undefined : ((json['tasks'] as Array<any>).map(ModelsTaskFromJSON)),
         'updatedAt': json['updated_at'] == null ? undefined : json['updated_at'],
@@ -181,6 +188,7 @@ export function ModelsBoardToJSONTyped(value?: ModelsBoard | null, ignoreDiscrim
         'owner': ModelsUserToJSON(value['owner']),
         'owner_id': value['ownerId'],
         'permissions': value['permissions'] == null ? undefined : ((value['permissions'] as Array<any>).map(ModelsBoardPermissionToJSON)),
+        'slug': value['slug'],
         'swimlanes': value['swimlanes'] == null ? undefined : ((value['swimlanes'] as Array<any>).map(ModelsSwimlaneToJSON)),
         'tasks': value['tasks'] == null ? undefined : ((value['tasks'] as Array<any>).map(ModelsTaskToJSON)),
         'updated_at': value['updatedAt'],

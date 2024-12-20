@@ -33,6 +33,12 @@ export interface BoardControllerCreateBoardRequest {
     name?: string;
     /**
      * 
+     * @type {string}
+     * @memberof BoardControllerCreateBoardRequest
+     */
+    slug?: string;
+    /**
+     * 
      * @type {Array<string>}
      * @memberof BoardControllerCreateBoardRequest
      */
@@ -58,6 +64,7 @@ export function BoardControllerCreateBoardRequestFromJSONTyped(json: any, ignore
         
         'columns': json['columns'] == null ? undefined : json['columns'],
         'name': json['name'] == null ? undefined : json['name'],
+        'slug': json['slug'] == null ? undefined : json['slug'],
         'swimlanes': json['swimlanes'] == null ? undefined : json['swimlanes'],
     };
 }
@@ -75,6 +82,7 @@ export function BoardControllerCreateBoardRequestToJSONTyped(value?: BoardContro
         
         'columns': value['columns'],
         'name': value['name'],
+        'slug': value['slug'],
         'swimlanes': value['swimlanes'],
     };
 }
