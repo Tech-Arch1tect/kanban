@@ -21,6 +21,8 @@ type TaskRepository interface {
 	Repository[models.Task]
 	GetWithPreload(id uint) (models.Task, error)
 	GetWithQuery(query string, user models.User) ([]models.Task, error)
+	GetByColumnAndSwimlane(columnID uint, swimlaneID uint) ([]models.Task, error)
+	GetPosition(columnID uint, swimlaneID uint) (int, error)
 }
 
 type GormTaskRepository struct {
@@ -92,7 +94,7 @@ func (r *GormTaskRepository) GetWithQuery(query string, user models.User) ([]mod
 	}
 
 	var tasks []models.Task
-	if err := tx.Find(&tasks).Error; err != nil {
+	if err := tx.Order("position ASC").Find(&tasks).Error; err != nil {
 		return nil, err
 	}
 
@@ -127,4 +129,20 @@ func (q *TaskQuery) Parse() (map[string]string, error) {
 	}
 
 	return filters, nil
+}
+
+func (r *GormTaskRepository) GetByColumnAndSwimlane(columnID uint, swimlaneID uint) ([]models.Task, error) {
+	var tasks []models.Task
+	if err := r.db.Where("column_id = ? AND swimlane_id = ?", columnID, swimlaneID).Order("position ASC").Find(&tasks).Error; err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
+func (r *GormTaskRepository) GetPosition(columnID uint, swimlaneID uint) (int, error) {
+	var task models.Task
+	if err := r.db.Where("column_id = ? AND swimlane_id = ?", columnID, swimlaneID).Order("position ASC").First(&task).Error; err != nil {
+		return 0, err
+	}
+	return task.Position, nil
 }

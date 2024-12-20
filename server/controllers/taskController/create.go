@@ -61,6 +61,12 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
+	position, err := database.DB.TaskRepository.GetPosition(request.ColumnID, request.SwimlaneID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	task := models.Task{
 		BoardID:     request.BoardID,
 		Title:       request.Title,
@@ -68,6 +74,7 @@ func CreateTask(c *gin.Context) {
 		SwimlaneID:  request.SwimlaneID,
 		Status:      request.Status,
 		ColumnID:    request.ColumnID,
+		Position:    position + 1,
 	}
 
 	err = task.Validate()

@@ -16,6 +16,7 @@ type Task struct {
 	Description string    `json:"description"`
 	Status      string    `json:"status"`
 	Comments    []Comment `gorm:"foreignKey:TaskID" json:"comments"`
+	Position    int       `json:"position"`
 }
 
 var allowedStatuses = []string{"open", "closed"}
