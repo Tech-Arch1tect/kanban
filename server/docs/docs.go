@@ -2004,6 +2004,72 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/tasks/move": {
+            "post": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
+                    }
+                ],
+                "description": "Move a task to a different column and swimlane, and update its position",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Move a task",
+                "parameters": [
+                    {
+                        "description": "Move task request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/taskController.MoveTaskRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/taskController.MoveTaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2678,6 +2744,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "position": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "string"
                 },
@@ -2899,6 +2968,36 @@ const docTemplate = `{
             }
         },
         "taskController.GetTaskResponse": {
+            "type": "object",
+            "properties": {
+                "task": {
+                    "$ref": "#/definitions/models.Task"
+                }
+            }
+        },
+        "taskController.MoveTaskRequest": {
+            "type": "object",
+            "required": [
+                "column_id",
+                "swimlane_id",
+                "task_id"
+            ],
+            "properties": {
+                "column_id": {
+                    "type": "integer"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "swimlane_id": {
+                    "type": "integer"
+                },
+                "task_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "taskController.MoveTaskResponse": {
             "type": "object",
             "properties": {
                 "task": {

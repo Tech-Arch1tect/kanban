@@ -434,6 +434,8 @@ definitions:
         type: string
       id:
         type: integer
+      position:
+        type: integer
       status:
         type: string
       swimlane:
@@ -577,6 +579,26 @@ definitions:
         type: array
     type: object
   taskController.GetTaskResponse:
+    properties:
+      task:
+        $ref: '#/definitions/models.Task'
+    type: object
+  taskController.MoveTaskRequest:
+    properties:
+      column_id:
+        type: integer
+      position:
+        type: integer
+      swimlane_id:
+        type: integer
+      task_id:
+        type: integer
+    required:
+    - column_id
+    - swimlane_id
+    - task_id
+    type: object
+  taskController.MoveTaskResponse:
     properties:
       task:
         $ref: '#/definitions/models.Task'
@@ -1830,6 +1852,48 @@ paths:
       security:
       - cookieAuth: []
       summary: Get a task
+      tags:
+      - tasks
+  /api/v1/tasks/move:
+    post:
+      consumes:
+      - application/json
+      description: Move a task to a different column and swimlane, and update its
+        position
+      parameters:
+      - description: Move task request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/taskController.MoveTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/taskController.MoveTaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Move a task
       tags:
       - tasks
 securityDefinitions:
