@@ -24,6 +24,8 @@ import type {
   TaskControllerEditTaskResponse,
   TaskControllerGetTaskQueryResponse,
   TaskControllerGetTaskResponse,
+  TaskControllerMoveTaskRequest,
+  TaskControllerMoveTaskResponse,
 } from '../models/index';
 import {
     ModelsErrorResponseFromJSON,
@@ -44,6 +46,10 @@ import {
     TaskControllerGetTaskQueryResponseToJSON,
     TaskControllerGetTaskResponseFromJSON,
     TaskControllerGetTaskResponseToJSON,
+    TaskControllerMoveTaskRequestFromJSON,
+    TaskControllerMoveTaskRequestToJSON,
+    TaskControllerMoveTaskResponseFromJSON,
+    TaskControllerMoveTaskResponseToJSON,
 } from '../models/index';
 
 export interface ApiV1TasksCreatePostRequest {
@@ -64,6 +70,10 @@ export interface ApiV1TasksGetIdGetRequest {
 
 export interface ApiV1TasksGetQueryQueryGetRequest {
     query: string;
+}
+
+export interface ApiV1TasksMovePostRequest {
+    request: TaskControllerMoveTaskRequest;
 }
 
 /**
@@ -264,6 +274,48 @@ export class TasksApi extends runtime.BaseAPI {
      */
     async apiV1TasksGetQueryQueryGet(requestParameters: ApiV1TasksGetQueryQueryGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TaskControllerGetTaskQueryResponse> {
         const response = await this.apiV1TasksGetQueryQueryGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Move a task to a different column and swimlane, and update its position
+     * Move a task
+     */
+    async apiV1TasksMovePostRaw(requestParameters: ApiV1TasksMovePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<TaskControllerMoveTaskResponse>> {
+        if (requestParameters['request'] == null) {
+            throw new runtime.RequiredError(
+                'request',
+                'Required parameter "request" was null or undefined when calling apiV1TasksMovePost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-CSRF-Token"] = await this.configuration.apiKey("X-CSRF-Token"); // csrf authentication
+        }
+
+        const response = await this.request({
+            path: `/api/v1/tasks/move`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: TaskControllerMoveTaskRequestToJSON(requestParameters['request']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => TaskControllerMoveTaskResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Move a task to a different column and swimlane, and update its position
+     * Move a task
+     */
+    async apiV1TasksMovePost(requestParameters: ApiV1TasksMovePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<TaskControllerMoveTaskResponse> {
+        const response = await this.apiV1TasksMovePostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

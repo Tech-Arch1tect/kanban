@@ -68,3 +68,5 @@ export * from './TaskControllerEditTaskRequest';
 export * from './TaskControllerEditTaskResponse';
 export * from './TaskControllerGetTaskQueryResponse';
 export * from './TaskControllerGetTaskResponse';
+export * from './TaskControllerMoveTaskRequest';
+export * from './TaskControllerMoveTaskResponse';

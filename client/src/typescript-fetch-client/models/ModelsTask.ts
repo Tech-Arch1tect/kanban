@@ -98,6 +98,12 @@ export interface ModelsTask {
     id?: number;
     /**
      * 
+     * @type {number}
+     * @memberof ModelsTask
+     */
+    position?: number;
+    /**
+     * 
      * @type {string}
      * @memberof ModelsTask
      */
@@ -153,6 +159,7 @@ export function ModelsTaskFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'deletedAt': json['deleted_at'] == null ? undefined : GormDeletedAtFromJSON(json['deleted_at']),
         'description': json['description'] == null ? undefined : json['description'],
         'id': json['id'] == null ? undefined : json['id'],
+        'position': json['position'] == null ? undefined : json['position'],
         'status': json['status'] == null ? undefined : json['status'],
         'swimlane': json['swimlane'] == null ? undefined : ModelsSwimlaneFromJSON(json['swimlane']),
         'swimlaneId': json['swimlane_id'] == null ? undefined : json['swimlane_id'],
@@ -180,6 +187,7 @@ export function ModelsTaskToJSONTyped(value?: ModelsTask | null, ignoreDiscrimin
         'deleted_at': GormDeletedAtToJSON(value['deletedAt']),
         'description': value['description'],
         'id': value['id'],
+        'position': value['position'],
         'status': value['status'],
         'swimlane': ModelsSwimlaneToJSON(value['swimlane']),
         'swimlane_id': value['swimlaneId'],
