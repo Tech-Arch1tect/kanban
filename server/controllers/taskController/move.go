@@ -111,5 +111,7 @@ func MoveTask(c *gin.Context) {
 		return
 	}
 
+	database.DB.TaskRepository.RePositionAll(task.ColumnID, task.SwimlaneID)
+
 	c.JSON(http.StatusOK, MoveTaskResponse{Task: updatedTask})
 }
