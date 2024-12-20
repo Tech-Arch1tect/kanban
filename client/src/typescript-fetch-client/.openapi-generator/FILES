@@ -5,6 +5,7 @@ apis/BoardsApi.ts
 apis/ColumnsApi.ts
 apis/CommentsApi.ts
 apis/MiscApi.ts
+apis/SampleDataApi.ts
 apis/SwimlanesApi.ts
 apis/TasksApi.ts
 apis/index.ts
@@ -61,6 +62,8 @@ models/ModelsRole.ts
 models/ModelsSwimlane.ts
 models/ModelsTask.ts
 models/ModelsUser.ts
+models/SampleDataControllerInsertSampleDataRequest.ts
+models/SampleDataControllerInsertSampleDataResponse.ts
 models/SwimlaneControllerCreateSwimlaneRequest.ts
 models/SwimlaneControllerCreateSwimlaneResponse.ts
 models/SwimlaneControllerDeleteSwimlaneRequest.ts

@@ -6,5 +6,6 @@ export * from './BoardsApi';
 export * from './ColumnsApi';
 export * from './CommentsApi';
 export * from './MiscApi';
+export * from './SampleDataApi';
 export * from './SwimlanesApi';
 export * from './TasksApi';

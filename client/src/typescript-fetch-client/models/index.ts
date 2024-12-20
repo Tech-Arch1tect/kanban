@@ -52,6 +52,8 @@ export * from './ModelsRole';
 export * from './ModelsSwimlane';
 export * from './ModelsTask';
 export * from './ModelsUser';
+export * from './SampleDataControllerInsertSampleDataRequest';
+export * from './SampleDataControllerInsertSampleDataResponse';
 export * from './SwimlaneControllerCreateSwimlaneRequest';
 export * from './SwimlaneControllerCreateSwimlaneResponse';
 export * from './SwimlaneControllerDeleteSwimlaneRequest';
