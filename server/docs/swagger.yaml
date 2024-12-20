@@ -466,6 +466,18 @@ definitions:
     required:
     - email
     type: object
+  sampleDataController.InsertSampleDataRequest:
+    properties:
+      board_id:
+        type: integer
+      num_tasks:
+        type: integer
+    type: object
+  sampleDataController.InsertSampleDataResponse:
+    properties:
+      message:
+        type: string
+    type: object
   swimlaneController.CreateSwimlaneRequest:
     properties:
       board_id:
@@ -1489,6 +1501,47 @@ paths:
       summary: Get the app name
       tags:
       - misc
+  /api/v1/sample-data/insert:
+    post:
+      consumes:
+      - application/json
+      description: Insert sample data into the database for a specific board
+      parameters:
+      - description: Insert sample data request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/sampleDataController.InsertSampleDataRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/sampleDataController.InsertSampleDataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - cookieAuth: []
+      - csrf: []
+      summary: Insert sample data into the database for a specific board
+      tags:
+      - sample-data
   /api/v1/swimlanes/create:
     post:
       consumes:

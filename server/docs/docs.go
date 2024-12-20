@@ -1421,6 +1421,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/sample-data/insert": {
+            "post": {
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "csrf": []
+                    }
+                ],
+                "description": "Insert sample data into the database for a specific board",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sample-data"
+                ],
+                "summary": "Insert sample data into the database for a specific board",
+                "parameters": [
+                    {
+                        "description": "Insert sample data request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/sampleDataController.InsertSampleDataRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/sampleDataController.InsertSampleDataResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/swimlanes/create": {
             "post": {
                 "security": [
@@ -2789,6 +2855,25 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "sampleDataController.InsertSampleDataRequest": {
+            "type": "object",
+            "properties": {
+                "board_id": {
+                    "type": "integer"
+                },
+                "num_tasks": {
+                    "type": "integer"
+                }
+            }
+        },
+        "sampleDataController.InsertSampleDataResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
                     "type": "string"
                 }
             }
