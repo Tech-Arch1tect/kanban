@@ -23,6 +23,7 @@ type TaskRepository interface {
 	GetWithQuery(query string, user models.User) ([]models.Task, error)
 	GetByColumnAndSwimlane(columnID uint, swimlaneID uint) ([]models.Task, error)
 	GetPosition(columnID uint, swimlaneID uint) (int, error)
+	RePositionAll(columnID uint, swimlaneID uint) error
 }
 
 type GormTaskRepository struct {
@@ -141,8 +142,25 @@ func (r *GormTaskRepository) GetByColumnAndSwimlane(columnID uint, swimlaneID ui
 
 func (r *GormTaskRepository) GetPosition(columnID uint, swimlaneID uint) (int, error) {
 	var task models.Task
-	if err := r.db.Where("column_id = ? AND swimlane_id = ?", columnID, swimlaneID).Order("position ASC").First(&task).Error; err != nil {
+	if err := r.db.Where("column_id = ? AND swimlane_id = ?", columnID, swimlaneID).Order("position DESC").First(&task).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, nil
+		}
 		return 0, err
 	}
 	return task.Position, nil
+}
+
+func (r *GormTaskRepository) RePositionAll(columnID uint, swimlaneID uint) error {
+	tasks, err := r.GetByColumnAndSwimlane(columnID, swimlaneID)
+	if err != nil {
+		return err
+	}
+	for i, task := range tasks {
+		task.Position = i
+		if err := r.Update(&task); err != nil {
+			return err
+		}
+	}
+	return nil
 }

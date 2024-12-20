@@ -65,6 +65,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/pquerna/otp v1.4.0
 	github.com/wneessen/go-mail v0.5.2
+	golang.org/x/exp v0.0.0-20241217172543-b2144cdd0a67
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 )

@@ -8,6 +8,7 @@ import (
 	"server/controllers/columnController"
 	"server/controllers/commentController"
 	"server/controllers/miscController"
+	"server/controllers/sampleDataController"
 	"server/controllers/swimlaneController"
 	"server/controllers/taskController"
 	"server/middleware"
@@ -72,6 +73,12 @@ func routes(r *gin.Engine) {
 			admin.DELETE("/users/:id", middleware.CSRFTokenRequired(), adminController.RemoveUser)
 			admin.GET("/users", adminController.ListUsers)
 			admin.PUT("/users/:id/role", middleware.CSRFTokenRequired(), adminController.UpdateUserRole)
+		}
+
+		sampleData := api.Group("/sample-data")
+		sampleData.Use(middleware.EnsureRole(models.RoleAdmin))
+		{
+			sampleData.POST("/insert", middleware.CSRFTokenRequired(), sampleDataController.InsertSampleData)
 		}
 
 		board := api.Group("/boards")
