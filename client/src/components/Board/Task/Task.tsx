@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { ModelsTask } from "../../../typescript-fetch-client";
 
 interface TaskProps {
@@ -29,16 +30,19 @@ export function Task({
         flex flex-col space-y-2 transition-all duration-200
       `}
     >
-      <div className="flex items-center justify-between text-sm text-gray-600">
-        <span className="truncate">
-          {task.assignee?.displayName || "Unassigned"}
-        </span>
-        <span className="text-gray-400">{`#${task.id}`}</span>
-      </div>
-      <h3 className="text-base font-medium text-gray-900 truncate">
-        {task.title}
-      </h3>
-      <p className="text-sm text-gray-700 line-clamp-2">{task.description}</p>
+      <Link to={`/task/${task.id}`}>
+        <div className="flex items-center justify-between text-sm text-gray-600">
+          <span className="truncate">
+            {task.assignee?.displayName || "Unassigned"}
+          </span>
+
+          <span className="text-gray-400">{`#${task.id}`}</span>
+        </div>
+        <h3 className="text-base font-medium text-gray-900 truncate">
+          {task.title}
+        </h3>
+        <p className="text-sm text-gray-700 line-clamp-2">{task.description}</p>
+      </Link>
     </div>
   );
 }
