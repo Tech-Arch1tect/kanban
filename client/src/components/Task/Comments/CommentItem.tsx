@@ -70,9 +70,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
               <span className="block">
                 Created: {comment.createdAt?.toLocaleString() || "Unknown Date"}
               </span>
-              <span className="block">
-                Updated: {comment.updatedAt?.toLocaleString() || "Unknown Date"}
-              </span>
+              {comment.updatedAt !== comment.createdAt && (
+                <span className="block">
+                  Updated:{" "}
+                  {comment.updatedAt?.toLocaleString() || "Unknown Date"}
+                </span>
+              )}
             </div>
           </div>
           {profile?.id === comment.user?.id && (
