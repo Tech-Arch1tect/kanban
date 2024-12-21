@@ -10,7 +10,7 @@ import (
 )
 
 type GetTaskRequest struct {
-	ID uint `json:"id"`
+	ID uint `uri:"id" binding:"required"`
 }
 
 type GetTaskResponse struct {
@@ -37,7 +37,7 @@ func GetTask(c *gin.Context) {
 		return
 	}
 
-	task, err := database.DB.TaskRepository.GetByID(request.ID)
+	task, err := database.DB.TaskRepository.GetWithPreload(request.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
