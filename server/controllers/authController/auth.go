@@ -5,6 +5,7 @@ import (
 	"server/database"
 	"server/helpers"
 	"server/models"
+	"strings"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -35,10 +36,13 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	displayName := strings.Split(input.Email, "@")[0]
+
 	user := models.User{
-		Email:    input.Email,
-		Password: input.Password,
-		Role:     models.RoleUser,
+		DisplayName: displayName,
+		Email:       input.Email,
+		Password:    input.Password,
+		Role:        models.RoleUser,
 	}
 
 	// If this is the first user to register, set the role to admin
@@ -198,9 +202,8 @@ type ChangePasswordResponse struct {
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/change-password [post]
 func ChangePassword(c *gin.Context) {
-	session := sessions.Default(c)
-	userID := session.Get("userID")
-	if userID == nil {
+	user, err := helpers.GetUserFromSession(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "unauthorized"})
 		return
 	}
@@ -208,12 +211,6 @@ func ChangePassword(c *gin.Context) {
 	var input ChangePasswordRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": helpers.ParseValidationError(err)})
-		return
-	}
-
-	user, err := database.DB.UserRepository.GetByID(userID.(uint))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "internal server error"})
 		return
 	}
 
@@ -238,6 +235,51 @@ func ChangePassword(c *gin.Context) {
 
 	c.JSON(http.StatusOK, ChangePasswordResponse{
 		Message: "password changed successfully",
+	})
+}
+
+type UpdateDisplayNameRequest struct {
+	DisplayName string `json:"display_name" binding:"required"`
+}
+
+type UpdateDisplayNameResponse struct {
+	Message string `json:"message"`
+}
+
+// UpdateDisplayName godoc
+// @Summary Update user display name
+// @Description Update the display name of the logged-in user
+// @Tags auth
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param displayName body UpdateDisplayNameRequest true "Display name details"
+// @Success 200 {object} UpdateDisplayNameResponse "message: display name updated successfully"
+// @Failure 400 {object} models.ErrorResponse "error: bad request"
+// @Failure 500 {object} models.ErrorResponse "error: internal server error"
+// @Router /api/v1/auth/update-display-name [post]
+func UpdateDisplayName(c *gin.Context) {
+	user, err := helpers.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "unauthorized"})
+		return
+	}
+
+	var request UpdateDisplayNameRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": helpers.ParseValidationError(err)})
+		return
+	}
+
+	user.DisplayName = request.DisplayName
+	if err := database.DB.UserRepository.Update(&user); err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, UpdateDisplayNameResponse{
+		Message: "display name updated successfully",
 	})
 }
 

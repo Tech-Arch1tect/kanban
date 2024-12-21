@@ -9,6 +9,7 @@ import (
 
 type User struct {
 	Model
+	DisplayName         string    `gorm:"not null" json:"display_name" binding:"required"`
 	Email               string    `gorm:"uniqueIndex;not null" json:"email" binding:"required,email"`
 	Password            string    `gorm:"not null" json:"-" binding:"required,min=6"`
 	Role                Role      `gorm:"default:user" json:"role"`

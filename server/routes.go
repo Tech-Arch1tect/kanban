@@ -43,6 +43,7 @@ func routes(r *gin.Engine) {
 			auth.GET("/profile", middleware.AuthRequired(), authController.Profile)
 			auth.GET("/csrf-token", middleware.AuthRequired(), authController.GetCSRFToken)
 			auth.POST("/change-password", middleware.AuthRequired(), middleware.CSRFTokenRequired(), authController.ChangePassword)
+			auth.POST("/update-display-name", middleware.AuthRequired(), middleware.CSRFTokenRequired(), authController.UpdateDisplayName)
 			if config.CFG.RateLimit.Enabled {
 				auth.POST("/password-reset", middleware.RateLimit(config.CFG.RateLimit.PasswordResetLimit, time.Duration(config.CFG.RateLimit.PasswordResetWindow)*time.Minute), authController.PasswordReset)
 				auth.POST("/reset-password", middleware.RateLimit(config.CFG.RateLimit.PasswordResetLimit, time.Duration(config.CFG.RateLimit.PasswordResetWindow)*time.Minute), authController.ResetPassword)
