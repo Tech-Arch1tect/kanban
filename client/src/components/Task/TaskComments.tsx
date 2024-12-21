@@ -1,32 +1,53 @@
-import { useState } from "react";
-import { useCreateComment } from "../../hooks/tasks/Comments/useCreateComment";
+import React, { useState, useCallback } from "react";
 import { useTaskData } from "../../hooks/tasks/useTaskData";
-import RenderMarkdown from "../Utility/RenderMarkdown";
+import { useUserProfile } from "../../hooks/profile/useUserProfile";
+import { useEditComment } from "../../hooks/tasks/Comments/useEditComment";
+import { useCreateComment } from "../../hooks/tasks/Comments/useCreateComment";
+import { useDeleteComment } from "../../hooks/tasks/Comments/useDeleteComment";
+import CommentForm from "./Comments/CommentForm";
+import CommentItem from "./Comments/CommentItem";
+import { ModelsUser } from "../../typescript-fetch-client";
 
 export default function TaskComments({ taskId }: { taskId: number }) {
   const { data, isLoading, error } = useTaskData({ id: taskId });
-  const {
-    mutate,
-    isError,
-    isSuccess,
-    error: mutationError,
-  } = useCreateComment();
+  const { profile } = useUserProfile();
+  const { mutate: deleteComment } = useDeleteComment();
+  const { mutate: editComment } = useEditComment();
+  const { mutate: createComment } = useCreateComment();
   const [newComment, setNewComment] = useState("");
 
-  const handleCommentSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newComment.trim()) {
-      mutate({ text: newComment, taskId });
-      setNewComment("");
-    }
-  };
+  const handleCommentSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (newComment.trim()) {
+        createComment({ text: newComment, taskId });
+        setNewComment("");
+      }
+    },
+    [newComment, taskId, createComment]
+  );
+
+  const handleEdit = useCallback(
+    (commentId: number, text: string) => {
+      editComment({ id: commentId, text, taskId });
+    },
+    [taskId, editComment]
+  );
+
+  const handleDelete = useCallback(
+    (commentId: number) => {
+      deleteComment({ id: commentId, taskId });
+    },
+    [taskId, deleteComment]
+  );
 
   if (isLoading)
     return (
-      <div className="flex justify-center items-center text-gray-500 py-8">
-        Loading...
+      <div className="flex justify-center items-center py-8">
+        <div className="animate-pulse w-3/4 h-6 bg-gray-300 rounded-md"></div>
       </div>
     );
+
   if (error)
     return (
       <div className="text-red-500 font-medium text-center py-4">
@@ -38,34 +59,15 @@ export default function TaskComments({ taskId }: { taskId: number }) {
     <div className="mx-auto">
       <h2 className="text-lg font-semibold text-gray-900 pb-1">Comments</h2>
       <div className="space-y-4 mt-4">
-        {data?.task?.comments?.length && data?.task?.comments?.length > 0 ? (
+        {data?.task?.comments?.length ? (
           data.task.comments.map((comment) => (
-            <div
+            <CommentItem
               key={comment.id}
-              className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm"
-            >
-              <p className="text-gray-800">
-                <RenderMarkdown
-                  markdown={comment.text || ""}
-                  className="prose-sm"
-                />
-              </p>
-              <div className="mt-3 text-sm text-gray-600 flex justify-between items-center">
-                <span className="font-medium text-gray-700">
-                  {comment.user?.displayName || "Unknown User"}
-                </span>
-                <div className="text-gray-400">
-                  <span className="block">
-                    Created:{" "}
-                    {comment.createdAt?.toLocaleString() || "Unknown Date"}
-                  </span>
-                  <span className="block">
-                    Updated:{" "}
-                    {comment.updatedAt?.toLocaleString() || "Unknown Date"}
-                  </span>
-                </div>
-              </div>
-            </div>
+              comment={comment}
+              profile={profile as ModelsUser}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           ))
         ) : (
           <div className="text-gray-500 text-center">
@@ -73,39 +75,12 @@ export default function TaskComments({ taskId }: { taskId: number }) {
           </div>
         )}
       </div>
-
-      <form onSubmit={handleCommentSubmit} className="mt-6 space-y-3">
-        <textarea
-          className="w-full border border-gray-300 rounded-md p-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-gray-400"
-          placeholder="Write your comment here..."
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          rows={4}
-        ></textarea>
-        <button
-          type="submit"
-          disabled={!newComment.trim()}
-          className={`w-full py-2 px-4 rounded-md text-white ${
-            newComment.trim()
-              ? "bg-blue-500 hover:bg-blue-600"
-              : "bg-gray-300 cursor-not-allowed"
-          }`}
-        >
-          Submit
-        </button>
-      </form>
-
-      {isError && (
-        <div className="text-red-500 font-medium mt-2 text-center">
-          Error: {mutationError?.message || "Failed to create comment."}
-        </div>
-      )}
-
-      {isSuccess && (
-        <div className="text-green-500 font-medium mt-2 text-center">
-          Comment added successfully!
-        </div>
-      )}
+      <CommentForm
+        onSubmit={handleCommentSubmit}
+        value={newComment}
+        setValue={setNewComment}
+        placeholder="Write your comment here..."
+      />
     </div>
   );
 }

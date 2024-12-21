@@ -67,11 +67,11 @@ export default function TaskView() {
 
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-900">Description</h2>
-          <p className="text-gray-700">
+          <div className="text-gray-700">
             <RenderMarkdown
               markdown={data?.task?.description || "No description provided."}
             />
-          </p>
+          </div>
         </div>
 
         <TaskComments taskId={Number(id)} />

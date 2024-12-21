@@ -3,16 +3,15 @@ import { commentsApi } from "../../../lib/api";
 import { ModelsComment } from "../../../typescript-fetch-client/models";
 import { toast } from "react-toastify";
 
-export const useCreateComment = () => {
+export const useDeleteComment = () => {
   const queryClient = useQueryClient();
 
   const { mutate, error, isError, isSuccess, data, isPending } = useMutation({
     mutationFn: async (comment: ModelsComment) => {
       return await commentsApi
-        .apiV1CommentsCreatePost({
+        .apiV1CommentsDeletePost({
           request: {
-            text: comment.text,
-            taskId: comment.taskId,
+            id: comment.id,
           },
         })
         .then(() => {
@@ -22,10 +21,10 @@ export const useCreateComment = () => {
         });
     },
     onSuccess: () => {
-      toast.success("Comment added successfully!");
+      toast.success("Comment deleted successfully!");
     },
     onError: (err: any) => {
-      toast.error(err.message || "Failed to create comment.");
+      toast.error(err.message || "Failed to delete comment.");
     },
   });
 
