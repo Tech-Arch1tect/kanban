@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ModelsTask } from "../../../typescript-fetch-client";
+import RenderMarkdown from "../../Utility/RenderMarkdown";
 
 interface TaskProps {
   task: ModelsTask;
@@ -41,7 +42,12 @@ export function Task({
         <h3 className="text-base font-medium text-gray-900 truncate">
           {task.title}
         </h3>
-        <p className="text-sm text-gray-700 line-clamp-2">{task.description}</p>
+        <p className="text-sm text-gray-700 line-clamp-2">
+          <RenderMarkdown
+            markdown={task.description || ""}
+            className="prose-sm line-clamp-1"
+          />
+        </p>
       </Link>
     </div>
   );
