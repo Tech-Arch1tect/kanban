@@ -1,6 +1,7 @@
 import { useParams } from "@tanstack/react-router";
 import { useTaskData } from "../../hooks/tasks/useTaskData";
 import RenderMarkdown from "../Utility/RenderMarkdown";
+import TaskComments from "./TaskComments";
 
 export default function TaskView() {
   const { id } = useParams({ from: "/task/$id" });
@@ -73,30 +74,7 @@ export default function TaskView() {
           </p>
         </div>
 
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900">Comments</h2>
-          <div className="space-y-4 mt-4">
-            {data?.task?.comments?.length &&
-            data?.task?.comments?.length > 0 ? (
-              data.task.comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  className="p-4 border border-gray-200 rounded-md bg-gray-50"
-                >
-                  <p className="text-gray-800">
-                    <RenderMarkdown markdown={comment.text || ""} />
-                  </p>
-                  <div className="mt-2 text-sm text-gray-600 flex justify-between">
-                    <span>{comment.user?.displayName || "Unknown User"}</span>
-                    <span>{comment.createdAt}</span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-gray-500">No comments available.</div>
-            )}
-          </div>
-        </div>
+        <TaskComments taskId={Number(id)} />
       </div>
     </div>
   );
