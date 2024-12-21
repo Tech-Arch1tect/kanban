@@ -23,5 +23,5 @@ swagger-client:
   cd client/src && rm -rf typescript-fetch-client && openapi-generator-cli generate -i ../../server/docs/swagger.yaml -g typescript-fetch -o typescript-fetch-client && rm openapitools.json
 
 # generate swagger server and client docs
-swagger-update: 
+swagger: 
   just swagger-server && just swagger-client
