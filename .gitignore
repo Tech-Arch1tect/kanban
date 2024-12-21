@@ -1,3 +1,4 @@
 *.db
 *.sqlite
-docs/
+server/docs/
+client/src/typescript-fetch-client
