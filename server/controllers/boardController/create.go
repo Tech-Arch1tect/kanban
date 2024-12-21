@@ -10,10 +10,10 @@ import (
 )
 
 type CreateBoardRequest struct {
-	Name      string   `json:"name"`
-	Swimlanes []string `json:"swimlanes"`
-	Columns   []string `json:"columns"`
-	Slug      string   `json:"slug"`
+	Name      string   `json:"name" binding:"required"`
+	Swimlanes []string `json:"swimlanes" binding:"required"`
+	Columns   []string `json:"columns" binding:"required"`
+	Slug      string   `json:"slug" binding:"required"`
 }
 
 type CreateBoardResponse struct {
