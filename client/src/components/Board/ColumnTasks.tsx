@@ -6,7 +6,7 @@ import {
 } from "../../typescript-fetch-client";
 import { useCreateTask } from "../../hooks/tasks/useCreateTask";
 import { PlusIcon } from "@heroicons/react/24/solid";
-import { Task } from "../Task/Task";
+import { Task } from "./Task/Task";
 import { useMoveTask } from "../../hooks/tasks/useMoveTask";
 import { useTaskDragDrop } from "../../hooks/tasks/useTaskDragDrop";
 

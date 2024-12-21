@@ -1,4 +1,4 @@
-import { ModelsTask } from "../../typescript-fetch-client";
+import { ModelsTask } from "../../../typescript-fetch-client";
 
 interface TaskProps {
   task: ModelsTask;
