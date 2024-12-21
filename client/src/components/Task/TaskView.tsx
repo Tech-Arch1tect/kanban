@@ -44,11 +44,19 @@ export default function TaskView() {
             </div>
             <div className="flex flex-col">
               <span className="font-medium text-gray-600">Created At</span>
-              <span className="text-gray-800">{data?.task?.createdAt}</span>
+              <span className="text-gray-800">
+                {data?.task?.createdAt
+                  ? new Date(data?.task?.createdAt).toLocaleString()
+                  : "N/A"}
+              </span>
             </div>
             <div className="flex flex-col">
               <span className="font-medium text-gray-600">Updated At</span>
-              <span className="text-gray-800">{data?.task?.updatedAt}</span>
+              <span className="text-gray-800">
+                {data?.task?.updatedAt
+                  ? new Date(data?.task?.updatedAt).toLocaleString()
+                  : "N/A"}
+              </span>
             </div>
             <div className="flex flex-col">
               <span className="font-medium text-gray-600">Swimlane</span>
