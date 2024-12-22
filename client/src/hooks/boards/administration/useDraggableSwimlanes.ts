@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ModelsSwimlane } from "../../../typescript-fetch-client";
 import { useMoveSwimlane } from "./useMoveSwimlane";
 
@@ -7,6 +7,7 @@ type UseDraggableSwimlanesReturn = {
   onDragStart: (e: React.DragEvent<HTMLLIElement>, swimlaneId: number) => void;
   onDragOver: (e: React.DragEvent<HTMLLIElement>) => void;
   onDrop: (e: React.DragEvent<HTMLLIElement>, targetSwimlaneId: number) => void;
+  setSwimlanes: React.Dispatch<React.SetStateAction<ModelsSwimlane[]>>;
 };
 
 export const useDraggableSwimlanes = (
@@ -17,6 +18,10 @@ export const useDraggableSwimlanes = (
     null
   );
   const { mutate: moveSwimlane } = useMoveSwimlane();
+
+  useEffect(() => {
+    setSwimlanes(initialSwimlanes);
+  }, [initialSwimlanes]);
 
   const onDragStart = useCallback(
     (e: React.DragEvent<HTMLLIElement>, swimlaneId: number) => {
@@ -63,5 +68,6 @@ export const useDraggableSwimlanes = (
     onDragStart,
     onDragOver,
     onDrop,
+    setSwimlanes,
   };
 };

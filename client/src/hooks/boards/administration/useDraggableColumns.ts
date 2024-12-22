@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ModelsColumn } from "../../../typescript-fetch-client";
 import { useMoveColumn } from "./useMoveColumn";
 
@@ -7,6 +7,7 @@ type UseDraggableColumnsReturn = {
   onDragStart: (e: React.DragEvent<HTMLLIElement>, columnId: number) => void;
   onDragOver: (e: React.DragEvent<HTMLLIElement>) => void;
   onDrop: (e: React.DragEvent<HTMLLIElement>, targetColumnId: number) => void;
+  setColumns: React.Dispatch<React.SetStateAction<ModelsColumn[]>>;
 };
 
 export const useDraggableColumns = (
@@ -15,6 +16,10 @@ export const useDraggableColumns = (
   const [columns, setColumns] = useState(initialColumns);
   const [draggedColumnId, setDraggedColumnId] = useState<number | null>(null);
   const { mutate: moveColumn } = useMoveColumn();
+
+  useEffect(() => {
+    setColumns(initialColumns);
+  }, [initialColumns]);
 
   const onDragStart = useCallback(
     (e: React.DragEvent<HTMLLIElement>, columnId: number) => {
@@ -59,5 +64,6 @@ export const useDraggableColumns = (
     onDragStart,
     onDragOver,
     onDrop,
+    setColumns,
   };
 };
