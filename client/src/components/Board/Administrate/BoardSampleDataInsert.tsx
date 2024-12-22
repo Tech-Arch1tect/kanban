@@ -7,11 +7,12 @@ interface BoardSampleDataInsertProps {
 
 export function BoardSampleDataInsert({ boardId }: BoardSampleDataInsertProps) {
   const [numTasks, setNumTasks] = useState(100);
+  const [numComments, setNumComments] = useState(1000);
   const { mutate, isError, isSuccess, error, data, isPending } =
     useInsertSampleData();
 
   const handleInsert = () => {
-    mutate({ boardId: Number(boardId), numTasks });
+    mutate({ boardId: Number(boardId), numTasks, numComments });
   };
 
   return (
@@ -28,6 +29,15 @@ export function BoardSampleDataInsert({ boardId }: BoardSampleDataInsertProps) {
           id="numTasks"
           value={numTasks}
           onChange={(e) => setNumTasks(Number(e.target.value))}
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="numComments">Number of Comments:</label>
+        <input
+          type="number"
+          id="numComments"
+          value={numComments}
+          onChange={(e) => setNumComments(Number(e.target.value))}
         />
       </div>
       <button

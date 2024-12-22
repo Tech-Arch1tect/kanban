@@ -6,14 +6,15 @@ export const useInsertSampleData = () => {
   const { mutate, error, isError, isSuccess, data, isPending } = useMutation<
     void,
     Error,
-    { boardId: number; numTasks: number }
+    { boardId: number; numTasks: number; numComments: number }
   >({
-    mutationFn: ({ boardId, numTasks }) =>
+    mutationFn: ({ boardId, numTasks, numComments }) =>
       sampleDataApi
         .apiV1SampleDataInsertPost({
           request: {
             boardId: boardId,
             numTasks: numTasks,
+            numComments: numComments,
           },
         })
         .then(() => {
