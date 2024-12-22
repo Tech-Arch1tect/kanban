@@ -2,6 +2,8 @@ import { useParams } from "@tanstack/react-router";
 import { useTaskData } from "../../hooks/tasks/useTaskData";
 import RenderMarkdown from "../Utility/RenderMarkdown";
 import TaskComments from "./TaskComments";
+import { TaskHeading } from "./Heading/TaskHeading";
+import { ModelsTask } from "../../typescript-fetch-client";
 
 export default function TaskView() {
   const { id } = useParams({ from: "/task/$id" });
@@ -21,57 +23,7 @@ export default function TaskView() {
   return (
     <div className="p-4 bg-gray-50 min-h-screen">
       <div className="max-w-screen-2xl mx-auto bg-white rounded-lg shadow-md p-6 space-y-6">
-        <div className="border-b pb-4">
-          <h1 className="text-2xl font-bold text-gray-900">
-            {data?.task?.title}
-          </h1>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm mt-4">
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-600">Assignee</span>
-              <span className="text-gray-800">
-                {data?.task?.assignee?.displayName || "Unassigned"}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-600">Status</span>
-              <span className="text-gray-800">{data?.task?.status}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-600">Creator</span>
-              <span className="text-gray-800">
-                {data?.task?.creator?.displayName}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-600">Created At</span>
-              <span className="text-gray-800">
-                {data?.task?.createdAt
-                  ? new Date(data?.task?.createdAt).toLocaleString()
-                  : "N/A"}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-600">Updated At</span>
-              <span className="text-gray-800">
-                {data?.task?.updatedAt
-                  ? new Date(data?.task?.updatedAt).toLocaleString()
-                  : "N/A"}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-600">Swimlane</span>
-              <span className="text-gray-800">
-                {data?.task?.swimlane?.name || "None"}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-600">Column</span>
-              <span className="text-gray-800">
-                {data?.task?.column?.name || "None"}
-              </span>
-            </div>
-          </div>
-        </div>
+        <TaskHeading task={data?.task as ModelsTask} />
 
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-900">Description</h2>
