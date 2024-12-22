@@ -16,6 +16,7 @@ import (
 type InsertSampleDataRequest struct {
 	BoardID  uint `json:"board_id"`
 	NumTasks int  `json:"num_tasks"`
+	NumComments int `json:"num_comments"`
 }
 
 type InsertSampleDataResponse struct {
@@ -61,6 +62,8 @@ func InsertSampleData(c *gin.Context) {
 		return
 	}
 
+	var tasks []models.Task
+
 	for i := 0; i < request.NumTasks; i++ {
 		status := "open"
 		if rand.Intn(2) == 1 {
@@ -83,6 +86,7 @@ func InsertSampleData(c *gin.Context) {
 			SwimlaneID:  swimlane.ID,
 		}
 		database.DB.TaskRepository.Create(&fakeTask)
+		tasks = append(tasks, fakeTask)
 	}
 
 	// reposition all tasks
@@ -90,6 +94,16 @@ func InsertSampleData(c *gin.Context) {
 		for _, swimlane := range simlanes {
 			database.DB.TaskRepository.RePositionAll(column.ID, swimlane.ID)
 		}
+	}
+
+	for i := 0; i < request.NumComments; i++ {
+		task := tasks[rand.Intn(len(tasks))]
+		comment := models.Comment{
+			TaskID:    task.ID,
+			Text:      fmt.Sprintf("Fake Comment %d", i),
+			UserID:    task.CreatorID,
+		}
+		database.DB.CommentRepository.Create(&comment)
 	}
 
 	c.JSON(http.StatusOK, InsertSampleDataResponse{Message: "Sample data inserted"})
