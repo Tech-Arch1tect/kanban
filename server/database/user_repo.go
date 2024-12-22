@@ -10,6 +10,7 @@ type UserRepository interface {
 	Repository[models.User]
 	GetByEmail(email string) (models.User, error)
 	PaginatedSearch(page, pageSize int, search string) ([]models.User, int64, error)
+	GetUsersByRole(role models.Role) ([]models.User, error)
 }
 
 type GormUserRepository struct {
@@ -58,4 +59,10 @@ func (r *GormUserRepository) PaginatedSearch(page, pageSize int, search string) 
 	}
 
 	return users, total, nil
+}
+
+func (r *GormUserRepository) GetUsersByRole(role models.Role) ([]models.User, error) {
+	var users []models.User
+	result := r.db.Where("role = ?", role).Find(&users)
+	return users, result.Error
 }

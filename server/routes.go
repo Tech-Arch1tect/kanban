@@ -90,6 +90,7 @@ func routes(r *gin.Engine) {
 			board.GET("/get-by-slug/:slug", boardController.GetBoardBySlug)
 			board.GET("/list", boardController.ListBoards)
 			board.POST("/delete", middleware.CSRFTokenRequired(), boardController.DeleteBoard)
+			board.GET("/permissions/:board_id", boardController.GetUsersWithAccessToBoard)
 		}
 
 		swimlane := api.Group("/swimlanes")
@@ -110,7 +111,6 @@ func routes(r *gin.Engine) {
 			task.POST("/edit", middleware.CSRFTokenRequired(), taskController.EditTask)
 			task.POST("/delete", middleware.CSRFTokenRequired(), taskController.DeleteTask)
 			task.POST("/move", middleware.CSRFTokenRequired(), taskController.MoveTask)
-			task.POST("/change-assignee", middleware.CSRFTokenRequired(), taskController.ChangeAssignee)
 		}
 
 		comment := api.Group("/comments")

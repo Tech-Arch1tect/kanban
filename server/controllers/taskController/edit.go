@@ -10,12 +10,11 @@ import (
 )
 
 type EditTaskRequest struct {
-	ID          uint   `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	SwimlaneID  uint   `json:"swimlane_id"`
-	Status      string `json:"status"`
-	ColumnID    uint   `json:"column_id"`
+	ID          uint   `json:"id" binding:"required"`
+	Title       string `json:"title" binding:"required"`
+	Description string `json:"description" binding:"required"`
+	Status      string `json:"status" binding:"required"`
+	AssigneeID  uint   `json:"assignee_id"`
 }
 
 type EditTaskResponse struct {
@@ -55,33 +54,19 @@ func EditTask(c *gin.Context) {
 		return
 	}
 
-	column, err := database.DB.ColumnRepository.GetByID(request.ColumnID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if column.BoardID != task.BoardID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
-		return
-	}
-
-	swimlane, err := database.DB.SwimlaneRepository.GetByID(request.SwimlaneID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if swimlane.BoardID != task.BoardID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
-		return
+	if request.AssigneeID != 0 {
+		_, err = database.DB.UserRepository.GetByID(request.AssigneeID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 	task.Title = request.Title
 	task.Description = request.Description
-	task.SwimlaneID = request.SwimlaneID
 	task.Status = request.Status
-	task.ColumnID = request.ColumnID
+	task.AssigneeID = request.AssigneeID
+
 	err = task.Validate()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
