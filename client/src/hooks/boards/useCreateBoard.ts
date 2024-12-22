@@ -4,7 +4,7 @@ import {
   ApiV1BoardsCreatePostRequest,
   BoardControllerCreateBoardResponse,
 } from "../../typescript-fetch-client";
-
+import { toast } from "react-toastify";
 export const useCreateBoard = () => {
   const queryClient = useQueryClient();
 
@@ -16,6 +16,10 @@ export const useCreateBoard = () => {
     mutationFn: async (board) => boardsApi.apiV1BoardsCreatePost(board),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["boards"] });
+      toast.success("Board created successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create board.");
     },
   });
 

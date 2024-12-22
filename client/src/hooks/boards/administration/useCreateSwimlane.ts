@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { swimlanesApi } from "../../../lib/api";
 import { SwimlaneControllerCreateSwimlaneRequest } from "../../../typescript-fetch-client";
+import { toast } from "react-toastify";
 
 export const useCreateSwimlane = () => {
   const queryClient = useQueryClient();
@@ -15,8 +16,11 @@ export const useCreateSwimlane = () => {
             queryKey: ["boardData", String(swimlane.boardId)],
           });
         }),
-    onError: (error) => {
-      console.error("Error creating swimlane:", error);
+    onSuccess: () => {
+      toast.success("Swimlane created successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create swimlane.");
     },
   });
 

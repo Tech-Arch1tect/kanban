@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tasksApi } from "../../lib/api";
-import { TaskControllerCreateTaskRequest } from "../../typescript-fetch-client/models";
+import { TaskControllerCreateTaskRequest } from "../../typescript-fetch-client/";
+import { toast } from "react-toastify";
 
 export const useCreateTask = () => {
   const queryClient = useQueryClient();
@@ -21,6 +22,12 @@ export const useCreateTask = () => {
         .then(() => {
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
         });
+    },
+    onSuccess: () => {
+      toast.success("Task created successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create task.");
     },
   });
 

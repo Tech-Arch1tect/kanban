@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { swimlanesApi } from "../../../lib/api";
 import { SwimlaneControllerMoveSwimlaneRequest } from "../../../typescript-fetch-client";
+import { toast } from "react-toastify";
 
 export const useMoveSwimlane = () => {
   const queryClient = useQueryClient();
@@ -12,6 +13,10 @@ export const useMoveSwimlane = () => {
       queryClient.invalidateQueries({
         queryKey: ["boardData", String(swimlane.swimlane?.boardId)],
       });
+      toast.success("Swimlane moved successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to move swimlane.");
     },
   });
 

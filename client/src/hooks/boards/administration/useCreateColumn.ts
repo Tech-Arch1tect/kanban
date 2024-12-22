@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { columnsApi } from "../../../lib/api";
 import { ColumnControllerCreateColumnRequest } from "../../../typescript-fetch-client";
+import { toast } from "react-toastify";
 
 export const useCreateColumn = () => {
   const queryClient = useQueryClient();
@@ -15,8 +16,11 @@ export const useCreateColumn = () => {
             queryKey: ["boardData", String(column.boardId)],
           });
         }),
-    onError: (error) => {
-      console.error("Error creating column:", error);
+    onSuccess: () => {
+      toast.success("Column created successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create column.");
     },
   });
 

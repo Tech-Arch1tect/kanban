@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tasksApi } from "../../lib/api";
 import { TaskControllerMoveTaskRequest } from "../../typescript-fetch-client";
-
+import { toast } from "react-toastify";
 export const useMoveTask = () => {
   const queryClient = useQueryClient();
 
@@ -19,6 +19,12 @@ export const useMoveTask = () => {
         .then(() => {
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
         });
+    },
+    onSuccess: () => {
+      toast.success("Task moved successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to move task.");
     },
   });
 

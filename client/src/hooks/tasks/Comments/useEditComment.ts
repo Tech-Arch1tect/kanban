@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { commentsApi } from "../../../lib/api";
-import { ModelsComment } from "../../../typescript-fetch-client/models";
+import { ModelsComment } from "../../../typescript-fetch-client/";
 import { toast } from "react-toastify";
 
 export const useEditComment = () => {

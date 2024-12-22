@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { swimlanesApi } from "../../../lib/api";
 import { ModelsSwimlane } from "../../../typescript-fetch-client";
+import { toast } from "react-toastify";
 
 export const useDeleteSwimlane = () => {
   const queryClient = useQueryClient();
@@ -13,6 +14,10 @@ export const useDeleteSwimlane = () => {
       queryClient.invalidateQueries({
         queryKey: ["boardData", String(swimlane?.boardId)],
       });
+      toast.success("Swimlane deleted successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete swimlane.");
     },
   });
 

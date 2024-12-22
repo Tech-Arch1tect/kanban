@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tasksApi } from "../../lib/api";
 import { TaskControllerEditTaskRequest } from "../../typescript-fetch-client";
+import { toast } from "react-toastify";
 
 export const useEditTask = () => {
   const queryClient = useQueryClient();
@@ -21,6 +22,12 @@ export const useEditTask = () => {
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
           queryClient.invalidateQueries({ queryKey: ["task", task.id] });
         });
+    },
+    onSuccess: () => {
+      toast.success("Task updated successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to update task.");
     },
   });
 

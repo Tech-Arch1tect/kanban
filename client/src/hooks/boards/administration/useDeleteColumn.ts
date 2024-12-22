@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { columnsApi } from "../../../lib/api";
 import { ModelsColumn } from "../../../typescript-fetch-client";
+import { toast } from "react-toastify";
 
 export const useDeleteColumn = () => {
   const queryClient = useQueryClient();
@@ -13,6 +14,10 @@ export const useDeleteColumn = () => {
       queryClient.invalidateQueries({
         queryKey: ["boardData", String(column?.boardId)],
       });
+      toast.success("Column deleted successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete column.");
     },
   });
 

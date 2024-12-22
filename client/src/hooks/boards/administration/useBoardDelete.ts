@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { boardsApi } from "../../../lib/api";
+import { toast } from "react-toastify";
 
 export const useBoardDelete = () => {
   const queryClient = useQueryClient();
@@ -9,9 +10,10 @@ export const useBoardDelete = () => {
       boardsApi.apiV1BoardsDeletePost({ request: { id: boardId } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["boards"] });
+      toast.success("Board deleted successfully!");
     },
     onError: (error: any) => {
-      console.error("Error deleting board:", error);
+      toast.error(error.message || "Failed to delete board.");
     },
   });
 

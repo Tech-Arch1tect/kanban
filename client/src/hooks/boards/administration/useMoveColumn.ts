@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { columnsApi } from "../../../lib/api";
-import { ColumnControllerMoveColumnRequest } from "../../../typescript-fetch-client/models/ColumnControllerMoveColumnRequest";
-
+import { ColumnControllerMoveColumnRequest } from "../../../typescript-fetch-client";
+import { toast } from "react-toastify";
 export const useMoveColumn = () => {
   const queryClient = useQueryClient();
 
@@ -12,6 +12,10 @@ export const useMoveColumn = () => {
       queryClient.invalidateQueries({
         queryKey: ["boardData", String(column.column?.boardId)],
       });
+      toast.success("Column moved successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to move column.");
     },
   });
 

@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "../../lib/api";
+import { toast } from "react-toastify";
 
 interface ChangePasswordArgs {
   currentPassword: string;
@@ -18,6 +19,12 @@ export const useChangePassword = () => {
           newPassword,
         },
       });
+    },
+    onSuccess: () => {
+      toast.success("Password changed successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to change password.");
     },
   });
 };

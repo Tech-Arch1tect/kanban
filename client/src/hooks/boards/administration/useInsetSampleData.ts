@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { sampleDataApi } from "../../../lib/api";
+import { toast } from "react-toastify";
 
 export const useInsertSampleData = () => {
   const queryClient = useQueryClient();
@@ -22,8 +23,11 @@ export const useInsertSampleData = () => {
             queryKey: ["tasks", String(boardId)],
           });
         }),
-    onError: (error) => {
-      console.error("Error inserting sample data:", error);
+    onSuccess: () => {
+      toast.success("Sample data inserted successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to insert sample data.");
     },
   });
 
