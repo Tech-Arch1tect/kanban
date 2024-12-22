@@ -148,7 +148,7 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-      <ToastContainer />
+      <ToastContainer position="bottom-right" newestOnTop theme="colored" />
     </>
   );
 };
