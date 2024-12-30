@@ -21,15 +21,15 @@ type serverInitialiser struct {
 }
 
 func (si *serverInitialiser) GetDBType() string {
-	return si.config.DBType
+	return si.config.Database.Type
 }
 
 func (si *serverInitialiser) GetSQLiteConfig() database.SQLiteConfig {
-	return si.config.SQLite
+	return si.config.Database.SQLite
 }
 
 func (si *serverInitialiser) GetMySQLConfig() database.MySQLConfig {
-	return si.config.MySQL
+	return si.config.Database.MySQL
 }
 
 func NewServerInitialiser(cfg *config.Config) ServerInitialiser {

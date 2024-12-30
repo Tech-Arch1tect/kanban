@@ -13,21 +13,29 @@ var (
 	validate = validator.New()
 )
 
+type DatabaseConfig struct {
+	Type   string       `validate:"required,oneof=mysql sqlite"`
+	MySQL  MySQLConfig  `validate:"omitempty"`
+	SQLite SQLiteConfig `validate:"required_if=Type sqlite"`
+}
+
+type SMTPConfig struct {
+	Host     string `validate:"required"`
+	Port     string `validate:"required"`
+	User     string `validate:"omitempty"`
+	Password string `validate:"omitempty"`
+	Auth     string
+	From     string `validate:"required,email"`
+	NoTLS    bool
+}
+
 type Config struct {
-	DBType       string       `validate:"required,oneof=mysql sqlite"`
-	MySQL        MySQLConfig  `validate:"omitempty"`
-	SQLite       SQLiteConfig `validate:"required_if=DBType sqlite"`
-	CookieSecret string       `validate:"required"`
-	SessionName  string       `validate:"required"`
-	AllowOrigin  string       `validate:"required,url"`
-	AppName      string       `validate:"required"`
-	SmtpHost     string       `validate:"required"`
-	SmtpPort     string       `validate:"required"`
-	SmtpUser     string       `validate:"omitempty"`
-	SmtpPassword string       `validate:"omitempty"`
-	SmtpAuth     string
-	SmtpFrom     string `validate:"required,email"`
-	SmtpNoTLS    bool
+	Database     DatabaseConfig
+	CookieSecret string `validate:"required"`
+	SessionName  string `validate:"required"`
+	AllowOrigin  string `validate:"required,url"`
+	AppName      string `validate:"required"`
+	SMTP         SMTPConfig
 	RateLimit    RateLimitConfig
 }
 
@@ -79,26 +87,30 @@ func (c SQLiteConfig) GetFilePath() string {
 
 func LoadConfig() error {
 	cfg := &Config{
-		DBType: os.Getenv("DB_TYPE"),
-		MySQL: MySQLConfig{
-			User:     os.Getenv("MYSQL_USER"),
-			Password: os.Getenv("MYSQL_PASSWORD"),
-			Host:     os.Getenv("MYSQL_HOST"),
-			Port:     os.Getenv("MYSQL_PORT"),
-			Database: os.Getenv("MYSQL_DATABASE"),
+		Database: DatabaseConfig{
+			Type: os.Getenv("DB_TYPE"),
+			MySQL: MySQLConfig{
+				User:     os.Getenv("MYSQL_USER"),
+				Password: os.Getenv("MYSQL_PASSWORD"),
+				Host:     os.Getenv("MYSQL_HOST"),
+				Port:     os.Getenv("MYSQL_PORT"),
+				Database: os.Getenv("MYSQL_DATABASE"),
+			},
+			SQLite: SQLiteConfig{FilePath: os.Getenv("SQLITE_FILE_PATH")},
 		},
-		SQLite:       SQLiteConfig{FilePath: os.Getenv("SQLITE_FILE_PATH")},
 		CookieSecret: os.Getenv("COOKIE_SECRET"),
 		SessionName:  os.Getenv("SESSION_NAME"),
 		AllowOrigin:  os.Getenv("ALLOW_ORIGIN"),
 		AppName:      os.Getenv("APP_NAME"),
-		SmtpHost:     os.Getenv("SMTP_HOST"),
-		SmtpPort:     os.Getenv("SMTP_PORT"),
-		SmtpUser:     os.Getenv("SMTP_USER"),
-		SmtpPassword: os.Getenv("SMTP_PASSWORD"),
-		SmtpAuth:     os.Getenv("SMTP_AUTH"),
-		SmtpFrom:     os.Getenv("SMTP_FROM"),
-		SmtpNoTLS:    os.Getenv("SMTP_NO_TLS") == "true",
+		SMTP: SMTPConfig{
+			Host:     os.Getenv("SMTP_HOST"),
+			Port:     os.Getenv("SMTP_PORT"),
+			User:     os.Getenv("SMTP_USER"),
+			Password: os.Getenv("SMTP_PASSWORD"),
+			Auth:     os.Getenv("SMTP_AUTH"),
+			From:     os.Getenv("SMTP_FROM"),
+			NoTLS:    os.Getenv("SMTP_NO_TLS") == "true",
+		},
 		RateLimit: RateLimitConfig{
 			Enabled:             os.Getenv("RATE_LIMIT_ENABLED") != "false",
 			Limit:               getIntEnv("RATE_LIMIT_LIMIT", 100),
@@ -121,13 +133,13 @@ func LoadConfig() error {
 }
 
 func setDefaults(cfg *Config) {
-	if cfg.DBType == "" {
-		cfg.DBType = "sqlite"
-		log.Printf("Using default DB_TYPE: %s", cfg.DBType)
+	if cfg.Database.Type == "" {
+		cfg.Database.Type = "sqlite"
+		log.Printf("Using default DB_TYPE: %s", cfg.Database.Type)
 	}
-	if cfg.DBType == "sqlite" && cfg.SQLite.FilePath == "" {
-		cfg.SQLite.FilePath = "./db.sqlite"
-		log.Printf("Using default SQLITE_FILE_PATH: %s", cfg.SQLite.FilePath)
+	if cfg.Database.Type == "sqlite" && cfg.Database.SQLite.FilePath == "" {
+		cfg.Database.SQLite.FilePath = "./db.sqlite"
+		log.Printf("Using default SQLITE_FILE_PATH: %s", cfg.Database.SQLite.FilePath)
 	}
 	if cfg.CookieSecret == "" {
 		cfg.CookieSecret = "secret"
@@ -145,17 +157,17 @@ func setDefaults(cfg *Config) {
 		cfg.AppName = "App Name"
 		log.Printf("Using default APP_NAME: %s", cfg.AppName)
 	}
-	if cfg.SmtpHost == "" {
-		cfg.SmtpHost = "localhost"
-		log.Printf("Using default SMTP_HOST: %s", cfg.SmtpHost)
+	if cfg.SMTP.Host == "" {
+		cfg.SMTP.Host = "localhost"
+		log.Printf("Using default SMTP_HOST: %s", cfg.SMTP.Host)
 	}
-	if cfg.SmtpPort == "" {
-		cfg.SmtpPort = "587"
-		log.Printf("Using default SMTP_PORT: %s", cfg.SmtpPort)
+	if cfg.SMTP.Port == "" {
+		cfg.SMTP.Port = "587"
+		log.Printf("Using default SMTP_PORT: %s", cfg.SMTP.Port)
 	}
-	if cfg.SmtpFrom == "" {
-		cfg.SmtpFrom = "no-reply@example.com"
-		log.Printf("Using default SMTP_FROM: %s", cfg.SmtpFrom)
+	if cfg.SMTP.From == "" {
+		cfg.SMTP.From = "no-reply@example.com"
+		log.Printf("Using default SMTP_FROM: %s", cfg.SMTP.From)
 	}
 }
 
