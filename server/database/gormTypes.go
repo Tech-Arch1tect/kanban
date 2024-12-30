@@ -3,15 +3,15 @@ package database
 import (
 	"errors"
 	"fmt"
-	"server/config"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func NewSqlite() (Database, error) {
-	db, err := gorm.Open(sqlite.Open(config.CFG.SQLite.FilePath), &gorm.Config{})
+func NewSqlite(cfg DBConfig) (Database, error) {
+	sqliteCfg := cfg.GetSQLiteConfig()
+	db, err := gorm.Open(sqlite.Open(sqliteCfg.GetFilePath()), &gorm.Config{})
 	if err != nil {
 		return Database{}, err
 	}
@@ -23,11 +23,17 @@ func NewSqlite() (Database, error) {
 	}, nil
 }
 
-func NewMySQL() (Database, error) {
-	if config.CFG.MySQL.User == "" || config.CFG.MySQL.Password == "" || config.CFG.MySQL.Host == "" || config.CFG.MySQL.Port == "" || config.CFG.MySQL.Database == "" {
+func NewMySQL(cfg DBConfig) (Database, error) {
+	mysqlCfg := cfg.GetMySQLConfig()
+	if mysqlCfg.GetUser() == "" || mysqlCfg.GetPassword() == "" || mysqlCfg.GetHost() == "" || mysqlCfg.GetPort() == "" || mysqlCfg.GetDatabase() == "" {
 		return Database{}, errors.New("missing mysql config")
 	}
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", config.CFG.MySQL.User, config.CFG.MySQL.Password, config.CFG.MySQL.Host, config.CFG.MySQL.Port, config.CFG.MySQL.Database)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		mysqlCfg.GetUser(),
+		mysqlCfg.GetPassword(),
+		mysqlCfg.GetHost(),
+		mysqlCfg.GetPort(),
+		mysqlCfg.GetDatabase())
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return Database{}, err

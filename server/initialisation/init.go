@@ -20,13 +20,25 @@ type serverInitialiser struct {
 	config *config.Config
 }
 
+func (si *serverInitialiser) GetDBType() string {
+	return si.config.DBType
+}
+
+func (si *serverInitialiser) GetSQLiteConfig() database.SQLiteConfig {
+	return si.config.SQLite
+}
+
+func (si *serverInitialiser) GetMySQLConfig() database.MySQLConfig {
+	return si.config.MySQL
+}
+
 func NewServerInitialiser(cfg *config.Config) ServerInitialiser {
 	return &serverInitialiser{config: cfg}
 }
 
 func (si *serverInitialiser) Initialise() *gin.Engine {
 	// Initialise database
-	database.Init()
+	database.Init(si)
 
 	// Initialise email
 	err := email.Init()

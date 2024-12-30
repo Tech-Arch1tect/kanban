@@ -2,8 +2,25 @@ package database
 
 import (
 	"log"
-	"server/config"
 )
+
+type DBConfig interface {
+	GetDBType() string
+	GetSQLiteConfig() SQLiteConfig
+	GetMySQLConfig() MySQLConfig
+}
+
+type SQLiteConfig interface {
+	GetFilePath() string
+}
+
+type MySQLConfig interface {
+	GetUser() string
+	GetPassword() string
+	GetHost() string
+	GetPort() string
+	GetDatabase() string
+}
 
 type Repository[T any] interface {
 	Migrate() error
@@ -21,25 +38,25 @@ type Database struct {
 
 var DB Database
 
-func Init() {
-	initFuncs := map[string]func() (Database, error){
+func Init(cfg DBConfig) {
+	initFuncs := map[string]func(DBConfig) (Database, error){
 		"sqlite": NewSqlite,
 		"mysql":  NewMySQL,
 	}
 
-	initFunc, exists := initFuncs[config.CFG.DBType]
+	initFunc, exists := initFuncs[cfg.GetDBType()]
 	if !exists {
-		log.Fatalf("Unsupported database type: %s", config.CFG.DBType)
+		log.Fatalf("Unsupported database type: %s", cfg.GetDBType())
 	}
 
-	database, err := initFunc()
+	database, err := initFunc(cfg)
 	if err != nil {
-		log.Fatalf("Failed to initialize %s database: %v", config.CFG.DBType, err)
+		log.Fatalf("Failed to initialize %s database: %v", cfg.GetDBType(), err)
 	}
 
 	err = database.Migrate()
 	if err != nil {
-		log.Fatalf("Failed to migrate %s database: %v", config.CFG.DBType, err)
+		log.Fatalf("Failed to migrate %s database: %v", cfg.GetDBType(), err)
 	}
 
 	DB = database

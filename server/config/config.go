@@ -46,8 +46,32 @@ type MySQLConfig struct {
 	Database string
 }
 
+func (c MySQLConfig) GetUser() string {
+	return c.User
+}
+
+func (c MySQLConfig) GetPassword() string {
+	return c.Password
+}
+
+func (c MySQLConfig) GetHost() string {
+	return c.Host
+}
+
+func (c MySQLConfig) GetPort() string {
+	return c.Port
+}
+
+func (c MySQLConfig) GetDatabase() string {
+	return c.Database
+}
+
 type SQLiteConfig struct {
 	FilePath string
+}
+
+func (c SQLiteConfig) GetFilePath() string {
+	return c.FilePath
 }
 
 func LoadConfig() {
