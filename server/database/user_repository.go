@@ -28,16 +28,17 @@ func (r *GormUserRepository) Migrate() error {
 
 func (r *GormUserRepository) GetByEmail(email string) (models.User, error) {
 	var user models.User
-	result := r.db.Where("email = ?", email).First(&user)
-	return user, result.Error
+	err := r.db.Where("email = ?", email).First(&user).Error
+	return user, err
 }
 
 func (r *GormUserRepository) PaginatedSearch(page, pageSize int, search string) ([]models.User, int64, error) {
-	var users []models.User
-	var total int64
+	var (
+		users []models.User
+		total int64
+	)
 
 	query := r.db.Model(&models.User{})
-
 	if search != "" {
 		query = query.Where("email LIKE ?", "%"+search+"%")
 	}
