@@ -1,0 +1,8 @@
+linters-settings:
+  unused:
+    check-exported: true
+
+run:
+  timeout: 5m
+  skip-dirs:
+    - vendor
