@@ -14,7 +14,9 @@ import (
 // @name X-CSRF-Token
 
 func main() {
-	config.LoadConfig()
+	if err := config.LoadConfig(); err != nil {
+		panic(err)
+	}
 
 	// Initialise server
 	initialiser := initialisation.NewServerInitialiser(config.CFG)

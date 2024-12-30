@@ -4,46 +4,49 @@ import (
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/go-playground/validator/v10"
 )
 
 var (
-	CFG *Config
+	CFG      *Config
+	validate = validator.New()
 )
 
 type Config struct {
-	DBType       string
-	MySQL        MySQLConfig
-	SQLite       SQLiteConfig
-	CookieSecret string
-	SessionName  string
-	AllowOrigin  string
-	AppName      string
-	SmtpHost     string
-	SmtpPort     string
-	SmtpUser     string
-	SmtpPassword string
+	DBType       string       `validate:"required,oneof=mysql sqlite"`
+	MySQL        MySQLConfig  `validate:"omitempty"`
+	SQLite       SQLiteConfig `validate:"required_if=DBType sqlite"`
+	CookieSecret string       `validate:"required"`
+	SessionName  string       `validate:"required"`
+	AllowOrigin  string       `validate:"required,url"`
+	AppName      string       `validate:"required"`
+	SmtpHost     string       `validate:"required"`
+	SmtpPort     string       `validate:"required"`
+	SmtpUser     string       `validate:"omitempty"`
+	SmtpPassword string       `validate:"omitempty"`
 	SmtpAuth     string
-	SmtpFrom     string
+	SmtpFrom     string `validate:"required,email"`
 	SmtpNoTLS    bool
 	RateLimit    RateLimitConfig
 }
 
 type RateLimitConfig struct {
 	Enabled             bool
-	Limit               int
-	Window              int
-	LoginLimit          int
-	LoginWindow         int
-	PasswordResetLimit  int
-	PasswordResetWindow int
+	Limit               int `validate:"min=1"`
+	Window              int `validate:"min=1"`
+	LoginLimit          int `validate:"min=1"`
+	LoginWindow         int `validate:"min=1"`
+	PasswordResetLimit  int `validate:"min=1"`
+	PasswordResetWindow int `validate:"min=1"`
 }
 
 type MySQLConfig struct {
-	User     string
-	Password string
-	Host     string
-	Port     string
-	Database string
+	User     string `validate:"required"`
+	Password string `validate:"required"`
+	Host     string `validate:"required"`
+	Port     string `validate:"required"`
+	Database string `validate:"required"`
 }
 
 func (c MySQLConfig) GetUser() string {
@@ -67,14 +70,14 @@ func (c MySQLConfig) GetDatabase() string {
 }
 
 type SQLiteConfig struct {
-	FilePath string
+	FilePath string `validate:"required"`
 }
 
 func (c SQLiteConfig) GetFilePath() string {
 	return c.FilePath
 }
 
-func LoadConfig() {
+func LoadConfig() error {
 	cfg := &Config{
 		DBType: os.Getenv("DB_TYPE"),
 		MySQL: MySQLConfig{
@@ -98,62 +101,62 @@ func LoadConfig() {
 		SmtpNoTLS:    os.Getenv("SMTP_NO_TLS") == "true",
 		RateLimit: RateLimitConfig{
 			Enabled:             os.Getenv("RATE_LIMIT_ENABLED") != "false",
-			Limit:               getIntEnv("RATE_LIMIT_LIMIT", 100),                // default 100 requests per IP
-			Window:              getIntEnv("RATE_LIMIT_WINDOW", 1),                 // default 1 minute
-			LoginLimit:          getIntEnv("RATE_LIMIT_LOGIN_LIMIT", 20),           // default 20 requests per IP
-			LoginWindow:         getIntEnv("RATE_LIMIT_LOGIN_WINDOW", 10),          // default 10 minute
-			PasswordResetLimit:  getIntEnv("RATE_LIMIT_PASSWORD_RESET_LIMIT", 5),   // default 5 requests per IP
-			PasswordResetWindow: getIntEnv("RATE_LIMIT_PASSWORD_RESET_WINDOW", 10), // default 10 minute
+			Limit:               getIntEnv("RATE_LIMIT_LIMIT", 100),
+			Window:              getIntEnv("RATE_LIMIT_WINDOW", 1),
+			LoginLimit:          getIntEnv("RATE_LIMIT_LOGIN_LIMIT", 20),
+			LoginWindow:         getIntEnv("RATE_LIMIT_LOGIN_WINDOW", 10),
+			PasswordResetLimit:  getIntEnv("RATE_LIMIT_PASSWORD_RESET_LIMIT", 5),
+			PasswordResetWindow: getIntEnv("RATE_LIMIT_PASSWORD_RESET_WINDOW", 10),
 		},
 	}
 
-	if cfg.DBType == "" {
-		cfg.DBType = "sqlite"
-	}
+	setDefaults(cfg)
 
-	if cfg.DBType == "sqlite" {
-		if cfg.SQLite.FilePath == "" {
-			log.Println("Warning: SQLite file path is not set. Using default value: ./db.sqlite. Please set this with the environment variable SQLITE_FILE_PATH")
-			cfg.SQLite.FilePath = "./db.sqlite"
-		}
-	}
-
-	if cfg.CookieSecret == "" {
-		log.Println("Warning: Cookie secret is not set. Using default value: secret. Please set this with the environment variable COOKIE_SECRET")
-		cfg.CookieSecret = "secret"
-	}
-
-	if cfg.SessionName == "" {
-		log.Println("Warning: Session name is not set. Using default value: mysession. Please set this with the environment variable SESSION_NAME")
-		cfg.SessionName = "mysession"
-	}
-
-	if cfg.AllowOrigin == "" {
-		log.Println("Warning: Allow origin is not set. Using default value: http://localhost:3001. Please set this with the environment variable ALLOW_ORIGIN")
-		cfg.AllowOrigin = "http://localhost:3001"
-	}
-
-	if cfg.AppName == "" {
-		log.Println("Warning: App name is not set. Using default value: App Name. Please set this with the environment variable APP_NAME")
-		cfg.AppName = "App Name"
-	}
-
-	if cfg.SmtpHost == "" {
-		log.Println("Warning: SMTP host is not set. Using default value: localhost. Please set this with the environment variable SMTP_HOST")
-		cfg.SmtpHost = "localhost"
-	}
-
-	if cfg.SmtpPort == "" {
-		log.Println("Warning: SMTP port is not set. Using default value: 587. Please set this with the environment variable SMTP_PORT")
-		cfg.SmtpPort = "587"
-	}
-
-	if cfg.SmtpFrom == "" {
-		log.Println("Warning: SMTP from is not set. Using default value: no-reply@example.com. Please set this with the environment variable SMTP_FROM")
-		cfg.SmtpFrom = "no-reply@example.com"
+	if err := validate.Struct(cfg); err != nil {
+		return err
 	}
 
 	CFG = cfg
+	return nil
+}
+
+func setDefaults(cfg *Config) {
+	if cfg.DBType == "" {
+		cfg.DBType = "sqlite"
+		log.Printf("Using default DB_TYPE: %s", cfg.DBType)
+	}
+	if cfg.DBType == "sqlite" && cfg.SQLite.FilePath == "" {
+		cfg.SQLite.FilePath = "./db.sqlite"
+		log.Printf("Using default SQLITE_FILE_PATH: %s", cfg.SQLite.FilePath)
+	}
+	if cfg.CookieSecret == "" {
+		cfg.CookieSecret = "secret"
+		log.Printf("Using default COOKIE_SECRET: %s", cfg.CookieSecret)
+	}
+	if cfg.SessionName == "" {
+		cfg.SessionName = "mysession"
+		log.Printf("Using default SESSION_NAME: %s", cfg.SessionName)
+	}
+	if cfg.AllowOrigin == "" {
+		cfg.AllowOrigin = "http://localhost:3001"
+		log.Printf("Using default ALLOW_ORIGIN: %s", cfg.AllowOrigin)
+	}
+	if cfg.AppName == "" {
+		cfg.AppName = "App Name"
+		log.Printf("Using default APP_NAME: %s", cfg.AppName)
+	}
+	if cfg.SmtpHost == "" {
+		cfg.SmtpHost = "localhost"
+		log.Printf("Using default SMTP_HOST: %s", cfg.SmtpHost)
+	}
+	if cfg.SmtpPort == "" {
+		cfg.SmtpPort = "587"
+		log.Printf("Using default SMTP_PORT: %s", cfg.SmtpPort)
+	}
+	if cfg.SmtpFrom == "" {
+		cfg.SmtpFrom = "no-reply@example.com"
+		log.Printf("Using default SMTP_FROM: %s", cfg.SmtpFrom)
+	}
 }
 
 func getIntEnv(key string, defaultValue int) int {
