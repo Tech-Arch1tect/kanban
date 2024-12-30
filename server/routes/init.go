@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"server/config"
 	"server/controllers/adminController"
 	"server/controllers/authController"
@@ -9,6 +8,12 @@ import (
 	"server/middleware"
 	"server/models"
 	"time"
+
+	_ "server/docs"
+
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Router interface {
@@ -23,7 +28,15 @@ func NewRouter(cfg *config.Config) Router {
 	return &router{config: cfg}
 }
 
+func registerSwaggerRoutes(r *gin.RouterGroup) {
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+}
+
 func (r *router) RegisterRoutes(engine *gin.Engine) {
+	root := engine.Group("/")
+	registerSwaggerRoutes(root)
+
+	// API versioned routes
 	api := engine.Group("/api/v1")
 	{
 		registerMiscRoutes(api)
