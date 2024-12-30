@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"log"
 )
 
@@ -38,7 +39,7 @@ type Database struct {
 
 var DB Database
 
-func Init(cfg DBConfig) {
+func Init(cfg DBConfig) error {
 	initFuncs := map[string]func(DBConfig) (Database, error){
 		"sqlite": NewSqlite,
 		"mysql":  NewMySQL,
@@ -46,17 +47,17 @@ func Init(cfg DBConfig) {
 
 	initFunc, exists := initFuncs[cfg.GetDBType()]
 	if !exists {
-		log.Fatalf("Unsupported database type: %s", cfg.GetDBType())
+		return fmt.Errorf("unsupported database type: %s", cfg.GetDBType())
 	}
 
 	database, err := initFunc(cfg)
 	if err != nil {
-		log.Fatalf("Failed to initialize %s database: %v", cfg.GetDBType(), err)
+		return fmt.Errorf("failed to initialize %s database: %w", cfg.GetDBType(), err)
 	}
 
 	err = database.Migrate()
 	if err != nil {
-		log.Fatalf("Failed to migrate %s database: %v", cfg.GetDBType(), err)
+		return fmt.Errorf("failed to migrate %s database: %w", cfg.GetDBType(), err)
 	}
 
 	DB = database

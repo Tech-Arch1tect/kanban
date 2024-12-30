@@ -38,7 +38,9 @@ func NewServerInitialiser(cfg *config.Config) ServerInitialiser {
 
 func (si *serverInitialiser) Initialise() *gin.Engine {
 	// Initialise database
-	database.Init(si)
+	if err := database.Init(si); err != nil {
+		log.Fatalf("Failed to initialise database: %v", err)
+	}
 
 	// Initialise email
 	err := email.Init()
