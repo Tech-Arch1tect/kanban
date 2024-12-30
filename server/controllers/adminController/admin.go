@@ -2,8 +2,8 @@ package adminController
 
 import (
 	"net/http"
-	"server/database"
 	"server/models"
+	"server/services/adminService"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +31,8 @@ func RemoveUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
 		return
 	}
-	if err := database.DB.UserRepository.Delete(uint(uintUserID)); err != nil {
+
+	if err := adminService.RemoveUser(uint(uintUserID)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to remove user"})
 		return
 	}
@@ -64,24 +65,22 @@ type SearchUsersRequest struct {
 func ListUsers(c *gin.Context) {
 	var req SearchUsersRequest
 	if err := c.ShouldBindWith(&req, binding.Query); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page or page size"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid page or page size"})
 		return
 	}
 
-	users, totalRecords, err := database.DB.UserRepository.PaginatedSearch(req.Page, req.PageSize, req.Search)
+	result, err := adminService.ListUsers(req.Page, req.PageSize, req.Search)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list users"})
 		return
 	}
 
-	totalPages := (int(totalRecords) + req.PageSize - 1) / req.PageSize
-
 	c.JSON(http.StatusOK, ListUsersResponse{
-		Users:        users,
+		Users:        result.Users,
 		Page:         req.Page,
 		PageSize:     req.PageSize,
-		TotalPages:   totalPages,
-		TotalRecords: int(totalRecords),
+		TotalPages:   result.TotalPages,
+		TotalRecords: result.TotalRecords,
 	})
 }
 
@@ -122,23 +121,18 @@ func UpdateUserRole(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
 		return
 	}
-	user, err := database.DB.UserRepository.GetByID(uint(uintUserID))
+
+	user, err := adminService.UpdateUserRole(uint(uintUserID), models.Role(input.Role))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		status := http.StatusInternalServerError
+		if err.Error() == "user not found" {
+			status = http.StatusNotFound
+		} else if err.Error() == "invalid role" {
+			status = http.StatusBadRequest
+		}
+		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
 
-	newrole := models.Role(input.Role)
-	if newrole == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid role"})
-		return
-	}
-
-	user.Role = newrole
-
-	if err := database.DB.UserRepository.Update(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user role"})
-		return
-	}
 	c.JSON(http.StatusOK, UpdateUserRoleResponse{Message: "user role updated", User: user})
 }
