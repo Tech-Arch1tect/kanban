@@ -22,7 +22,7 @@ jobs:
       - name: Install golangci-lint
         run: |
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s latest
-          sudo mv ./golangci-lint /usr/local/bin/
+          sudo mv ./bin/golangci-lint /usr/local/bin/
 
       - name: Run golangci-lint
         working-directory: ./server
