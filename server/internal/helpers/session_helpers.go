@@ -1,4 +1,4 @@
-package authController
+package helpers
 
 import (
 	"github.com/gin-gonic/contrib/sessions"
@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func createLoginSession(c *gin.Context, userID uint) error {
-	if err := clearLoginSession(c); err != nil {
+func CreateLoginSession(c *gin.Context, userID uint) error {
+	if err := ClearLoginSession(c); err != nil {
 		return err
 	}
 	session := sessions.Default(c)
@@ -18,7 +18,7 @@ func createLoginSession(c *gin.Context, userID uint) error {
 	return nil
 }
 
-func clearLoginSession(c *gin.Context) error {
+func ClearLoginSession(c *gin.Context) error {
 	session := sessions.Default(c)
 	session.Clear()
 	if err := session.Save(); err != nil {
@@ -27,7 +27,7 @@ func clearLoginSession(c *gin.Context) error {
 	return nil
 }
 
-func createTOTPSession(c *gin.Context, userID uint) error {
+func CreateTOTPSession(c *gin.Context, userID uint) error {
 	session := sessions.Default(c)
 	session.Set("totpUserID", userID)
 	if err := session.Save(); err != nil {
@@ -36,7 +36,7 @@ func createTOTPSession(c *gin.Context, userID uint) error {
 	return nil
 }
 
-func clearTOTPSession(c *gin.Context) error {
+func ClearTOTPSession(c *gin.Context) error {
 	session := sessions.Default(c)
 	session.Delete("totpUserID")
 	if err := session.Save(); err != nil {
@@ -45,6 +45,6 @@ func clearTOTPSession(c *gin.Context) error {
 	return nil
 }
 
-func generateRandomToken() string {
+func GenerateRandomToken() string {
 	return uuid.New().String()
 }

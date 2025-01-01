@@ -1,9 +1,9 @@
 package main
 
 import (
+	"server/api/routes"
 	"server/config"
 	"server/initialisation"
-	"server/routes"
 )
 
 // @title Server API

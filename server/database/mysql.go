@@ -3,12 +3,13 @@ package database
 import (
 	"errors"
 	"fmt"
+	"server/database/repository"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func newMySQLDB(cfg DBConfig) (*Database, error) {
+func newMySQLDB(cfg DBConfig) (*repository.Database, error) {
 	mysqlCfg := cfg.GetMySQLConfig()
 
 	if mysqlCfg.GetUser() == "" ||
@@ -33,7 +34,7 @@ func newMySQLDB(cfg DBConfig) (*Database, error) {
 		return nil, err
 	}
 
-	return &Database{
-		UserRepository: NewUserRepository(gormDB),
+	return &repository.Database{
+		UserRepository: repository.NewUserRepository(gormDB),
 	}, nil
 }

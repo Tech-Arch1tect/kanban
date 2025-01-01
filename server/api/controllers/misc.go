@@ -1,4 +1,4 @@
-package miscController
+package controllers
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AppNameResponse struct {
+type MiscAppNameResponse struct {
 	AppName string `json:"app_name"`
 }
 
@@ -15,10 +15,10 @@ type AppNameResponse struct {
 // @Description Get the app name
 // @Tags misc
 // @Produce json
-// @Success 200 {object} AppNameResponse
+// @Success 200 {object} MiscAppNameResponse
 // @Router /api/v1/misc/appname [get]
-func GetAppName(c *gin.Context) {
-	response := AppNameResponse{
+func MiscGetAppName(c *gin.Context) {
+	response := MiscAppNameResponse{
 		AppName: config.CFG.AppName,
 	}
 	c.JSON(http.StatusOK, response)

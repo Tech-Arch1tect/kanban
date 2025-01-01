@@ -1,4 +1,4 @@
-package adminService
+package services
 
 import (
 	"errors"
@@ -6,30 +6,30 @@ import (
 	"server/models"
 )
 
-type PaginationResult struct {
+type AdminPaginationResult struct {
 	Users        []models.User
 	TotalRecords int
 	TotalPages   int
 }
 
-func RemoveUser(userID uint) error {
+func AdminRemoveUser(userID uint) error {
 	return database.DB.UserRepository.Delete(userID)
 }
 
-func ListUsers(page, pageSize int, search string) (PaginationResult, error) {
+func AdminListUsers(page, pageSize int, search string) (AdminPaginationResult, error) {
 	users, totalRecords, err := database.DB.UserRepository.PaginatedSearch(page, pageSize, search)
 	if err != nil {
-		return PaginationResult{}, err
+		return AdminPaginationResult{}, err
 	}
 	totalPages := (int(totalRecords) + pageSize - 1) / pageSize
-	return PaginationResult{
+	return AdminPaginationResult{
 		Users:        users,
 		TotalRecords: int(totalRecords),
 		TotalPages:   totalPages,
 	}, nil
 }
 
-func UpdateUserRole(userID uint, role models.Role) (models.User, error) {
+func AdminUpdateUserRole(userID uint, role models.Role) (models.User, error) {
 	user, err := database.DB.UserRepository.GetByID(userID)
 	if err != nil {
 		return models.User{}, errors.New("user not found")

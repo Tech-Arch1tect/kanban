@@ -1,5 +1,5 @@
 definitions:
-  adminController.ListUsersResponse:
+  api_controllers.AdminListUsersResponse:
     properties:
       page:
         type: integer
@@ -14,24 +14,24 @@ definitions:
           $ref: '#/definitions/models.User'
         type: array
     type: object
-  adminController.RemoveUserResponse:
+  api_controllers.AdminRemoveUserResponse:
     properties:
       message:
         type: string
     type: object
-  adminController.UpdateUserRoleRequest:
+  api_controllers.AdminUpdateUserRoleRequest:
     properties:
       role:
         type: string
     type: object
-  adminController.UpdateUserRoleResponse:
+  api_controllers.AdminUpdateUserRoleResponse:
     properties:
       message:
         type: string
       user:
         $ref: '#/definitions/models.User'
     type: object
-  authController.ChangePasswordRequest:
+  api_controllers.AuthChangePasswordRequest:
     properties:
       current_password:
         type: string
@@ -42,89 +42,89 @@ definitions:
     - current_password
     - new_password
     type: object
-  authController.ChangePasswordResponse:
+  api_controllers.AuthChangePasswordResponse:
     properties:
       message:
         type: string
     type: object
-  authController.ConfirmTOTPRequest:
+  api_controllers.AuthConfirmTOTPRequest:
     properties:
       code:
         type: string
     required:
     - code
     type: object
-  authController.ConfirmTOTPResponse:
+  api_controllers.AuthConfirmTOTPResponse:
     properties:
       message:
         type: string
     type: object
-  authController.DisableTOTPRequest:
+  api_controllers.AuthDisableTOTPRequest:
     properties:
       code:
         type: string
     required:
     - code
     type: object
-  authController.DisableTOTPResponse:
+  api_controllers.AuthDisableTOTPResponse:
     properties:
       message:
         type: string
     type: object
-  authController.EnableTOTPRequest:
+  api_controllers.AuthEnableTOTPRequest:
     properties:
       code:
         type: string
     required:
     - code
     type: object
-  authController.EnableTOTPResponse:
+  api_controllers.AuthEnableTOTPResponse:
     properties:
       message:
         type: string
     type: object
-  authController.GenerateTOTPResponse:
+  api_controllers.AuthGenerateTOTPResponse:
     properties:
       secret:
         type: string
     type: object
-  authController.GetCSRFTokenResponse:
+  api_controllers.AuthGetCSRFTokenResponse:
     properties:
       csrf_token:
         type: string
     type: object
-  authController.LoginRequest:
+  api_controllers.AuthLoginRequest:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  authController.LoginResponse:
+  api_controllers.AuthLoginResponse:
     properties:
       message:
         type: string
     type: object
-  authController.PasswordResetRequest:
+  api_controllers.AuthPasswordResetRequest:
     properties:
       email:
         type: string
     required:
     - email
     type: object
-  authController.PasswordResetResponse:
+  api_controllers.AuthPasswordResetResponse:
     properties:
       message:
         type: string
     type: object
-  authController.RegisterRequest:
+  api_controllers.AuthRegisterRequest:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  authController.ResetPasswordRequest:
+  api_controllers.AuthResetPasswordRequest:
     properties:
       code:
         type: string
@@ -137,20 +137,12 @@ definitions:
     - email
     - password
     type: object
-  authController.ResetPasswordResponse:
+  api_controllers.AuthResetPasswordResponse:
     properties:
       message:
         type: string
     type: object
-  gorm.DeletedAt:
-    properties:
-      time:
-        type: string
-      valid:
-        description: Valid is true if Time is not NULL
-        type: boolean
-    type: object
-  miscController.AppNameResponse:
+  api_controllers.MiscAppNameResponse:
     properties:
       app_name:
         type: string
@@ -174,8 +166,6 @@ definitions:
     properties:
       created_at:
         type: string
-      deleted_at:
-        $ref: '#/definitions/gorm.DeletedAt'
       email:
         type: string
       id:
@@ -213,7 +203,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/adminController.ListUsersResponse'
+            $ref: '#/definitions/api_controllers.AdminListUsersResponse'
         "400":
           description: 'error: Invalid page or page size'
           schema:
@@ -240,7 +230,7 @@ paths:
         "200":
           description: 'message: user removed'
           schema:
-            $ref: '#/definitions/adminController.RemoveUserResponse'
+            $ref: '#/definitions/api_controllers.AdminRemoveUserResponse'
         "500":
           description: 'error: failed to remove user'
           schema:
@@ -268,14 +258,14 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/adminController.UpdateUserRoleRequest'
+          $ref: '#/definitions/api_controllers.AdminUpdateUserRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: 'message: user role updated, user: updated user details'
           schema:
-            $ref: '#/definitions/adminController.UpdateUserRoleResponse'
+            $ref: '#/definitions/api_controllers.AdminUpdateUserRoleResponse'
         "400":
           description: 'error: invalid input or invalid role'
           schema:
@@ -305,14 +295,14 @@ paths:
         name: passwordChange
         required: true
         schema:
-          $ref: '#/definitions/authController.ChangePasswordRequest'
+          $ref: '#/definitions/api_controllers.AuthChangePasswordRequest'
       produces:
       - application/json
       responses:
         "200":
           description: 'message: password changed successfully'
           schema:
-            $ref: '#/definitions/authController.ChangePasswordResponse'
+            $ref: '#/definitions/api_controllers.AuthChangePasswordResponse'
         "400":
           description: 'error: bad request'
           schema:
@@ -340,7 +330,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/authController.GetCSRFTokenResponse'
+            $ref: '#/definitions/api_controllers.AuthGetCSRFTokenResponse'
         "401":
           description: Unauthorized
           schema:
@@ -365,14 +355,14 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/authController.LoginRequest'
+          $ref: '#/definitions/api_controllers.AuthLoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/authController.LoginResponse'
+            $ref: '#/definitions/api_controllers.AuthLoginResponse'
         "400":
           description: 'error: bad request'
           schema:
@@ -412,7 +402,7 @@ paths:
         name: passwordReset
         required: true
         schema:
-          $ref: '#/definitions/authController.PasswordResetRequest'
+          $ref: '#/definitions/api_controllers.AuthPasswordResetRequest'
       produces:
       - application/json
       responses:
@@ -420,7 +410,7 @@ paths:
           description: 'message: If you have an account with us, you will receive
             a password reset link shortly.'
           schema:
-            $ref: '#/definitions/authController.PasswordResetResponse'
+            $ref: '#/definitions/api_controllers.AuthPasswordResetResponse'
         "400":
           description: 'error: invalid request'
           schema:
@@ -462,7 +452,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/authController.RegisterRequest'
+          $ref: '#/definitions/api_controllers.AuthRegisterRequest'
       produces:
       - application/json
       responses:
@@ -494,14 +484,14 @@ paths:
         name: resetPassword
         required: true
         schema:
-          $ref: '#/definitions/authController.ResetPasswordRequest'
+          $ref: '#/definitions/api_controllers.AuthResetPasswordRequest'
       produces:
       - application/json
       responses:
         "200":
           description: 'message: Password reset successful'
           schema:
-            $ref: '#/definitions/authController.ResetPasswordResponse'
+            $ref: '#/definitions/api_controllers.AuthResetPasswordResponse'
         "400":
           description: 'error: invalid request'
           schema:
@@ -524,14 +514,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/authController.ConfirmTOTPRequest'
+          $ref: '#/definitions/api_controllers.AuthConfirmTOTPRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/authController.ConfirmTOTPResponse'
+            $ref: '#/definitions/api_controllers.AuthConfirmTOTPResponse'
         "400":
           description: 'error: invalid request or invalid TOTP code'
           schema:
@@ -558,14 +548,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/authController.DisableTOTPRequest'
+          $ref: '#/definitions/api_controllers.AuthDisableTOTPRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/authController.DisableTOTPResponse'
+            $ref: '#/definitions/api_controllers.AuthDisableTOTPResponse'
         "400":
           description: 'error: invalid TOTP code'
           schema:
@@ -595,14 +585,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/authController.EnableTOTPRequest'
+          $ref: '#/definitions/api_controllers.AuthEnableTOTPRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/authController.EnableTOTPResponse'
+            $ref: '#/definitions/api_controllers.AuthEnableTOTPResponse'
         "400":
           description: 'error: invalid TOTP code'
           schema:
@@ -630,7 +620,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/authController.GenerateTOTPResponse'
+            $ref: '#/definitions/api_controllers.AuthGenerateTOTPResponse'
         "401":
           description: 'error: unauthorized'
           schema:
@@ -654,7 +644,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/miscController.AppNameResponse'
+            $ref: '#/definitions/api_controllers.MiscAppNameResponse'
       summary: Get the app name
       tags:
       - misc

@@ -18,7 +18,7 @@ type Model struct {
 	ID        uint           `gorm:"primarykey" json:"id"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
 // everything below this line is for swagger / openapi spec purposes. NOT ALWAYS USED WITHIN THE APPLICATION (but sometimes)

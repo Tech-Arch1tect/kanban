@@ -2,16 +2,13 @@ package database
 
 import (
 	"fmt"
-)
+	"server/database/repository"
+) 
 
-type Database struct {
-	UserRepository UserRepository
-}
-
-var DB Database
+var DB repository.Database
 
 func Init(cfg DBConfig) error {
-	initFuncs := map[string]func(DBConfig) (*Database, error){
+	initFuncs := map[string]func(DBConfig) (*repository.Database, error){
 		"sqlite": newSQLiteDB,
 		"mysql":  newMySQLDB,
 	}
@@ -34,6 +31,4 @@ func Init(cfg DBConfig) error {
 	return nil
 }
 
-func (db *Database) Migrate() error {
-	return db.UserRepository.Migrate()
-}
+

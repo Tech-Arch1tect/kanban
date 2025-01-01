@@ -2,10 +2,10 @@ package initialisation
 
 import (
 	"log"
+	"server/api/middleware"
 	"server/config"
 	"server/database"
-	"server/email"
-	"server/middleware"
+	"server/internal/email"
 	"time"
 
 	"github.com/gin-gonic/contrib/sessions"

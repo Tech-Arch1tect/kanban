@@ -1,4 +1,4 @@
-package database
+package repository
 
 import "gorm.io/gorm"
 
@@ -12,4 +12,12 @@ type Repository[T any] interface {
 	Update(entity *T) error
 	Delete(id uint) error
 	Count(opts ...QueryOption) (int64, error)
+}
+
+type Database struct {
+	UserRepository UserRepository
+}
+
+func (db *Database) Migrate() error {
+	return db.UserRepository.Migrate()
 }

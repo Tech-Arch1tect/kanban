@@ -50,7 +50,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/adminController.ListUsersResponse"
+                            "$ref": "#/definitions/api_controllers.AdminListUsersResponse"
                         }
                     },
                     "400": {
@@ -96,7 +96,7 @@ const docTemplate = `{
                     "200": {
                         "description": "message: user removed",
                         "schema": {
-                            "$ref": "#/definitions/adminController.RemoveUserResponse"
+                            "$ref": "#/definitions/api_controllers.AdminRemoveUserResponse"
                         }
                     },
                     "500": {
@@ -143,7 +143,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/adminController.UpdateUserRoleRequest"
+                            "$ref": "#/definitions/api_controllers.AdminUpdateUserRoleRequest"
                         }
                     }
                 ],
@@ -151,7 +151,7 @@ const docTemplate = `{
                     "200": {
                         "description": "message: user role updated, user: updated user details",
                         "schema": {
-                            "$ref": "#/definitions/adminController.UpdateUserRoleResponse"
+                            "$ref": "#/definitions/api_controllers.AdminUpdateUserRoleResponse"
                         }
                     },
                     "400": {
@@ -203,7 +203,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authController.ChangePasswordRequest"
+                            "$ref": "#/definitions/api_controllers.AuthChangePasswordRequest"
                         }
                     }
                 ],
@@ -211,7 +211,7 @@ const docTemplate = `{
                     "200": {
                         "description": "message: password changed successfully",
                         "schema": {
-                            "$ref": "#/definitions/authController.ChangePasswordResponse"
+                            "$ref": "#/definitions/api_controllers.AuthChangePasswordResponse"
                         }
                     },
                     "400": {
@@ -254,7 +254,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authController.GetCSRFTokenResponse"
+                            "$ref": "#/definitions/api_controllers.AuthGetCSRFTokenResponse"
                         }
                     },
                     "401": {
@@ -292,7 +292,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authController.LoginRequest"
+                            "$ref": "#/definitions/api_controllers.AuthLoginRequest"
                         }
                     }
                 ],
@@ -300,7 +300,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authController.LoginResponse"
+                            "$ref": "#/definitions/api_controllers.AuthLoginResponse"
                         }
                     },
                     "400": {
@@ -366,7 +366,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authController.PasswordResetRequest"
+                            "$ref": "#/definitions/api_controllers.AuthPasswordResetRequest"
                         }
                     }
                 ],
@@ -374,7 +374,7 @@ const docTemplate = `{
                     "200": {
                         "description": "message: If you have an account with us, you will receive a password reset link shortly.",
                         "schema": {
-                            "$ref": "#/definitions/authController.PasswordResetResponse"
+                            "$ref": "#/definitions/api_controllers.AuthPasswordResetResponse"
                         }
                     },
                     "400": {
@@ -443,7 +443,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authController.RegisterRequest"
+                            "$ref": "#/definitions/api_controllers.AuthRegisterRequest"
                         }
                     }
                 ],
@@ -492,7 +492,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authController.ResetPasswordRequest"
+                            "$ref": "#/definitions/api_controllers.AuthResetPasswordRequest"
                         }
                     }
                 ],
@@ -500,7 +500,7 @@ const docTemplate = `{
                     "200": {
                         "description": "message: Password reset successful",
                         "schema": {
-                            "$ref": "#/definitions/authController.ResetPasswordResponse"
+                            "$ref": "#/definitions/api_controllers.AuthResetPasswordResponse"
                         }
                     },
                     "400": {
@@ -538,7 +538,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authController.ConfirmTOTPRequest"
+                            "$ref": "#/definitions/api_controllers.AuthConfirmTOTPRequest"
                         }
                     }
                 ],
@@ -546,7 +546,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authController.ConfirmTOTPResponse"
+                            "$ref": "#/definitions/api_controllers.AuthConfirmTOTPResponse"
                         }
                     },
                     "400": {
@@ -598,7 +598,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authController.DisableTOTPRequest"
+                            "$ref": "#/definitions/api_controllers.AuthDisableTOTPRequest"
                         }
                     }
                 ],
@@ -606,7 +606,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authController.DisableTOTPResponse"
+                            "$ref": "#/definitions/api_controllers.AuthDisableTOTPResponse"
                         }
                     },
                     "400": {
@@ -658,7 +658,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authController.EnableTOTPRequest"
+                            "$ref": "#/definitions/api_controllers.AuthEnableTOTPRequest"
                         }
                     }
                 ],
@@ -666,7 +666,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authController.EnableTOTPResponse"
+                            "$ref": "#/definitions/api_controllers.AuthEnableTOTPResponse"
                         }
                     },
                     "400": {
@@ -712,7 +712,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authController.GenerateTOTPResponse"
+                            "$ref": "#/definitions/api_controllers.AuthGenerateTOTPResponse"
                         }
                     },
                     "401": {
@@ -744,7 +744,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/miscController.AppNameResponse"
+                            "$ref": "#/definitions/api_controllers.MiscAppNameResponse"
                         }
                     }
                 }
@@ -752,7 +752,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "adminController.ListUsersResponse": {
+        "api_controllers.AdminListUsersResponse": {
             "type": "object",
             "properties": {
                 "page": {
@@ -775,7 +775,7 @@ const docTemplate = `{
                 }
             }
         },
-        "adminController.RemoveUserResponse": {
+        "api_controllers.AdminRemoveUserResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -783,7 +783,7 @@ const docTemplate = `{
                 }
             }
         },
-        "adminController.UpdateUserRoleRequest": {
+        "api_controllers.AdminUpdateUserRoleRequest": {
             "type": "object",
             "properties": {
                 "role": {
@@ -791,7 +791,7 @@ const docTemplate = `{
                 }
             }
         },
-        "adminController.UpdateUserRoleResponse": {
+        "api_controllers.AdminUpdateUserRoleResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -802,7 +802,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.ChangePasswordRequest": {
+        "api_controllers.AuthChangePasswordRequest": {
             "type": "object",
             "required": [
                 "current_password",
@@ -818,7 +818,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.ChangePasswordResponse": {
+        "api_controllers.AuthChangePasswordResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -826,7 +826,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.ConfirmTOTPRequest": {
+        "api_controllers.AuthConfirmTOTPRequest": {
             "type": "object",
             "required": [
                 "code"
@@ -837,7 +837,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.ConfirmTOTPResponse": {
+        "api_controllers.AuthConfirmTOTPResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -845,7 +845,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.DisableTOTPRequest": {
+        "api_controllers.AuthDisableTOTPRequest": {
             "type": "object",
             "required": [
                 "code"
@@ -856,7 +856,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.DisableTOTPResponse": {
+        "api_controllers.AuthDisableTOTPResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -864,7 +864,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.EnableTOTPRequest": {
+        "api_controllers.AuthEnableTOTPRequest": {
             "type": "object",
             "required": [
                 "code"
@@ -875,7 +875,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.EnableTOTPResponse": {
+        "api_controllers.AuthEnableTOTPResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -883,7 +883,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.GenerateTOTPResponse": {
+        "api_controllers.AuthGenerateTOTPResponse": {
             "type": "object",
             "properties": {
                 "secret": {
@@ -891,7 +891,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.GetCSRFTokenResponse": {
+        "api_controllers.AuthGetCSRFTokenResponse": {
             "type": "object",
             "properties": {
                 "csrf_token": {
@@ -899,7 +899,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.LoginRequest": {
+        "api_controllers.AuthLoginRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -910,7 +910,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.LoginResponse": {
+        "api_controllers.AuthLoginResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -918,7 +918,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.PasswordResetRequest": {
+        "api_controllers.AuthPasswordResetRequest": {
             "type": "object",
             "required": [
                 "email"
@@ -929,7 +929,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.PasswordResetResponse": {
+        "api_controllers.AuthPasswordResetResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -937,7 +937,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.RegisterRequest": {
+        "api_controllers.AuthRegisterRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -948,7 +948,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.ResetPasswordRequest": {
+        "api_controllers.AuthResetPasswordRequest": {
             "type": "object",
             "required": [
                 "code",
@@ -967,7 +967,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authController.ResetPasswordResponse": {
+        "api_controllers.AuthResetPasswordResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -975,19 +975,7 @@ const docTemplate = `{
                 }
             }
         },
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
-        "miscController.AppNameResponse": {
+        "api_controllers.MiscAppNameResponse": {
             "type": "object",
             "properties": {
                 "app_name": {
@@ -1024,9 +1012,6 @@ const docTemplate = `{
             "properties": {
                 "created_at": {
                     "type": "string"
-                },
-                "deleted_at": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "email": {
                     "type": "string"

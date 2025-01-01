@@ -1,16 +1,16 @@
-package adminController
+package controllers
 
 import (
 	"net/http"
 	"server/models"
-	"server/services/adminService"
+	"server/services"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
 
-type RemoveUserResponse struct {
+type AdminRemoveUserResponse struct {
 	Message string `json:"message"`
 }
 
@@ -21,10 +21,10 @@ type RemoveUserResponse struct {
 // @Security cookieAuth
 // @Security csrf
 // @Param id path string true "User ID"
-// @Success 200 {object} RemoveUserResponse "message: user removed"
+// @Success 200 {object} AdminRemoveUserResponse "message: user removed"
 // @Failure 500 {object} models.ErrorResponse "error: failed to remove user"
 // @Router /api/v1/admin/users/{id} [delete]
-func RemoveUser(c *gin.Context) {
+func AdminRemoveUser(c *gin.Context) {
 	userID := c.Param("id")
 	uintUserID, err := strconv.ParseUint(userID, 10, 64)
 	if err != nil {
@@ -32,14 +32,14 @@ func RemoveUser(c *gin.Context) {
 		return
 	}
 
-	if err := adminService.RemoveUser(uint(uintUserID)); err != nil {
+	if err := services.AdminRemoveUser(uint(uintUserID)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to remove user"})
 		return
 	}
-	c.JSON(http.StatusOK, RemoveUserResponse{Message: "user removed"})
+	c.JSON(http.StatusOK, AdminRemoveUserResponse{Message: "user removed"})
 }
 
-type ListUsersResponse struct {
+type AdminListUsersResponse struct {
 	Users        []models.User `json:"users"`
 	Page         int           `json:"page"`
 	PageSize     int           `json:"page_size"`
@@ -47,7 +47,7 @@ type ListUsersResponse struct {
 	TotalRecords int           `json:"total_records"`
 }
 
-type SearchUsersRequest struct {
+type AdminSearchUsersRequest struct {
 	models.PaginationParamsRequest
 	Search string `form:"search"`
 }
@@ -57,25 +57,25 @@ type SearchUsersRequest struct {
 // @Description List all users with optional pagination parameters and search functionality
 // @Tags admin
 // @Security cookieAuth
-// @Param request query SearchUsersRequest true "Search users"
-// @Success 200 {object} ListUsersResponse
+// @Param request query AdminSearchUsersRequest true "Search users"
+// @Success 200 {object} AdminListUsersResponse
 // @Failure 400 {object} models.ErrorResponse "error: Invalid page or page size"
 // @Failure 500 {object} models.ErrorResponse "error: failed to list users"
 // @Router /api/v1/admin/users [get]
-func ListUsers(c *gin.Context) {
-	var req SearchUsersRequest
+func AdminListUsers(c *gin.Context) {
+	var req AdminSearchUsersRequest
 	if err := c.ShouldBindWith(&req, binding.Query); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid page or page size"})
 		return
 	}
 
-	result, err := adminService.ListUsers(req.Page, req.PageSize, req.Search)
+	result, err := services.AdminListUsers(req.Page, req.PageSize, req.Search)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list users"})
 		return
 	}
 
-	c.JSON(http.StatusOK, ListUsersResponse{
+	c.JSON(http.StatusOK, AdminListUsersResponse{
 		Users:        result.Users,
 		Page:         req.Page,
 		PageSize:     req.PageSize,
@@ -84,11 +84,11 @@ func ListUsers(c *gin.Context) {
 	})
 }
 
-type UpdateUserRoleRequest struct {
+type AdminUpdateUserRoleRequest struct {
 	Role string `json:"role"`
 }
 
-type UpdateUserRoleResponse struct {
+type AdminUpdateUserRoleResponse struct {
 	Message string      `json:"message"`
 	User    models.User `json:"user"`
 }
@@ -102,14 +102,14 @@ type UpdateUserRoleResponse struct {
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"
-// @Param user body UpdateUserRoleRequest true "New Role"
-// @Success 200 {object} UpdateUserRoleResponse "message: user role updated, user: updated user details"
+// @Param user body AdminUpdateUserRoleRequest true "New Role"
+// @Success 200 {object} AdminUpdateUserRoleResponse "message: user role updated, user: updated user details"
 // @Failure 400 {object} models.ErrorResponse "error: invalid input or invalid role"
 // @Failure 404 {object} models.ErrorResponse "error: user not found"
 // @Failure 500 {object} models.ErrorResponse "error: failed to update user role"
 // @Router /api/v1/admin/users/{id}/role [put]
-func UpdateUserRole(c *gin.Context) {
-	var input UpdateUserRoleRequest
+func AdminUpdateUserRole(c *gin.Context) {
+	var input AdminUpdateUserRoleRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
 		return
@@ -122,7 +122,7 @@ func UpdateUserRole(c *gin.Context) {
 		return
 	}
 
-	user, err := adminService.UpdateUserRole(uint(uintUserID), models.Role(input.Role))
+	user, err := services.AdminUpdateUserRole(uint(uintUserID), models.Role(input.Role))
 	if err != nil {
 		status := http.StatusInternalServerError
 		if err.Error() == "user not found" {
@@ -134,5 +134,5 @@ func UpdateUserRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, UpdateUserRoleResponse{Message: "user role updated", User: user})
+	c.JSON(http.StatusOK, AdminUpdateUserRoleResponse{Message: "user role updated", User: user})
 }

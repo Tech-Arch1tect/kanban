@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 	"server/database"
-	"server/helpers"
+	"server/internal/helpers"
 	"server/models"
 
 	"github.com/gin-gonic/contrib/sessions"
