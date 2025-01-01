@@ -11,7 +11,7 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
   const [totpCode, setTotpCode] = useState("");
   const [error, setError] = useState("");
   const [totpRequired, setTotpRequired] = useState(false);
-  
+
   const navigate = useNavigate();
 
   const loginMutation = useLogin();
@@ -59,7 +59,24 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
         { email, password },
         {
           onSuccess: () => {
-            navigate({ to: "/login" });
+            loginMutation.mutate(
+              { email, password },
+              {
+                onSuccess: (data) => {
+                  if (data.message === "totp_required") {
+                    setTotpRequired(true);
+                  } else {
+                    navigate({ to: "/" });
+                  }
+                },
+                onError: () => {
+                  setError(
+                    "Registration successful, but auto-login failed. Please try logging in."
+                  );
+                  setMode("login");
+                },
+              }
+            );
           },
           onError: () => {
             setError("Registration failed");
