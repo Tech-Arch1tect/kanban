@@ -2,9 +2,11 @@ name: GolangCI-Lint
 
 on:
   push:
-    branches: [main]
+    branches:
+      - "**"
   pull_request:
-    branches: [main]
+    branches:
+      - "**"
 
 jobs:
   lint:
@@ -13,6 +15,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.23
+
+      - name: Download Dependencies
+        run: go mod download
+        working-directory: server
+
+      - name: Install swag CLI
+        run: go install github.com/swaggo/swag/cmd/swag@latest
+
+      - name: Generate Swagger docs
+        run: swag init --pd --parseInternal -g cmd/main.go
+        working-directory: server
+        continue-on-error: true
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3
