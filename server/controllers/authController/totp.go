@@ -224,8 +224,15 @@ func ConfirmTOTP(c *gin.Context) {
 		return
 	}
 
-	createLoginSession(c, user.ID)
-	clearTOTPSession(c)
+	if err := createLoginSession(c, user.ID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+	if err := clearTOTPSession(c); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
 	response := ConfirmTOTPResponse{Message: "totp_confirmed"}
 	c.JSON(http.StatusOK, response)
 }
+

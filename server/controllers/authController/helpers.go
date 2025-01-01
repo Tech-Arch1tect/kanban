@@ -6,29 +6,43 @@ import (
 	"github.com/google/uuid"
 )
 
-func createLoginSession(c *gin.Context, userID uint) {
-	clearLoginSession(c)
+func createLoginSession(c *gin.Context, userID uint) error {
+	if err := clearLoginSession(c); err != nil {
+		return err
+	}
 	session := sessions.Default(c)
 	session.Set("userID", userID)
-	session.Save()
+	if err := session.Save(); err != nil {
+		return err
+	}
+	return nil
 }
 
-func clearLoginSession(c *gin.Context) {
+func clearLoginSession(c *gin.Context) error {
 	session := sessions.Default(c)
 	session.Clear()
-	session.Save()
+	if err := session.Save(); err != nil {
+		return err
+	}
+	return nil
 }
 
-func createTOTPSession(c *gin.Context, userID uint) {
+func createTOTPSession(c *gin.Context, userID uint) error {
 	session := sessions.Default(c)
 	session.Set("totpUserID", userID)
-	session.Save()
+	if err := session.Save(); err != nil {
+		return err
+	}
+	return nil
 }
 
-func clearTOTPSession(c *gin.Context) {
+func clearTOTPSession(c *gin.Context) error {
 	session := sessions.Default(c)
 	session.Delete("totpUserID")
-	session.Save()
+	if err := session.Save(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func generateRandomToken() string {

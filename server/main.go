@@ -26,5 +26,7 @@ func main() {
 	router := routes.NewRouter(config.CFG)
 	router.RegisterRoutes(r)
 
-	r.Run(":8090")
+	if err := r.Run(":8090"); err != nil {
+		panic(err)
+	}
 }

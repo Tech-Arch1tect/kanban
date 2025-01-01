@@ -116,7 +116,10 @@ func Login(c *gin.Context) {
 	}
 
 	if user.TotpEnabled {
-		createTOTPSession(c, user.ID)
+		if err := createTOTPSession(c, user.ID); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			return
+		}
 		resp := LoginResponse{
 			Message: "totp_required",
 		}
@@ -124,7 +127,10 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	createLoginSession(c, user.ID)
+	if err := createLoginSession(c, user.ID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
 	resp := LoginResponse{
 		Message: "logged in",
 	}
@@ -147,7 +153,10 @@ func Logout(c *gin.Context) {
 		return
 	}
 	session.Clear()
-	session.Save()
+	if err := session.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
 }

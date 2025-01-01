@@ -40,8 +40,12 @@ func Init() error {
 func SendPlainText(to, subject, body string) error {
 	msg := mail.NewMsg()
 	msg.Subject(subject)
-	msg.From(config.CFG.SMTP.From)
-	msg.To(to)
+	if err := msg.From(config.CFG.SMTP.From); err != nil {
+		return err
+	}
+	if err := msg.To(to); err != nil {
+		return err
+	}
 	msg.SetBodyString(mail.TypeTextPlain, body)
 	log.Println("Sending email to", to)
 	return c.DialAndSend(msg)
