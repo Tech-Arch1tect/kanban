@@ -9,9 +9,9 @@ server:
   @go run cmd/main.go
 
 # Starts the server with hot reloading using Air.
-[working-directory: "server"]
+[working-directory: "server/cmd"]
 server-watch:
-  @air cmd/main.go
+  @air
 
 # Client commands
 # Starts the client development server using npm.
