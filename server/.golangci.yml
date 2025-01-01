@@ -4,5 +4,7 @@ linters-settings:
 
 run:
   timeout: 5m
-  skip-dirs:
+
+issues:
+  exclude-dirs:
     - vendor
