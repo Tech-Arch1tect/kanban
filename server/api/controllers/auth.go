@@ -1,20 +1,13 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
-	"server/config"
 	"server/database"
-	"server/internal/email"
 	"server/internal/helpers"
 	"server/models"
-	"time"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/pquerna/otp/totp"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthRegisterRequest struct {
@@ -40,30 +33,8 @@ func AuthRegister(c *gin.Context) {
 		return
 	}
 
-	user := models.User{
-		Email:    input.Email,
-		Password: input.Password,
-		Role:     models.RoleUser,
-	}
-
-	// If this is the first user to register, set the role to admin
-	count, err := database.DB.UserRepository.Count()
+	err := authService.Register(input.Email, input.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-		return
-	}
-	if count == 0 {
-		user.Role = models.RoleAdmin
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-		return
-	}
-
-	user.Password = string(hashedPassword)
-	if err := database.DB.UserRepository.Create(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
@@ -98,30 +69,9 @@ func AuthLogin(c *gin.Context) {
 		return
 	}
 
-	user, err := database.DB.UserRepository.GetByEmail(input.Email)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
-			Error: "invalid credentials",
-		})
-		return
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
-			Error: "invalid credentials",
-		})
-		return
-	}
-
-	if user.Role == models.RoleDisabled {
-		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
-			Error: "user is disabled",
-		})
-		return
-	}
-
-	if user.TotpEnabled {
-		if err := helpers.CreateTOTPSession(c, user.ID); err != nil {
+	id, err := authService.Login(input.Email, input.Password)
+	if err != nil && err.Error() == "totp_required" {
+		if err := helpers.CreateTOTPSession(c, id); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 			return
 		}
@@ -131,8 +81,12 @@ func AuthLogin(c *gin.Context) {
 		c.JSON(http.StatusOK, resp)
 		return
 	}
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
 
-	if err := helpers.CreateLoginSession(c, user.ID); err != nil {
+	if err := helpers.CreateLoginSession(c, id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
@@ -152,11 +106,6 @@ func AuthLogin(c *gin.Context) {
 // @Router /api/v1/auth/logout [post]
 func AuthLogout(c *gin.Context) {
 	session := sessions.Default(c)
-	userID := session.Get("userID")
-	if userID == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "no user found"})
-		return
-	}
 	session.Clear()
 	if err := session.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
@@ -225,28 +174,9 @@ func AuthChangePassword(c *gin.Context) {
 		return
 	}
 
-	user, err := database.DB.UserRepository.GetByID(userID.(uint))
+	err := authService.ChangePassword(userID.(uint), input.CurrentPassword, input.NewPassword)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "internal server error"})
-		return
-	}
-
-	// Verify current password
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.CurrentPassword)); err != nil {
-		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "invalid current password"})
-		return
-	}
-
-	// Hash and set new password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.NewPassword), bcrypt.DefaultCost)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "internal server error"})
-		return
-	}
-
-	user.Password = string(hashedPassword)
-	if err := database.DB.UserRepository.Update(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "internal server error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -306,7 +236,6 @@ type AuthPasswordResetResponse struct {
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/password-reset [post]
 func AuthPasswordReset(c *gin.Context) {
-	token := helpers.GenerateRandomToken()
 
 	var req AuthPasswordResetRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -314,27 +243,9 @@ func AuthPasswordReset(c *gin.Context) {
 		return
 	}
 
-	// find user by email
-	user, err := database.DB.UserRepository.GetByEmail(req.Email)
+	err := authService.RequestPasswordReset(req.Email)
 	if err != nil {
-		// respond with 200 and message
-		c.JSON(200, AuthPasswordResetResponse{Message: "If you have an account with us, you will receive a password reset link shortly."})
-		return
-	}
-
-	// update user with reset token
-	user.PasswordResetToken = token
-	user.PasswordResetSentAt = time.Now()
-	if err := database.DB.UserRepository.Update(&user); err != nil {
 		c.JSON(500, AuthPasswordResetResponse{Message: "Internal server error"})
-		return
-	}
-
-	// send email with code to reset password
-	err = email.SendPlainText(user.Email, "Password Reset", "A password reset request has been received for your account. Please use the following code to reset your password: "+token)
-	if err != nil {
-		log.Println("Error sending password reset email:", err)
-		c.JSON(500, AuthPasswordResetResponse{Message: "Failed to send password reset email. Please try again."})
 		return
 	}
 
@@ -369,34 +280,9 @@ func AuthResetPassword(c *gin.Context) {
 		return
 	}
 
-	// find user by email
-	user, err := database.DB.UserRepository.GetByEmail(req.Email)
+	err := authService.ResetPassword(req.Email, req.Code, req.Password)
 	if err != nil {
-		c.JSON(500, AuthResetPasswordResponse{Message: "Invalid code"})
-		return
-	}
-
-	// verify code
-	if user.PasswordResetToken != req.Code {
-		c.JSON(500, AuthResetPasswordResponse{Message: "Invalid code"})
-		return
-	}
-
-	// check if code has expired
-	if time.Since(user.PasswordResetSentAt) > 60*time.Minute {
-		c.JSON(500, AuthResetPasswordResponse{Message: "Invalid code"})
-		return
-	}
-
-	// update user password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	if err != nil {
-		c.JSON(500, AuthResetPasswordResponse{Message: "Internal server error"})
-		return
-	}
-	user.Password = string(hashedPassword)
-	if err := database.DB.UserRepository.Update(&user); err != nil {
-		c.JSON(500, AuthResetPasswordResponse{Message: "Internal server error"})
+		c.JSON(500, AuthResetPasswordResponse{Message: err.Error()})
 		return
 	}
 
@@ -427,22 +313,13 @@ func AuthGenerateTOTP(c *gin.Context) {
 		return
 	}
 
-	key, err := totp.Generate(totp.GenerateOpts{
-		Issuer:      config.CFG.AppName,
-		AccountName: user.Email,
-	})
-	if err != nil {
+	secret, err := authService.GenerateTOTP(user.ID)
+	if err != nil || secret == "" {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate TOTP secret"})
 		return
 	}
 
-	user.TotpSecret = key.Secret()
-	if err := database.DB.UserRepository.Update(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save TOTP secret"})
-		return
-	}
-
-	response := AuthGenerateTOTPResponse{Secret: key.Secret()}
+	response := AuthGenerateTOTPResponse{Secret: secret}
 	c.JSON(http.StatusOK, response)
 }
 
@@ -469,18 +346,6 @@ type AuthEnableTOTPResponse struct {
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/totp/enable [post]
 func AuthEnableTOTP(c *gin.Context) {
-	session := sessions.Default(c)
-	userID := session.Get("userID")
-	if userID == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	user, err := database.DB.UserRepository.GetByID(userID.(uint))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-		return
-	}
 
 	var req AuthEnableTOTPRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -488,20 +353,19 @@ func AuthEnableTOTP(c *gin.Context) {
 		return
 	}
 
-	valid := totp.Validate(req.Code, user.TotpSecret)
-	if !valid {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid TOTP code"})
+	user, err := helpers.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
-	user.TotpEnabled = true
-	if err := database.DB.UserRepository.Update(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to enable TOTP"})
+	err = authService.EnableTOTP(user.ID, req.Code)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	response := AuthEnableTOTPResponse{Message: "TOTP enabled"}
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, AuthEnableTOTPResponse{Message: "TOTP enabled"})
 }
 
 type AuthDisableTOTPRequest struct {
@@ -527,23 +391,6 @@ type AuthDisableTOTPResponse struct {
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/totp/disable [post]
 func AuthDisableTOTP(c *gin.Context) {
-	session := sessions.Default(c)
-	userID := session.Get("userID")
-	if userID == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	user, err := database.DB.UserRepository.GetByID(userID.(uint))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-		return
-	}
-
-	if !user.TotpEnabled {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "TOTP is not enabled"})
-		return
-	}
 
 	var req AuthDisableTOTPRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -551,21 +398,19 @@ func AuthDisableTOTP(c *gin.Context) {
 		return
 	}
 
-	valid := totp.Validate(req.Code, user.TotpSecret)
-	if !valid {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid TOTP code"})
+	user, err := helpers.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
-	user.TotpEnabled = false
-	user.TotpSecret = ""
-	if err := database.DB.UserRepository.Update(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to disable TOTP"})
+	err = authService.DisableTOTP(user.ID, req.Code)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	response := AuthDisableTOTPResponse{Message: "TOTP disabled"}
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, AuthDisableTOTPResponse{Message: "TOTP disabled"})
 }
 
 type AuthConfirmTOTPRequest struct {
@@ -589,30 +434,22 @@ type AuthConfirmTOTPResponse struct {
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/totp/confirm [post]
 func AuthConfirmTOTP(c *gin.Context) {
-	session := sessions.Default(c)
-	userID := session.Get("totpUserID")
-	if userID == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
 
-	// find the user by ID
-	user, err := database.DB.UserRepository.GetByID(userID.(uint))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-		return
-	}
-
-	// verify the TOTP code
 	var req AuthConfirmTOTPRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
 
-	valid := totp.Validate(req.Code, user.TotpSecret)
-	if !valid {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid TOTP code"})
+	user, err := helpers.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	err = authService.ConfirmTOTP(user.ID, req.Code)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -620,11 +457,11 @@ func AuthConfirmTOTP(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
+
 	if err := helpers.ClearTOTPSession(c); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
-	response := AuthConfirmTOTPResponse{Message: "totp_confirmed"}
-	c.JSON(http.StatusOK, response)
-}
 
+	c.JSON(http.StatusOK, AuthConfirmTOTPResponse{Message: "totp_confirmed"})
+}
