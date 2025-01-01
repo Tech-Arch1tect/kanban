@@ -20,7 +20,10 @@ func main() {
 
 	// Initialise server
 	initialiser := initialisation.NewServerInitialiser(config.CFG)
-	r := initialiser.Initialise()
+	r, err := initialiser.Initialise()
+	if err != nil {
+		panic(err)
+	}
 
 	// Initialise routes
 	router := routes.NewRouter(config.CFG)

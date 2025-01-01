@@ -3,7 +3,6 @@ package controllers
 import (
 	"net/http"
 	"server/models"
-	"server/services"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -32,7 +31,7 @@ func AdminRemoveUser(c *gin.Context) {
 		return
 	}
 
-	if err := services.AdminRemoveUser(uint(uintUserID)); err != nil {
+	if err := adminService.RemoveUser(uint(uintUserID)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to remove user"})
 		return
 	}
@@ -69,7 +68,7 @@ func AdminListUsers(c *gin.Context) {
 		return
 	}
 
-	result, err := services.AdminListUsers(req.Page, req.PageSize, req.Search)
+	result, err := adminService.ListUsers(req.Page, req.PageSize, req.Search)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list users"})
 		return
@@ -122,7 +121,7 @@ func AdminUpdateUserRole(c *gin.Context) {
 		return
 	}
 
-	user, err := services.AdminUpdateUserRole(uint(uintUserID), models.Role(input.Role))
+	user, err := adminService.UpdateUserRole(uint(uintUserID), models.Role(input.Role))
 	if err != nil {
 		status := http.StatusInternalServerError
 		if err.Error() == "user not found" {

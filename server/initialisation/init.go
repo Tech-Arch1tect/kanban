@@ -1,7 +1,8 @@
 package initialisation
 
 import (
-	"log"
+	"fmt"
+	"server/api/controllers"
 	"server/api/middleware"
 	"server/config"
 	"server/database"
@@ -13,7 +14,7 @@ import (
 )
 
 type ServerInitialiser interface {
-	Initialise() *gin.Engine
+	Initialise() (*gin.Engine, error)
 }
 
 type serverInitialiser struct {
@@ -36,16 +37,16 @@ func NewServerInitialiser(cfg *config.Config) ServerInitialiser {
 	return &serverInitialiser{config: cfg}
 }
 
-func (si *serverInitialiser) Initialise() *gin.Engine {
+func (si *serverInitialiser) Initialise() (*gin.Engine, error) {
 	// Initialise database
 	if err := database.Init(si); err != nil {
-		log.Fatalf("Failed to initialise database: %v", err)
+		return nil, fmt.Errorf("failed to initialise database: %v", err)
 	}
 
 	// Initialise email
 	err := email.Init()
 	if err != nil {
-		log.Fatalf("Failed to initialise email: %v", err)
+		return nil, fmt.Errorf("failed to initialise email: %v", err)
 	}
 
 	r := gin.Default()
@@ -55,7 +56,7 @@ func (si *serverInitialiser) Initialise() *gin.Engine {
 
 	// Configure rate limiting
 	if si.config.RateLimit.Enabled {
-		log.Printf("Rate limiting enabled with %d requests per %d minutes",
+		fmt.Printf("Rate limiting enabled with %d requests per %d minutes",
 			si.config.RateLimit.Limit, si.config.RateLimit.Window)
 		r.Use(middleware.RateLimit(si.config.RateLimit.Limit,
 			time.Duration(si.config.RateLimit.Window)*time.Minute))
@@ -65,5 +66,9 @@ func (si *serverInitialiser) Initialise() *gin.Engine {
 	store := sessions.NewCookieStore([]byte(si.config.CookieSecret))
 	r.Use(sessions.Sessions(si.config.SessionName, store))
 
-	return r
+	if err := controllers.Init(); err != nil {
+		return nil, fmt.Errorf("failed to initialise controllers: %v", err)
+	}
+
+	return r, nil
 }

@@ -6,17 +6,20 @@ import (
 	"server/models"
 )
 
+type AdminService struct {
+}
+
 type AdminPaginationResult struct {
 	Users        []models.User
 	TotalRecords int
 	TotalPages   int
 }
 
-func AdminRemoveUser(userID uint) error {
+func (s *AdminService) RemoveUser(userID uint) error {
 	return database.DB.UserRepository.Delete(userID)
 }
 
-func AdminListUsers(page, pageSize int, search string) (AdminPaginationResult, error) {
+func (s *AdminService) ListUsers(page, pageSize int, search string) (AdminPaginationResult, error) {
 	users, totalRecords, err := database.DB.UserRepository.PaginatedSearch(page, pageSize, search)
 	if err != nil {
 		return AdminPaginationResult{}, err
@@ -29,7 +32,7 @@ func AdminListUsers(page, pageSize int, search string) (AdminPaginationResult, e
 	}, nil
 }
 
-func AdminUpdateUserRole(userID uint, role models.Role) (models.User, error) {
+func (s *AdminService) UpdateUserRole(userID uint, role models.Role) (models.User, error) {
 	user, err := database.DB.UserRepository.GetByID(userID)
 	if err != nil {
 		return models.User{}, errors.New("user not found")
