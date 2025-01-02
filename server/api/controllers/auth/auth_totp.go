@@ -1,4 +1,4 @@
-package controllers
+package auth
 
 import (
 	"net/http"
@@ -25,7 +25,7 @@ func (a *AuthController) GenerateTOTP(c *gin.Context) {
 		return
 	}
 
-	secret, err := authService.GenerateTOTP(user.ID)
+	secret, err := a.authService.GenerateTOTP(user.ID)
 	if err != nil || secret == "" {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate TOTP secret"})
 		return
@@ -63,7 +63,7 @@ func (a *AuthController) EnableTOTP(c *gin.Context) {
 		return
 	}
 
-	err = authService.EnableTOTP(user.ID, req.Code)
+	err = a.authService.EnableTOTP(user.ID, req.Code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -100,7 +100,7 @@ func (a *AuthController) DisableTOTP(c *gin.Context) {
 		return
 	}
 
-	err = authService.DisableTOTP(user.ID, req.Code)
+	err = a.authService.DisableTOTP(user.ID, req.Code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -135,7 +135,7 @@ func (a *AuthController) ConfirmTOTP(c *gin.Context) {
 		return
 	}
 
-	err = authService.ConfirmTOTP(user.ID, req.Code)
+	err = a.authService.ConfirmTOTP(user.ID, req.Code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

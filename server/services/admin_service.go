@@ -9,6 +9,10 @@ import (
 type AdminService struct {
 }
 
+func NewAdminService() *AdminService {
+	return &AdminService{}
+}
+
 type AdminPaginationResult struct {
 	Users        []models.User
 	TotalRecords int

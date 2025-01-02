@@ -8,11 +8,18 @@ import (
 	"github.com/wneessen/go-mail"
 )
 
-var c *mail.Client
+type EmailService struct {
+	client *mail.Client
+	cfg    *config.Config
+}
 
-func Init() error {
+func NewEmailService(cfg *config.Config) *EmailService {
+	return &EmailService{cfg: cfg}
+}
+
+func Init(cfg *config.Config) (*EmailService, error) {
 	var auth mail.SMTPAuthType
-	switch config.CFG.SMTP.Auth {
+	switch cfg.SMTP.Auth {
 	case "plain":
 		auth = mail.SMTPAuthPlain
 	case "login":
@@ -20,27 +27,26 @@ func Init() error {
 	default:
 		auth = mail.SMTPAuthNoAuth
 	}
-	port, err := strconv.Atoi(config.CFG.SMTP.Port)
+	port, err := strconv.Atoi(cfg.SMTP.Port)
 	if err != nil {
 		log.Fatalf("failed to convert smtp port to int: %s", err)
 	}
 	tlspolicy := mail.TLSMandatory
-	if config.CFG.SMTP.NoTLS {
+	if cfg.SMTP.NoTLS {
 		tlspolicy = mail.NoTLS
 	}
-	client, err := mail.NewClient(config.CFG.SMTP.Host, mail.WithSMTPAuth(auth),
-		mail.WithUsername(config.CFG.SMTP.User), mail.WithPassword(config.CFG.SMTP.Password), mail.WithPort(port), mail.WithTLSPolicy(tlspolicy))
+	client, err := mail.NewClient(cfg.SMTP.Host, mail.WithSMTPAuth(auth),
+		mail.WithUsername(cfg.SMTP.User), mail.WithPassword(cfg.SMTP.Password), mail.WithPort(port), mail.WithTLSPolicy(tlspolicy))
 	if err != nil {
 		log.Fatalf("failed to create mail client: %s", err)
 	}
-	c = client
-	return nil
+	return &EmailService{client: client}, nil
 }
 
-func SendPlainText(to, subject, body string) error {
+func (s *EmailService) SendPlainText(to, subject, body string) error {
 	msg := mail.NewMsg()
 	msg.Subject(subject)
-	if err := msg.From(config.CFG.SMTP.From); err != nil {
+	if err := msg.From(s.cfg.SMTP.From); err != nil {
 		return err
 	}
 	if err := msg.To(to); err != nil {
@@ -48,5 +54,5 @@ func SendPlainText(to, subject, body string) error {
 	}
 	msg.SetBodyString(mail.TypeTextPlain, body)
 	log.Println("Sending email to", to)
-	return c.DialAndSend(msg)
+	return s.client.DialAndSend(msg)
 }

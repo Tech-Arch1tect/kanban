@@ -1,15 +1,16 @@
 package database
 
 import (
+	"server/config"
 	"server/database/repository"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func newSQLiteDB(cfg DBConfig) (*repository.Database, error) {
-	sqliteCfg := cfg.GetSQLiteConfig()
-	gormDB, err := gorm.Open(sqlite.Open(sqliteCfg.GetFilePath()), &gorm.Config{})
+func newSQLiteDB(cfg *config.Config) (*repository.Database, error) {
+	sqliteCfg := cfg.Database.SQLite
+	gormDB, err := gorm.Open(sqlite.Open(sqliteCfg.FilePath), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}

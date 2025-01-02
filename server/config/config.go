@@ -1,16 +1,12 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
-)
-
-var (
-	CFG      *Config
-	validate = validator.New()
 )
 
 type DatabaseConfig struct {
@@ -57,35 +53,13 @@ type MySQLConfig struct {
 	Database string `validate:"required"`
 }
 
-func (c MySQLConfig) GetUser() string {
-	return c.User
-}
-
-func (c MySQLConfig) GetPassword() string {
-	return c.Password
-}
-
-func (c MySQLConfig) GetHost() string {
-	return c.Host
-}
-
-func (c MySQLConfig) GetPort() string {
-	return c.Port
-}
-
-func (c MySQLConfig) GetDatabase() string {
-	return c.Database
-}
-
 type SQLiteConfig struct {
 	FilePath string `validate:"required"`
 }
 
-func (c SQLiteConfig) GetFilePath() string {
-	return c.FilePath
-}
+var validate = validator.New()
 
-func LoadConfig() error {
+func LoadConfig() (*Config, error) {
 	cfg := &Config{
 		Database: DatabaseConfig{
 			Type: os.Getenv("DB_TYPE"),
@@ -125,11 +99,10 @@ func LoadConfig() error {
 	setDefaults(cfg)
 
 	if err := validate.Struct(cfg); err != nil {
-		return err
+		return nil, fmt.Errorf("validation error: %w", err)
 	}
 
-	CFG = cfg
-	return nil
+	return cfg, nil
 }
 
 func setDefaults(cfg *Config) {
@@ -178,6 +151,7 @@ func getIntEnv(key string, defaultValue int) int {
 	}
 	intValue, err := strconv.Atoi(value)
 	if err != nil {
+		log.Printf("Invalid value for %s: %s. Using default: %d", key, value, defaultValue)
 		return defaultValue
 	}
 	return intValue

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"server/api/routes"
+	"log"
 	"server/config"
 	"server/initialisation"
 )
@@ -14,22 +14,18 @@ import (
 // @name X-CSRF-Token
 
 func main() {
-	if err := config.LoadConfig(); err != nil {
-		panic(err)
-	}
-
-	// Initialise server
-	initialiser := initialisation.NewServerInitialiser(config.CFG)
-	r, cr, err := initialiser.Initialise()
+	cfg, err := config.LoadConfig()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	// Initialise routes
-	router := routes.NewRouter(config.CFG)
-	router.RegisterRoutes(r, cr)
+	initializer := initialisation.NewInitializer(cfg)
+	router, err := initializer.Initialize()
+	if err != nil {
+		log.Fatalf("Initialization error: %v", err)
+	}
 
-	if err := r.Run(":8090"); err != nil {
-		panic(err)
+	if err := router.Run(":8090"); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
 	}
 }

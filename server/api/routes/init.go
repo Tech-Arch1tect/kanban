@@ -15,57 +15,56 @@ import (
 )
 
 type Router interface {
-	RegisterRoutes(r *gin.Engine, cr *controllers.Controllers)
+	RegisterRoutes(engine *gin.Engine)
 }
 
 type router struct {
-	config *config.Config
+	cr  *controllers.Controllers
+	cfg *config.Config
 }
 
-func NewRouter(cfg *config.Config) Router {
-	return &router{config: cfg}
-}
-
-func registerSwaggerRoutes(r *gin.RouterGroup) {
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-}
-
-func (r *router) RegisterRoutes(engine *gin.Engine, cr *controllers.Controllers) {
-	root := engine.Group("/")
-	registerSwaggerRoutes(root)
-
-	// API versioned routes
-	api := engine.Group("/api/v1")
-	{
-		registerMiscRoutes(api, cr)
-		registerAuthRoutes(api, cr, r.config)
-		registerAdminRoutes(api, cr)
+func NewRouter(cr *controllers.Controllers, cfg *config.Config) Router {
+	return &router{
+		cr:  cr,
+		cfg: cfg,
 	}
 }
 
-func registerMiscRoutes(api *gin.RouterGroup, cr *controllers.Controllers) {
+func (r *router) RegisterRoutes(engine *gin.Engine) {
+	root := engine.Group("/")
+	root.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	api := engine.Group("/api/v1")
+	{
+		r.registerMiscRoutes(api, r.cr)
+		r.registerAuthRoutes(api, r.cr)
+		r.registerAdminRoutes(api, r.cr)
+	}
+}
+
+func (r *router) registerMiscRoutes(api *gin.RouterGroup, cr *controllers.Controllers) {
 	misc := api.Group("/misc")
 	{
 		misc.GET("/appname", cr.MiscController.GetAppName)
 	}
 }
 
-func registerAuthRoutes(api *gin.RouterGroup, cr *controllers.Controllers, cfg *config.Config) {
+func (r *router) registerAuthRoutes(api *gin.RouterGroup, cr *controllers.Controllers) {
 	auth := api.Group("/auth")
 	{
-		auth.POST("/register", cr.AuthController.Register)
-		if cfg.RateLimit.Enabled {
-			auth.POST("/login", middleware.RateLimit(cfg.RateLimit.LoginLimit, time.Duration(cfg.RateLimit.LoginWindow)*time.Minute), cr.AuthController.Login)
+		if r.cfg.RateLimit.Enabled {
+			auth.POST("/login", middleware.RateLimit(r.cfg.RateLimit.LoginLimit, time.Duration(r.cfg.RateLimit.LoginWindow)*time.Minute), cr.AuthController.Login)
 		} else {
 			auth.POST("/login", cr.AuthController.Login)
 		}
-		auth.POST("/logout", middleware.AuthRequired(), middleware.CSRFTokenRequired(), cr.AuthController.Logout)
+		auth.POST("/register", cr.AuthController.Register)
+		auth.POST("/logout", middleware.CSRFTokenRequired(), middleware.AuthRequired(), cr.AuthController.Logout)
 		auth.GET("/profile", middleware.AuthRequired(), cr.AuthController.Profile)
 		auth.GET("/csrf-token", middleware.AuthRequired(), cr.AuthController.GetCSRFToken)
 		auth.POST("/change-password", middleware.AuthRequired(), middleware.CSRFTokenRequired(), cr.AuthController.ChangePassword)
-		if cfg.RateLimit.Enabled {
-			auth.POST("/password-reset", middleware.RateLimit(cfg.RateLimit.PasswordResetLimit, time.Duration(cfg.RateLimit.PasswordResetWindow)*time.Minute), cr.AuthController.PasswordReset)
-			auth.POST("/reset-password", middleware.RateLimit(cfg.RateLimit.PasswordResetLimit, time.Duration(cfg.RateLimit.PasswordResetWindow)*time.Minute), cr.AuthController.ResetPassword)
+		if r.cfg.RateLimit.Enabled {
+			auth.POST("/password-reset", middleware.RateLimit(r.cfg.RateLimit.PasswordResetLimit, time.Duration(r.cfg.RateLimit.PasswordResetWindow)*time.Minute), cr.AuthController.PasswordReset)
+			auth.POST("/reset-password", middleware.RateLimit(r.cfg.RateLimit.PasswordResetLimit, time.Duration(r.cfg.RateLimit.PasswordResetWindow)*time.Minute), cr.AuthController.ResetPassword)
 		} else {
 			auth.POST("/password-reset", cr.AuthController.PasswordReset)
 			auth.POST("/reset-password", cr.AuthController.ResetPassword)
@@ -87,9 +86,10 @@ func registerAuthRoutes(api *gin.RouterGroup, cr *controllers.Controllers, cfg *
 	}
 }
 
-func registerAdminRoutes(api *gin.RouterGroup, cr *controllers.Controllers) {
+func (r *router) registerAdminRoutes(api *gin.RouterGroup, cr *controllers.Controllers) {
 	admin := api.Group("admin")
 	admin.Use(middleware.EnsureRole(models.RoleAdmin))
+	admin.Use(middleware.AuthRequired())
 	{
 		admin.DELETE("/users/:id", middleware.CSRFTokenRequired(), cr.AdminController.RemoveUser)
 		admin.GET("/users", cr.AdminController.ListUsers)

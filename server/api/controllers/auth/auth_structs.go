@@ -1,4 +1,4 @@
-package controllers
+package auth
 
 type AuthRegisterRequest struct {
 	Email    string `json:"email"`

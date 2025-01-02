@@ -1,16 +1,23 @@
-package controllers
+package auth
 
 import (
 	"net/http"
 	"server/database"
 	"server/internal/helpers"
 	"server/models"
+	"server/services"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
-type AuthController struct{}
+type AuthController struct {
+	authService *services.AuthService
+}
+
+func NewAuthController(authService *services.AuthService) *AuthController {
+	return &AuthController{authService: authService}
+}
 
 // Register godoc
 // @Summary Register a new user
@@ -30,7 +37,7 @@ func (a *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	err := authService.Register(input.Email, input.Password)
+	err := a.authService.Register(input.Email, input.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
@@ -57,7 +64,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	id, err := authService.Login(input.Email, input.Password)
+	id, err := a.authService.Login(input.Email, input.Password)
 	if err != nil && err.Error() == "totp_required" {
 		if err := helpers.CreateTOTPSession(c, id); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})

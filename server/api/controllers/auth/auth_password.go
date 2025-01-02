@@ -1,4 +1,4 @@
-package controllers
+package auth
 
 import (
 	"net/http"
@@ -37,7 +37,7 @@ func (a *AuthController) ChangePassword(c *gin.Context) {
 		return
 	}
 
-	err := authService.ChangePassword(userID.(uint), input.CurrentPassword, input.NewPassword)
+	err := a.authService.ChangePassword(userID.(uint), input.CurrentPassword, input.NewPassword)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -67,7 +67,7 @@ func (a *AuthController) PasswordReset(c *gin.Context) {
 		return
 	}
 
-	err := authService.RequestPasswordReset(req.Email)
+	err := a.authService.RequestPasswordReset(req.Email)
 	if err != nil {
 		c.JSON(500, AuthPasswordResetResponse{Message: "Internal server error"})
 		return
@@ -94,7 +94,7 @@ func (a *AuthController) ResetPassword(c *gin.Context) {
 		return
 	}
 
-	err := authService.ResetPassword(req.Email, req.Code, req.Password)
+	err := a.authService.ResetPassword(req.Email, req.Code, req.Password)
 	if err != nil {
 		c.JSON(500, AuthResetPasswordResponse{Message: err.Error()})
 		return

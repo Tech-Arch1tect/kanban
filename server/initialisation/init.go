@@ -4,72 +4,62 @@ import (
 	"fmt"
 	"server/api/controllers"
 	"server/api/middleware"
+	"server/api/routes"
 	"server/config"
 	"server/database"
-	"server/internal/email"
+	"server/services"
 	"time"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
-type ServerInitialiser interface {
-	Initialise() (*gin.Engine, *controllers.Controllers, error)
+type Initializer struct {
+	Config       *config.Config
+	AuthService  *services.AuthService
+	AdminService *services.AdminService
 }
 
-type serverInitialiser struct {
-	config *config.Config
+func NewInitializer(cfg *config.Config) *Initializer {
+
+	return &Initializer{
+		Config: cfg,
+	}
 }
 
-func (si *serverInitialiser) GetDBType() string {
-	return si.config.Database.Type
-}
-
-func (si *serverInitialiser) GetSQLiteConfig() database.SQLiteConfig {
-	return si.config.Database.SQLite
-}
-
-func (si *serverInitialiser) GetMySQLConfig() database.MySQLConfig {
-	return si.config.Database.MySQL
-}
-
-func NewServerInitialiser(cfg *config.Config) ServerInitialiser {
-	return &serverInitialiser{config: cfg}
-}
-
-func (si *serverInitialiser) Initialise() (r *gin.Engine, cr *controllers.Controllers, err error) {
-	// Initialise database
-	if err := database.Init(si); err != nil {
-		return nil, nil, fmt.Errorf("failed to initialise database: %v", err)
+func (i *Initializer) Initialize() (*gin.Engine, error) {
+	if err := database.Init(i.Config); err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	// Initialise email
-	err = email.Init()
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to initialise email: %v", err)
+	router := gin.Default()
+
+	corsMiddleware := middleware.Cors(i.Config)
+	var rateLimitMiddleware gin.HandlerFunc
+	if i.Config.RateLimit.Enabled {
+		fmt.Println("Rate limit enabled: limit", i.Config.RateLimit.Limit, "window", i.Config.RateLimit.Window)
+		rateLimitMiddleware = middleware.RateLimit(
+			i.Config.RateLimit.Limit,
+			time.Duration(i.Config.RateLimit.Window)*time.Minute,
+		)
 	}
+	sessionStore := sessions.NewCookieStore([]byte(i.Config.CookieSecret))
+	sessionMiddleware := sessions.Sessions(i.Config.SessionName, sessionStore)
 
-	r = gin.Default()
-
-	// Add CORS headers
-	r.Use(middleware.Cors())
-
-	// Configure rate limiting
-	if si.config.RateLimit.Enabled {
-		fmt.Printf("Rate limiting enabled with %d requests per %d minutes",
-			si.config.RateLimit.Limit, si.config.RateLimit.Window)
-		r.Use(middleware.RateLimit(si.config.RateLimit.Limit,
-			time.Duration(si.config.RateLimit.Window)*time.Minute))
+	router.Use(corsMiddleware)
+	if i.Config.RateLimit.Enabled {
+		router.Use(rateLimitMiddleware)
 	}
+	router.Use(sessionMiddleware)
 
-	// Configure session middleware
-	store := sessions.NewCookieStore([]byte(si.config.CookieSecret))
-	r.Use(sessions.Sessions(si.config.SessionName, store))
+	authService := services.NewAuthService(i.Config)
+	adminService := services.NewAdminService()
 
-	cr, err = controllers.Init()
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to initialise controllers: %v", err)
-	}
+	controllers := controllers.NewControllers(i.Config, authService, adminService)
 
-	return r, cr, nil
+	appRouter := routes.NewRouter(controllers, i.Config)
+
+	appRouter.RegisterRoutes(router)
+
+	return router, nil
 }

@@ -1,15 +1,22 @@
-package controllers
+package admin
 
 import (
 	"net/http"
 	"server/models"
+	"server/services"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
 
-type AdminController struct{}
+type AdminController struct {
+	adminService *services.AdminService
+}
+
+func NewAdminController(adminService *services.AdminService) *AdminController {
+	return &AdminController{adminService: adminService}
+}
 
 // RemoveUser godoc
 // @Summary Remove a user by ID
@@ -29,7 +36,7 @@ func (a *AdminController) RemoveUser(c *gin.Context) {
 		return
 	}
 
-	if err := adminService.RemoveUser(uint(uintUserID)); err != nil {
+	if err := a.adminService.RemoveUser(uint(uintUserID)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to remove user"})
 		return
 	}
@@ -53,7 +60,7 @@ func (a *AdminController) ListUsers(c *gin.Context) {
 		return
 	}
 
-	result, err := adminService.ListUsers(req.Page, req.PageSize, req.Search)
+	result, err := a.adminService.ListUsers(req.Page, req.PageSize, req.Search)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list users"})
 		return
@@ -97,7 +104,7 @@ func (a *AdminController) UpdateUserRole(c *gin.Context) {
 		return
 	}
 
-	user, err := adminService.UpdateUserRole(uint(uintUserID), models.Role(input.Role))
+	user, err := a.adminService.UpdateUserRole(uint(uintUserID), models.Role(input.Role))
 	if err != nil {
 		status := http.StatusInternalServerError
 		if err.Error() == "user not found" {

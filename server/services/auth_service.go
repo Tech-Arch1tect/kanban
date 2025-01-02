@@ -13,7 +13,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type AuthService struct{}
+type AuthService struct {
+	config *config.Config
+	email  *e.EmailService
+}
+
+func NewAuthService(config *config.Config) *AuthService {
+	return &AuthService{
+		config: config,
+		email:  e.NewEmailService(config),
+	}
+}
 
 func (s *AuthService) Register(email, password string) error {
 	user := models.User{
@@ -107,7 +117,7 @@ func (s *AuthService) RequestPasswordReset(email string) error {
 	}
 
 	// send email with code to reset password
-	err = e.SendPlainText(user.Email, "Password Reset", "A password reset request has been received for your account. Please use the following code to reset your password: "+token)
+	err = s.email.SendPlainText(user.Email, "Password Reset", "A password reset request has been received for your account. Please use the following code to reset your password: "+token)
 	if err != nil {
 		return err
 	}
@@ -152,7 +162,7 @@ func (s *AuthService) GenerateTOTP(userID uint) (string, error) {
 	}
 
 	key, err := totp.Generate(totp.GenerateOpts{
-		Issuer:      config.CFG.AppName,
+		Issuer:      s.config.AppName,
 		AccountName: user.Email,
 	})
 	if err != nil {
