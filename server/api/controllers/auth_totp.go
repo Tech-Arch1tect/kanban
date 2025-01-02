@@ -18,7 +18,7 @@ import (
 // @Failure 401 {object} models.ErrorResponse "error: unauthorized"
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/totp/generate [post]
-func AuthGenerateTOTP(c *gin.Context) {
+func (a *AuthController) GenerateTOTP(c *gin.Context) {
 	user, err := helpers.GetUserFromSession(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -49,7 +49,7 @@ func AuthGenerateTOTP(c *gin.Context) {
 // @Failure 401 {object} models.ErrorResponse "error: unauthorized"
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/totp/enable [post]
-func AuthEnableTOTP(c *gin.Context) {
+func (a *AuthController) EnableTOTP(c *gin.Context) {
 
 	var req AuthEnableTOTPRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -86,7 +86,7 @@ func AuthEnableTOTP(c *gin.Context) {
 // @Failure 401 {object} models.ErrorResponse "error: unauthorized"
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/totp/disable [post]
-func AuthDisableTOTP(c *gin.Context) {
+func (a *AuthController) DisableTOTP(c *gin.Context) {
 
 	var req AuthDisableTOTPRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -121,7 +121,7 @@ func AuthDisableTOTP(c *gin.Context) {
 // @Failure 401 {object} models.ErrorResponse "error: unauthorized"
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/totp/confirm [post]
-func AuthConfirmTOTP(c *gin.Context) {
+func (a *AuthController) ConfirmTOTP(c *gin.Context) {
 
 	var req AuthConfirmTOTPRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

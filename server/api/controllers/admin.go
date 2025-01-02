@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin/binding"
 )
 
+type AdminController struct{}
+
 // RemoveUser godoc
 // @Summary Remove a user by ID
 // @Description Remove a user from the database by providing their ID
@@ -19,7 +21,7 @@ import (
 // @Success 200 {object} AdminRemoveUserResponse "message: user removed"
 // @Failure 500 {object} models.ErrorResponse "error: failed to remove user"
 // @Router /api/v1/admin/users/{id} [delete]
-func AdminRemoveUser(c *gin.Context) {
+func (a *AdminController) RemoveUser(c *gin.Context) {
 	userID := c.Param("id")
 	uintUserID, err := strconv.ParseUint(userID, 10, 64)
 	if err != nil {
@@ -44,7 +46,7 @@ func AdminRemoveUser(c *gin.Context) {
 // @Failure 400 {object} models.ErrorResponse "error: Invalid page or page size"
 // @Failure 500 {object} models.ErrorResponse "error: failed to list users"
 // @Router /api/v1/admin/users [get]
-func AdminListUsers(c *gin.Context) {
+func (a *AdminController) ListUsers(c *gin.Context) {
 	var req AdminSearchUsersRequest
 	if err := c.ShouldBindWith(&req, binding.Query); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid page or page size"})
@@ -81,7 +83,7 @@ func AdminListUsers(c *gin.Context) {
 // @Failure 404 {object} models.ErrorResponse "error: user not found"
 // @Failure 500 {object} models.ErrorResponse "error: failed to update user role"
 // @Router /api/v1/admin/users/{id}/role [put]
-func AdminUpdateUserRole(c *gin.Context) {
+func (a *AdminController) UpdateUserRole(c *gin.Context) {
 	var input AdminUpdateUserRoleRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})

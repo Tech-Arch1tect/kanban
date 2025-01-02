@@ -5,8 +5,19 @@ import "server/services"
 var adminService services.AdminService
 var authService services.AuthService
 
-func Init() error {
+type Controllers struct {
+	AdminController *AdminController
+	AuthController  *AuthController
+	MiscController  *MiscController
+}
+
+func Init() (cr *Controllers, err error) {
 	adminService = services.AdminService{}
 	authService = services.AuthService{}
-	return nil
+
+	return &Controllers{
+		AdminController: &AdminController{},
+		AuthController:  &AuthController{},
+		MiscController:  &MiscController{},
+	}, nil
 }

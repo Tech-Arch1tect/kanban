@@ -15,7 +15,7 @@ import (
 )
 
 type Router interface {
-	RegisterRoutes(r *gin.Engine)
+	RegisterRoutes(r *gin.Engine, cr *controllers.Controllers)
 }
 
 type router struct {
@@ -30,69 +30,69 @@ func registerSwaggerRoutes(r *gin.RouterGroup) {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 
-func (r *router) RegisterRoutes(engine *gin.Engine) {
+func (r *router) RegisterRoutes(engine *gin.Engine, cr *controllers.Controllers) {
 	root := engine.Group("/")
 	registerSwaggerRoutes(root)
 
 	// API versioned routes
 	api := engine.Group("/api/v1")
 	{
-		registerMiscRoutes(api)
-		registerAuthRoutes(api, r.config)
-		registerAdminRoutes(api)
+		registerMiscRoutes(api, cr)
+		registerAuthRoutes(api, cr, r.config)
+		registerAdminRoutes(api, cr)
 	}
 }
 
-func registerMiscRoutes(api *gin.RouterGroup) {
+func registerMiscRoutes(api *gin.RouterGroup, cr *controllers.Controllers) {
 	misc := api.Group("/misc")
 	{
-		misc.GET("/appname", controllers.MiscGetAppName)
+		misc.GET("/appname", cr.MiscController.GetAppName)
 	}
 }
 
-func registerAuthRoutes(api *gin.RouterGroup, cfg *config.Config) {
+func registerAuthRoutes(api *gin.RouterGroup, cr *controllers.Controllers, cfg *config.Config) {
 	auth := api.Group("/auth")
 	{
-		auth.POST("/register", controllers.AuthRegister)
+		auth.POST("/register", cr.AuthController.Register)
 		if cfg.RateLimit.Enabled {
-			auth.POST("/login", middleware.RateLimit(cfg.RateLimit.LoginLimit, time.Duration(cfg.RateLimit.LoginWindow)*time.Minute), controllers.AuthLogin)
+			auth.POST("/login", middleware.RateLimit(cfg.RateLimit.LoginLimit, time.Duration(cfg.RateLimit.LoginWindow)*time.Minute), cr.AuthController.Login)
 		} else {
-			auth.POST("/login", controllers.AuthLogin)
+			auth.POST("/login", cr.AuthController.Login)
 		}
-		auth.POST("/logout", middleware.AuthRequired(), middleware.CSRFTokenRequired(), controllers.AuthLogout)
-		auth.GET("/profile", middleware.AuthRequired(), controllers.AuthProfile)
-		auth.GET("/csrf-token", middleware.AuthRequired(), controllers.AuthGetCSRFToken)
-		auth.POST("/change-password", middleware.AuthRequired(), middleware.CSRFTokenRequired(), controllers.AuthChangePassword)
+		auth.POST("/logout", middleware.AuthRequired(), middleware.CSRFTokenRequired(), cr.AuthController.Logout)
+		auth.GET("/profile", middleware.AuthRequired(), cr.AuthController.Profile)
+		auth.GET("/csrf-token", middleware.AuthRequired(), cr.AuthController.GetCSRFToken)
+		auth.POST("/change-password", middleware.AuthRequired(), middleware.CSRFTokenRequired(), cr.AuthController.ChangePassword)
 		if cfg.RateLimit.Enabled {
-			auth.POST("/password-reset", middleware.RateLimit(cfg.RateLimit.PasswordResetLimit, time.Duration(cfg.RateLimit.PasswordResetWindow)*time.Minute), controllers.AuthPasswordReset)
-			auth.POST("/reset-password", middleware.RateLimit(cfg.RateLimit.PasswordResetLimit, time.Duration(cfg.RateLimit.PasswordResetWindow)*time.Minute), controllers.AuthResetPassword)
+			auth.POST("/password-reset", middleware.RateLimit(cfg.RateLimit.PasswordResetLimit, time.Duration(cfg.RateLimit.PasswordResetWindow)*time.Minute), cr.AuthController.PasswordReset)
+			auth.POST("/reset-password", middleware.RateLimit(cfg.RateLimit.PasswordResetLimit, time.Duration(cfg.RateLimit.PasswordResetWindow)*time.Minute), cr.AuthController.ResetPassword)
 		} else {
-			auth.POST("/password-reset", controllers.AuthPasswordReset)
-			auth.POST("/reset-password", controllers.AuthResetPassword)
+			auth.POST("/password-reset", cr.AuthController.PasswordReset)
+			auth.POST("/reset-password", cr.AuthController.ResetPassword)
 		}
 	}
 
 	authtotpLoginRequired := api.Group("/auth")
 	authtotpLoginRequired.Use(middleware.TOTPTempAuthRequired())
 	{
-		authtotpLoginRequired.POST("/totp/confirm", controllers.AuthConfirmTOTP)
+		authtotpLoginRequired.POST("/totp/confirm", cr.AuthController.ConfirmTOTP)
 	}
 
 	authLoginRequired := api.Group("/auth")
 	authLoginRequired.Use(middleware.AuthRequired())
 	{
-		authLoginRequired.POST("/totp/generate", middleware.CSRFTokenRequired(), controllers.AuthGenerateTOTP)
-		authLoginRequired.POST("/totp/enable", middleware.CSRFTokenRequired(), controllers.AuthEnableTOTP)
-		authLoginRequired.POST("/totp/disable", middleware.CSRFTokenRequired(), controllers.AuthDisableTOTP)
+		authLoginRequired.POST("/totp/generate", middleware.CSRFTokenRequired(), cr.AuthController.GenerateTOTP)
+		authLoginRequired.POST("/totp/enable", middleware.CSRFTokenRequired(), cr.AuthController.EnableTOTP)
+		authLoginRequired.POST("/totp/disable", middleware.CSRFTokenRequired(), cr.AuthController.DisableTOTP)
 	}
 }
 
-func registerAdminRoutes(api *gin.RouterGroup) {
+func registerAdminRoutes(api *gin.RouterGroup, cr *controllers.Controllers) {
 	admin := api.Group("admin")
 	admin.Use(middleware.EnsureRole(models.RoleAdmin))
 	{
-		admin.DELETE("/users/:id", middleware.CSRFTokenRequired(), controllers.AdminRemoveUser)
-		admin.GET("/users", controllers.AdminListUsers)
-		admin.PUT("/users/:id/role", middleware.CSRFTokenRequired(), controllers.AdminUpdateUserRole)
+		admin.DELETE("/users/:id", middleware.CSRFTokenRequired(), cr.AdminController.RemoveUser)
+		admin.GET("/users", cr.AdminController.ListUsers)
+		admin.PUT("/users/:id/role", middleware.CSRFTokenRequired(), cr.AdminController.UpdateUserRole)
 	}
 }

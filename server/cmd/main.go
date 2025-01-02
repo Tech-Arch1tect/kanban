@@ -20,14 +20,14 @@ func main() {
 
 	// Initialise server
 	initialiser := initialisation.NewServerInitialiser(config.CFG)
-	r, err := initialiser.Initialise()
+	r, cr, err := initialiser.Initialise()
 	if err != nil {
 		panic(err)
 	}
 
 	// Initialise routes
 	router := routes.NewRouter(config.CFG)
-	router.RegisterRoutes(r)
+	router.RegisterRoutes(r, cr)
 
 	if err := r.Run(":8090"); err != nil {
 		panic(err)

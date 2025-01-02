@@ -14,7 +14,7 @@ import (
 )
 
 type ServerInitialiser interface {
-	Initialise() (*gin.Engine, error)
+	Initialise() (*gin.Engine, *controllers.Controllers, error)
 }
 
 type serverInitialiser struct {
@@ -37,19 +37,19 @@ func NewServerInitialiser(cfg *config.Config) ServerInitialiser {
 	return &serverInitialiser{config: cfg}
 }
 
-func (si *serverInitialiser) Initialise() (*gin.Engine, error) {
+func (si *serverInitialiser) Initialise() (r *gin.Engine, cr *controllers.Controllers, err error) {
 	// Initialise database
 	if err := database.Init(si); err != nil {
-		return nil, fmt.Errorf("failed to initialise database: %v", err)
+		return nil, nil, fmt.Errorf("failed to initialise database: %v", err)
 	}
 
 	// Initialise email
-	err := email.Init()
+	err = email.Init()
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialise email: %v", err)
+		return nil, nil, fmt.Errorf("failed to initialise email: %v", err)
 	}
 
-	r := gin.Default()
+	r = gin.Default()
 
 	// Add CORS headers
 	r.Use(middleware.Cors())
@@ -66,9 +66,10 @@ func (si *serverInitialiser) Initialise() (*gin.Engine, error) {
 	store := sessions.NewCookieStore([]byte(si.config.CookieSecret))
 	r.Use(sessions.Sessions(si.config.SessionName, store))
 
-	if err := controllers.Init(); err != nil {
-		return nil, fmt.Errorf("failed to initialise controllers: %v", err)
+	cr, err = controllers.Init()
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to initialise controllers: %v", err)
 	}
 
-	return r, nil
+	return r, cr, nil
 }

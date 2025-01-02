@@ -23,7 +23,7 @@ import (
 // @Failure 401 {object} models.ErrorResponse "error: unauthorized"
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/change-password [post]
-func AuthChangePassword(c *gin.Context) {
+func (a *AuthController) ChangePassword(c *gin.Context) {
 	session := sessions.Default(c)
 	userID := session.Get("userID")
 	if userID == nil {
@@ -59,7 +59,7 @@ func AuthChangePassword(c *gin.Context) {
 // @Failure 400 {object} models.ErrorResponse "error: invalid request"
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/password-reset [post]
-func AuthPasswordReset(c *gin.Context) {
+func (a *AuthController) PasswordReset(c *gin.Context) {
 
 	var req AuthPasswordResetRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -87,7 +87,7 @@ func AuthPasswordReset(c *gin.Context) {
 // @Failure 400 {object} models.ErrorResponse "error: invalid request"
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/reset-password [post]
-func AuthResetPassword(c *gin.Context) {
+func (a *AuthController) ResetPassword(c *gin.Context) {
 	var req AuthResetPasswordRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request"})

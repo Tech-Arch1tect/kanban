@@ -10,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type AuthController struct{}
+
 // Register godoc
 // @Summary Register a new user
 // @Description Register a new user with email and password
@@ -21,7 +23,7 @@ import (
 // @Failure 400 {object} models.ErrorResponse "error: bad request"
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/register [post]
-func AuthRegister(c *gin.Context) {
+func (a *AuthController) Register(c *gin.Context) {
 	var input AuthRegisterRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": helpers.ParseValidationError(err)})
@@ -48,7 +50,7 @@ func AuthRegister(c *gin.Context) {
 // @Failure 400 {object} models.ErrorResponse "error: bad request"
 // @Failure 401 {object} models.ErrorResponse "error: invalid credentials"
 // @Router /api/v1/auth/login [post]
-func AuthLogin(c *gin.Context) {
+func (a *AuthController) Login(c *gin.Context) {
 	var input AuthLoginRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": helpers.ParseValidationError(err)})
@@ -90,7 +92,7 @@ func AuthLogin(c *gin.Context) {
 // @Produce json
 // @Success 200 {object} map[string]string "message: logged out"
 // @Router /api/v1/auth/logout [post]
-func AuthLogout(c *gin.Context) {
+func (a *AuthController) Logout(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Clear()
 	if err := session.Save(); err != nil {
@@ -110,7 +112,7 @@ func AuthLogout(c *gin.Context) {
 // @Success 200 {object} models.User
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/profile [get]
-func AuthProfile(c *gin.Context) {
+func (a *AuthController) Profile(c *gin.Context) {
 	session := sessions.Default(c)
 	userID := session.Get("userID")
 
@@ -133,7 +135,7 @@ func AuthProfile(c *gin.Context) {
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
 // @Router /api/v1/auth/csrf-token [get]
-func AuthGetCSRFToken(c *gin.Context) {
+func (a *AuthController) GetCSRFToken(c *gin.Context) {
 	user, err := helpers.GetUserFromSession(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "unauthorized"})
