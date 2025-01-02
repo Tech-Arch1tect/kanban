@@ -10,11 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AuthRegisterRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 // Register godoc
 // @Summary Register a new user
 // @Description Register a new user with email and password
@@ -40,15 +35,6 @@ func AuthRegister(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "user created"})
-}
-
-type AuthLoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type AuthLoginResponse struct {
-	Message string `json:"message"`
 }
 
 // Login godoc
@@ -137,15 +123,6 @@ func AuthProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-type AuthChangePasswordRequest struct {
-	CurrentPassword string `json:"current_password" binding:"required"`
-	NewPassword     string `json:"new_password" binding:"required,min=8"`
-}
-
-type AuthChangePasswordResponse struct {
-	Message string `json:"message"`
-}
-
 // AuthChangePassword godoc
 // @Summary Change user password
 // @Description Change the password of the logged-in user
@@ -185,10 +162,6 @@ func AuthChangePassword(c *gin.Context) {
 	})
 }
 
-type AuthGetCSRFTokenResponse struct {
-	CSRFToken string `json:"csrf_token"`
-}
-
 // AuthGetCSRFToken godoc
 // @Summary Get CSRF token
 // @Description Get the CSRF token for the logged-in user
@@ -214,14 +187,6 @@ func AuthGetCSRFToken(c *gin.Context) {
 	c.JSON(http.StatusOK, AuthGetCSRFTokenResponse{
 		CSRFToken: user.CSRFToken,
 	})
-}
-
-type AuthPasswordResetRequest struct {
-	Email string `json:"email" binding:"required,email"`
-}
-
-type AuthPasswordResetResponse struct {
-	Message string `json:"message"`
 }
 
 // AuthPasswordReset godoc
@@ -250,16 +215,6 @@ func AuthPasswordReset(c *gin.Context) {
 	}
 
 	c.JSON(200, AuthPasswordResetResponse{Message: "If you have an account with us, you will receive a password reset link shortly."})
-}
-
-type AuthResetPasswordRequest struct {
-	Code     string `json:"code" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
-}
-
-type AuthResetPasswordResponse struct {
-	Message string `json:"message"`
 }
 
 // ResetPassword godoc
@@ -291,10 +246,6 @@ func AuthResetPassword(c *gin.Context) {
 
 // TOTP related routes using github.com/pquerna/otp/totp
 
-type AuthGenerateTOTPResponse struct {
-	Secret string `json:"secret"`
-}
-
 // GenerateTOTP godoc
 // @Summary Generate TOTP secret
 // @Description Generate a new TOTP secret for the logged-in user
@@ -321,14 +272,6 @@ func AuthGenerateTOTP(c *gin.Context) {
 
 	response := AuthGenerateTOTPResponse{Secret: secret}
 	c.JSON(http.StatusOK, response)
-}
-
-type AuthEnableTOTPRequest struct {
-	Code string `json:"code" binding:"required"`
-}
-
-type AuthEnableTOTPResponse struct {
-	Message string `json:"message"`
 }
 
 // EnableTOTP godoc
@@ -368,14 +311,6 @@ func AuthEnableTOTP(c *gin.Context) {
 	c.JSON(http.StatusOK, AuthEnableTOTPResponse{Message: "TOTP enabled"})
 }
 
-type AuthDisableTOTPRequest struct {
-	Code string `json:"code" binding:"required"`
-}
-
-type AuthDisableTOTPResponse struct {
-	Message string `json:"message"`
-}
-
 // DisableTOTP godoc
 // @Summary Disable TOTP
 // @Description Disable TOTP for the logged-in user
@@ -411,14 +346,6 @@ func AuthDisableTOTP(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, AuthDisableTOTPResponse{Message: "TOTP disabled"})
-}
-
-type AuthConfirmTOTPRequest struct {
-	Code string `json:"code" binding:"required"`
-}
-
-type AuthConfirmTOTPResponse struct {
-	Message string `json:"message"`
 }
 
 // ConfirmTOTP godoc
