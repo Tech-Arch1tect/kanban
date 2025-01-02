@@ -21,7 +21,7 @@ func Init(cfg *config.Config) error {
 
 	db, err := initFunc(cfg)
 	if err != nil {
-		return fmt.Errorf("failed to initialize %s database: %w", cfg.Database.Type, err)
+		return fmt.Errorf("failed to initialise %s database: %w", cfg.Database.Type, err)
 	}
 
 	if err := db.Migrate(); err != nil {

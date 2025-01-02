@@ -14,20 +14,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Initializer struct {
+type Initialiser struct {
 	Config       *config.Config
 	AuthService  *services.AuthService
 	AdminService *services.AdminService
 }
 
-func NewInitializer(cfg *config.Config) *Initializer {
+func NewInitialiser(cfg *config.Config) *Initialiser {
 
-	return &Initializer{
+	return &Initialiser{
 		Config: cfg,
 	}
 }
 
-func (i *Initializer) Initialize() (*gin.Engine, error) {
+func (i *Initialiser) Initialise() (*gin.Engine, error) {
 	if err := database.Init(i.Config); err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}

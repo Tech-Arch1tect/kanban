@@ -19,10 +19,10 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	initializer := initialisation.NewInitializer(cfg)
-	router, err := initializer.Initialize()
+	initialiser := initialisation.NewInitialiser(cfg)
+	router, err := initialiser.Initialise()
 	if err != nil {
-		log.Fatalf("Initialization error: %v", err)
+		log.Fatalf("Initialisation error: %v", err)
 	}
 
 	if err := router.Run(":8090"); err != nil {
