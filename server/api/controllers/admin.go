@@ -9,10 +9,6 @@ import (
 	"github.com/gin-gonic/gin/binding"
 )
 
-type AdminRemoveUserResponse struct {
-	Message string `json:"message"`
-}
-
 // RemoveUser godoc
 // @Summary Remove a user by ID
 // @Description Remove a user from the database by providing their ID
@@ -36,19 +32,6 @@ func AdminRemoveUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, AdminRemoveUserResponse{Message: "user removed"})
-}
-
-type AdminListUsersResponse struct {
-	Users        []models.User `json:"users"`
-	Page         int           `json:"page"`
-	PageSize     int           `json:"page_size"`
-	TotalPages   int           `json:"total_pages"`
-	TotalRecords int           `json:"total_records"`
-}
-
-type AdminSearchUsersRequest struct {
-	models.PaginationParamsRequest
-	Search string `form:"search"`
 }
 
 // ListUsers godoc
@@ -81,15 +64,6 @@ func AdminListUsers(c *gin.Context) {
 		TotalPages:   result.TotalPages,
 		TotalRecords: result.TotalRecords,
 	})
-}
-
-type AdminUpdateUserRoleRequest struct {
-	Role string `json:"role"`
-}
-
-type AdminUpdateUserRoleResponse struct {
-	Message string      `json:"message"`
-	User    models.User `json:"user"`
 }
 
 // UpdateUserRole godoc
