@@ -157,6 +157,9 @@ func (s *AuthService) ResetPassword(email, token, newPassword string) error {
 		return err
 	}
 	user.Password = string(hashedPassword)
+
+	// reset password reset token
+	user.PasswordResetToken = ""
 	if err := s.db.UserRepository.Update(&user); err != nil {
 		return err
 	}
