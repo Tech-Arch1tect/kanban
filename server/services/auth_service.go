@@ -121,7 +121,12 @@ func (s *AuthService) RequestPasswordReset(email string) error {
 	}
 
 	// send email with code to reset password
-	err = s.email.SendPlainText(user.Email, "Password Reset", "A password reset request has been received for your account. Please use the following code to reset your password: "+token)
+	err = s.email.SendHTMLTemplate(user.Email, "Password Reset", "passwordReset.tmpl", map[string]string{
+		"code":      token,
+		"appUrl":    s.config.AppUrl,
+		"appName":   s.config.AppName,
+		"userEmail": user.Email,
+	})
 	if err != nil {
 		return err
 	}
