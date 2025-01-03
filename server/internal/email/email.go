@@ -22,7 +22,13 @@ type EmailService struct {
 }
 
 func NewEmailService(cfg *config.Config) *EmailService {
-	return &EmailService{cfg: cfg}
+
+	emailService, err := Init(cfg)
+	if err != nil {
+		log.Fatalf("failed to create email service: %s", err)
+	}
+
+	return emailService
 }
 
 func Init(cfg *config.Config) (*EmailService, error) {
