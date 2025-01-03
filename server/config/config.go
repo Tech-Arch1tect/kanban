@@ -31,6 +31,7 @@ type Config struct {
 	SessionName  string `validate:"required"`
 	AllowOrigin  string `validate:"required,url"`
 	AppName      string `validate:"required"`
+	AppUrl       string `validate:"required,url"`
 	SMTP         SMTPConfig
 	RateLimit    RateLimitConfig
 }
@@ -76,6 +77,7 @@ func LoadConfig() (*Config, error) {
 		SessionName:  os.Getenv("SESSION_NAME"),
 		AllowOrigin:  os.Getenv("ALLOW_ORIGIN"),
 		AppName:      os.Getenv("APP_NAME"),
+		AppUrl:       os.Getenv("APP_URL"),
 		SMTP: SMTPConfig{
 			Host:     os.Getenv("SMTP_HOST"),
 			Port:     os.Getenv("SMTP_PORT"),
@@ -129,6 +131,10 @@ func setDefaults(cfg *Config) {
 	if cfg.AppName == "" {
 		cfg.AppName = "App Name"
 		log.Printf("Using default APP_NAME: %s", cfg.AppName)
+	}
+	if cfg.AppUrl == "" {
+		cfg.AppUrl = "http://localhost:3001"
+		log.Printf("Using default APP_URL: %s", cfg.AppUrl)
 	}
 	if cfg.SMTP.Host == "" {
 		cfg.SMTP.Host = "localhost"
