@@ -1,0 +1,18 @@
+# this is a docker compose file used for local development
+# it is used to run mailpit for local email testing
+
+services:
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit
+    ports:
+      - "25:25"
+      - "8025:8025"
+    volumes:
+      - mailpit-data:/data
+    environment:
+      - MAILPIT_SMTP_BIND_ADDR=0.0.0.0:25
+      - MAILPIT_HTTP_BIND_ADDR=0.0.0.0:8025
+
+volumes:
+  mailpit-data:
