@@ -1,12 +1,20 @@
 package email
 
 import (
+	"embed"
+	"html/template"
 	"log"
-	"server/config"
 	"strconv"
 
 	"github.com/wneessen/go-mail"
+
+	"server/config"
 )
+
+// Embed the entire templates directory into the binary
+//
+//go:embed templates/*.tmpl
+var tplFS embed.FS
 
 type EmailService struct {
 	client *mail.Client
@@ -27,32 +35,69 @@ func Init(cfg *config.Config) (*EmailService, error) {
 	default:
 		auth = mail.SMTPAuthNoAuth
 	}
+
 	port, err := strconv.Atoi(cfg.SMTP.Port)
 	if err != nil {
 		log.Fatalf("failed to convert smtp port to int: %s", err)
 	}
+
 	tlspolicy := mail.TLSMandatory
 	if cfg.SMTP.NoTLS {
 		tlspolicy = mail.NoTLS
 	}
-	client, err := mail.NewClient(cfg.SMTP.Host, mail.WithSMTPAuth(auth),
-		mail.WithUsername(cfg.SMTP.User), mail.WithPassword(cfg.SMTP.Password), mail.WithPort(port), mail.WithTLSPolicy(tlspolicy))
+
+	client, err := mail.NewClient(
+		cfg.SMTP.Host,
+		mail.WithSMTPAuth(auth),
+		mail.WithUsername(cfg.SMTP.User),
+		mail.WithPassword(cfg.SMTP.Password),
+		mail.WithPort(port),
+		mail.WithTLSPolicy(tlspolicy),
+	)
 	if err != nil {
 		log.Fatalf("failed to create mail client: %s", err)
 	}
-	return &EmailService{client: client}, nil
+
+	return &EmailService{client: client, cfg: cfg}, nil
 }
 
 func (s *EmailService) SendPlainText(to, subject, body string) error {
 	msg := mail.NewMsg()
 	msg.Subject(subject)
+
 	if err := msg.From(s.cfg.SMTP.From); err != nil {
 		return err
 	}
 	if err := msg.To(to); err != nil {
 		return err
 	}
+
 	msg.SetBodyString(mail.TypeTextPlain, body)
-	log.Println("Sending email to", to)
+
+	log.Println("Sending plain text email to", to)
+	return s.client.DialAndSend(msg)
+}
+
+func (s *EmailService) SendHTMLTemplate(to, subject, tplName string, data interface{}) error {
+	msg := mail.NewMsg()
+	msg.Subject(subject)
+
+	if err := msg.From(s.cfg.SMTP.From); err != nil {
+		return err
+	}
+	if err := msg.To(to); err != nil {
+		return err
+	}
+
+	tpl, err := template.ParseFS(tplFS, "templates/"+tplName)
+	if err != nil {
+		return err
+	}
+
+	if err := msg.SetBodyHTMLTemplate(tpl, data); err != nil {
+		return err
+	}
+
+	log.Println("Sending HTML email to", to, "using template:", tplName)
 	return s.client.DialAndSend(msg)
 }
