@@ -8,7 +8,6 @@ import (
 
 type UserRepository interface {
 	Repository[models.User]
-	GetByEmail(email string) (models.User, error)
 	PaginatedSearch(page, pageSize int, search string) ([]models.User, int64, error)
 }
 
@@ -24,12 +23,6 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 
 func (r *GormUserRepository) Migrate() error {
 	return r.db.AutoMigrate(&models.User{})
-}
-
-func (r *GormUserRepository) GetByEmail(email string) (models.User, error) {
-	var user models.User
-	err := r.db.Where("email = ?", email).First(&user).Error
-	return user, err
 }
 
 func (r *GormUserRepository) PaginatedSearch(page, pageSize int, search string) ([]models.User, int64, error) {

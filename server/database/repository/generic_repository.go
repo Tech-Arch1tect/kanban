@@ -27,6 +27,13 @@ func (r *GormRepository[T]) GetAll(opts ...QueryOption) ([]T, error) {
 	return entities, result.Error
 }
 
+func (r *GormRepository[T]) GetFirst(opts ...QueryOption) (T, error) {
+	var entity T
+	db := r.applyOptions(opts...)
+	result := db.First(&entity)
+	return entity, result.Error
+}
+
 func (r *GormRepository[T]) GetByID(id uint, opts ...QueryOption) (T, error) {
 	var entity T
 	db := r.applyOptions(opts...)

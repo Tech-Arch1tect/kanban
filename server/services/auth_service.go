@@ -59,7 +59,7 @@ func (s *AuthService) Register(email, password string) error {
 }
 
 func (s *AuthService) Login(email, password string) (uint, error) {
-	user, err := s.db.UserRepository.GetByEmail(email)
+	user, err := s.db.UserRepository.GetFirst(repository.WithWhere("email = ?", email))
 	if err != nil {
 		return user.ID, err
 	}
@@ -108,7 +108,7 @@ func (s *AuthService) RequestPasswordReset(email string) error {
 	token := s.helper.GenerateRandomToken()
 
 	// find user by email
-	user, err := s.db.UserRepository.GetByEmail(email)
+	user, err := s.db.UserRepository.GetFirst(repository.WithWhere("email = ?", email))
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func (s *AuthService) RequestPasswordReset(email string) error {
 
 func (s *AuthService) ResetPassword(email, token, newPassword string) error {
 	// find user by email
-	user, err := s.db.UserRepository.GetByEmail(email)
+	user, err := s.db.UserRepository.GetFirst(repository.WithWhere("email = ?", email))
 	if err != nil {
 		return err
 	}
