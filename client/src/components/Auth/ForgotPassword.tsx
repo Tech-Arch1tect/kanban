@@ -1,22 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSendResetCode } from "../../hooks/auth/useSendResetCode";
 import { useResetPassword } from "../../hooks/auth/useResetPassword";
+import { Link } from "@tanstack/react-router";
 
-const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
+const ForgotPassword = ({ initialEmail = "", initialCode = "" }) => {
+  const [email, setEmail] = useState(initialEmail);
+  const [code, setCode] = useState(initialCode);
   const [password, setPassword] = useState("");
-  const [stage, setStage] = useState(1); 
+  const [stage, setStage] = useState(initialCode ? 2 : 1);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
   const sendResetCodeMutation = useSendResetCode();
   const resetPasswordMutation = useResetPassword();
 
+  useEffect(() => {
+    if (initialEmail) setEmail(initialEmail);
+    if (initialCode) {
+      setCode(initialCode);
+      setStage(2);
+    }
+  }, [initialEmail, initialCode]);
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
-    
+
     if (stage === 1) {
       sendResetCodeMutation.mutate(email, {
         onSuccess: () => {
@@ -24,7 +33,7 @@ const ForgotPassword = () => {
         },
         onError: () => {
           setError("Failed to send reset code. Please try again.");
-        }
+        },
       });
     } else if (stage === 2) {
       resetPasswordMutation.mutate(
@@ -35,7 +44,7 @@ const ForgotPassword = () => {
           },
           onError: () => {
             setError("Failed to reset password. Please try again.");
-          }
+          },
         }
       );
     }
@@ -54,6 +63,9 @@ const ForgotPassword = () => {
             </h2>
             <p className="text-gray-700 text-center">
               Your password has been successfully reset.
+            </p>
+            <p className="text-center pt-4">
+              <Link to="/login">Login</Link>
             </p>
           </div>
         ) : (

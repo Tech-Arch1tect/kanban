@@ -1,13 +1,13 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useUserProfile } from '../../hooks/useUserProfile';
-import { useAuth } from '../../hooks/auth/useAuth';
-import { useDropdown } from '../../hooks/useDropdown';
+import { useUserProfile } from "../../hooks/useUserProfile";
+import { useAuth } from "../../hooks/auth/useAuth";
+import { useDropdown } from "../../hooks/useDropdown";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const { profile, error } = useUserProfile();
 
   const { handleLogout, isAdmin } = useAuth(profile);
@@ -16,7 +16,11 @@ const Navbar = () => {
   const adminDropdown = useDropdown();
 
   useEffect(() => {
-    if (error && !["/login", "/register"].includes(location.pathname)) {
+    if (
+      error &&
+      !["/login", "/register"].includes(location.pathname) &&
+      !location.pathname.startsWith("/password-reset")
+    ) {
       navigate({ to: "/login" });
     }
   }, [error, location, navigate]);
@@ -61,7 +65,12 @@ const Navbar = () => {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
             {profileDropdown.isOpen && (
@@ -99,7 +108,12 @@ const Navbar = () => {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </button>
               {adminDropdown.isOpen && (
