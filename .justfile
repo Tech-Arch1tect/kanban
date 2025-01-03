@@ -13,6 +13,11 @@ server:
 server-watch:
   @air
 
+# Lints the server code.
+[working-directory: "server"]
+lint:
+  @golangci-lint run
+
 # Client commands
 # Starts the client development server using npm.
 [working-directory: "client"]
