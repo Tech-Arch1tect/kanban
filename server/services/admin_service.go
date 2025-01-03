@@ -2,15 +2,16 @@ package services
 
 import (
 	"errors"
-	"server/database"
+	"server/database/repository"
 	"server/models"
 )
 
 type AdminService struct {
+	db *repository.Database
 }
 
-func NewAdminService() *AdminService {
-	return &AdminService{}
+func NewAdminService(db *repository.Database) *AdminService {
+	return &AdminService{db: db}
 }
 
 type AdminPaginationResult struct {
@@ -20,11 +21,11 @@ type AdminPaginationResult struct {
 }
 
 func (s *AdminService) RemoveUser(userID uint) error {
-	return database.DB.UserRepository.Delete(userID)
+	return s.db.UserRepository.Delete(userID)
 }
 
 func (s *AdminService) ListUsers(page, pageSize int, search string) (AdminPaginationResult, error) {
-	users, totalRecords, err := database.DB.UserRepository.PaginatedSearch(page, pageSize, search)
+	users, totalRecords, err := s.db.UserRepository.PaginatedSearch(page, pageSize, search)
 	if err != nil {
 		return AdminPaginationResult{}, err
 	}
@@ -37,7 +38,7 @@ func (s *AdminService) ListUsers(page, pageSize int, search string) (AdminPagina
 }
 
 func (s *AdminService) UpdateUserRole(userID uint, role models.Role) (models.User, error) {
-	user, err := database.DB.UserRepository.GetByID(userID)
+	user, err := s.db.UserRepository.GetByID(userID)
 	if err != nil {
 		return models.User{}, errors.New("user not found")
 	}
@@ -47,7 +48,7 @@ func (s *AdminService) UpdateUserRole(userID uint, role models.Role) (models.Use
 	}
 
 	user.Role = role
-	if err := database.DB.UserRepository.Update(&user); err != nil {
+	if err := s.db.UserRepository.Update(&user); err != nil {
 		return models.User{}, errors.New("failed to update user role")
 	}
 

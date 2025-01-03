@@ -2,7 +2,7 @@ package auth
 
 import (
 	"net/http"
-	"server/database"
+	"server/database/repository"
 	"server/internal/helpers"
 	"server/models"
 	"server/services"
@@ -12,11 +12,13 @@ import (
 )
 
 type AuthController struct {
-	authService *services.AuthService
+	authService   *services.AuthService
+	db            *repository.Database
+	helperService *helpers.HelperService
 }
 
-func NewAuthController(authService *services.AuthService) *AuthController {
-	return &AuthController{authService: authService}
+func NewAuthController(authService *services.AuthService, db *repository.Database, helperService *helpers.HelperService) *AuthController {
+	return &AuthController{authService: authService, db: db, helperService: helperService}
 }
 
 // Register godoc
@@ -33,7 +35,7 @@ func NewAuthController(authService *services.AuthService) *AuthController {
 func (a *AuthController) Register(c *gin.Context) {
 	var input AuthRegisterRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": helpers.ParseValidationError(err)})
+		c.JSON(http.StatusBadRequest, gin.H{"error": a.helperService.ParseValidationError(err)})
 		return
 	}
 
@@ -60,13 +62,13 @@ func (a *AuthController) Register(c *gin.Context) {
 func (a *AuthController) Login(c *gin.Context) {
 	var input AuthLoginRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": helpers.ParseValidationError(err)})
+		c.JSON(http.StatusBadRequest, gin.H{"error": a.helperService.ParseValidationError(err)})
 		return
 	}
 
 	id, err := a.authService.Login(input.Email, input.Password)
 	if err != nil && err.Error() == "totp_required" {
-		if err := helpers.CreateTOTPSession(c, id); err != nil {
+		if err := a.helperService.CreateTOTPSession(c, id); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 			return
 		}
@@ -81,7 +83,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	if err := helpers.CreateLoginSession(c, id); err != nil {
+	if err := a.helperService.CreateLoginSession(c, id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
@@ -123,7 +125,7 @@ func (a *AuthController) Profile(c *gin.Context) {
 	session := sessions.Default(c)
 	userID := session.Get("userID")
 
-	user, err := database.DB.UserRepository.GetByID(userID.(uint))
+	user, err := a.db.UserRepository.GetByID(userID.(uint))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
@@ -143,7 +145,7 @@ func (a *AuthController) Profile(c *gin.Context) {
 // @Failure 500 {object} models.ErrorResponse
 // @Router /api/v1/auth/csrf-token [get]
 func (a *AuthController) GetCSRFToken(c *gin.Context) {
-	user, err := helpers.GetUserFromSession(c)
+	user, err := a.helperService.GetUserFromSession(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "unauthorized"})
 		return

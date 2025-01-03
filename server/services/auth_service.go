@@ -3,7 +3,7 @@ package services
 import (
 	"errors"
 	"server/config"
-	"server/database"
+	"server/database/repository"
 	e "server/internal/email"
 	"server/internal/helpers"
 	"server/models"
@@ -16,12 +16,16 @@ import (
 type AuthService struct {
 	config *config.Config
 	email  *e.EmailService
+	db     *repository.Database
+	helper *helpers.HelperService
 }
 
-func NewAuthService(config *config.Config) *AuthService {
+func NewAuthService(config *config.Config, email *e.EmailService, db *repository.Database, helper *helpers.HelperService) *AuthService {
 	return &AuthService{
 		config: config,
-		email:  e.NewEmailService(config),
+		email:  email,
+		db:     db,
+		helper: helper,
 	}
 }
 
@@ -33,7 +37,7 @@ func (s *AuthService) Register(email, password string) error {
 	}
 
 	// If this is the first user to register, set the role to admin
-	count, err := database.DB.UserRepository.Count()
+	count, err := s.db.UserRepository.Count()
 	if err != nil {
 		return err
 	}
@@ -47,7 +51,7 @@ func (s *AuthService) Register(email, password string) error {
 	}
 
 	user.Password = string(hashedPassword)
-	if err := database.DB.UserRepository.Create(&user); err != nil {
+	if err := s.db.UserRepository.Create(&user); err != nil {
 		return err
 	}
 
@@ -55,7 +59,7 @@ func (s *AuthService) Register(email, password string) error {
 }
 
 func (s *AuthService) Login(email, password string) (uint, error) {
-	user, err := database.DB.UserRepository.GetByEmail(email)
+	user, err := s.db.UserRepository.GetByEmail(email)
 	if err != nil {
 		return user.ID, err
 	}
@@ -76,7 +80,7 @@ func (s *AuthService) Login(email, password string) (uint, error) {
 }
 
 func (s *AuthService) ChangePassword(userID uint, currentPassword, newPassword string) error {
-	user, err := database.DB.UserRepository.GetByID(userID)
+	user, err := s.db.UserRepository.GetByID(userID)
 	if err != nil {
 		return err
 	}
@@ -93,7 +97,7 @@ func (s *AuthService) ChangePassword(userID uint, currentPassword, newPassword s
 	}
 
 	user.Password = string(hashedPassword)
-	if err := database.DB.UserRepository.Update(&user); err != nil {
+	if err := s.db.UserRepository.Update(&user); err != nil {
 		return err
 	}
 
@@ -101,10 +105,10 @@ func (s *AuthService) ChangePassword(userID uint, currentPassword, newPassword s
 }
 
 func (s *AuthService) RequestPasswordReset(email string) error {
-	token := helpers.GenerateRandomToken()
+	token := s.helper.GenerateRandomToken()
 
 	// find user by email
-	user, err := database.DB.UserRepository.GetByEmail(email)
+	user, err := s.db.UserRepository.GetByEmail(email)
 	if err != nil {
 		return err
 	}
@@ -112,7 +116,7 @@ func (s *AuthService) RequestPasswordReset(email string) error {
 	// update user with reset token
 	user.PasswordResetToken = token
 	user.PasswordResetSentAt = time.Now()
-	if err := database.DB.UserRepository.Update(&user); err != nil {
+	if err := s.db.UserRepository.Update(&user); err != nil {
 		return err
 	}
 
@@ -127,7 +131,7 @@ func (s *AuthService) RequestPasswordReset(email string) error {
 
 func (s *AuthService) ResetPassword(email, token, newPassword string) error {
 	// find user by email
-	user, err := database.DB.UserRepository.GetByEmail(email)
+	user, err := s.db.UserRepository.GetByEmail(email)
 	if err != nil {
 		return err
 	}
@@ -148,7 +152,7 @@ func (s *AuthService) ResetPassword(email, token, newPassword string) error {
 		return err
 	}
 	user.Password = string(hashedPassword)
-	if err := database.DB.UserRepository.Update(&user); err != nil {
+	if err := s.db.UserRepository.Update(&user); err != nil {
 		return err
 	}
 
@@ -156,7 +160,7 @@ func (s *AuthService) ResetPassword(email, token, newPassword string) error {
 }
 
 func (s *AuthService) GenerateTOTP(userID uint) (string, error) {
-	user, err := database.DB.UserRepository.GetByID(userID)
+	user, err := s.db.UserRepository.GetByID(userID)
 	if err != nil {
 		return "", err
 	}
@@ -170,7 +174,7 @@ func (s *AuthService) GenerateTOTP(userID uint) (string, error) {
 	}
 
 	user.TotpSecret = key.Secret()
-	if err := database.DB.UserRepository.Update(&user); err != nil {
+	if err := s.db.UserRepository.Update(&user); err != nil {
 		return "", err
 	}
 
@@ -178,7 +182,7 @@ func (s *AuthService) GenerateTOTP(userID uint) (string, error) {
 }
 
 func (s *AuthService) EnableTOTP(userID uint, code string) error {
-	user, err := database.DB.UserRepository.GetByID(userID)
+	user, err := s.db.UserRepository.GetByID(userID)
 	if err != nil {
 		return err
 	}
@@ -189,7 +193,7 @@ func (s *AuthService) EnableTOTP(userID uint, code string) error {
 	}
 
 	user.TotpEnabled = true
-	if err := database.DB.UserRepository.Update(&user); err != nil {
+	if err := s.db.UserRepository.Update(&user); err != nil {
 		return err
 	}
 
@@ -197,7 +201,7 @@ func (s *AuthService) EnableTOTP(userID uint, code string) error {
 }
 
 func (s *AuthService) DisableTOTP(userID uint, code string) error {
-	user, err := database.DB.UserRepository.GetByID(userID)
+	user, err := s.db.UserRepository.GetByID(userID)
 	if err != nil {
 		return err
 	}
@@ -213,7 +217,7 @@ func (s *AuthService) DisableTOTP(userID uint, code string) error {
 
 	user.TotpEnabled = false
 	user.TotpSecret = ""
-	if err := database.DB.UserRepository.Update(&user); err != nil {
+	if err := s.db.UserRepository.Update(&user); err != nil {
 		return err
 	}
 
@@ -222,7 +226,7 @@ func (s *AuthService) DisableTOTP(userID uint, code string) error {
 
 func (s *AuthService) ConfirmTOTP(userID uint, code string) error {
 	// find the user by ID
-	user, err := database.DB.UserRepository.GetByID(userID)
+	user, err := s.db.UserRepository.GetByID(userID)
 	if err != nil {
 		return err
 	}

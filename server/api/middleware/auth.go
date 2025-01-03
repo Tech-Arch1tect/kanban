@@ -2,15 +2,13 @@ package middleware
 
 import (
 	"net/http"
-	"server/database"
-	"server/internal/helpers"
 	"server/models"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
-func AuthRequired() gin.HandlerFunc {
+func (m *Middleware) AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
 		userID := session.Get("userID")
@@ -22,7 +20,7 @@ func AuthRequired() gin.HandlerFunc {
 	}
 }
 
-func EnsureRole(role models.Role) gin.HandlerFunc {
+func (m *Middleware) EnsureRole(role models.Role) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
 		userID := session.Get("userID")
@@ -30,7 +28,7 @@ func EnsureRole(role models.Role) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthenticated"})
 			return
 		}
-		user, err := database.DB.UserRepository.GetByID(userID.(uint))
+		user, err := m.db.UserRepository.GetByID(userID.(uint))
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 			return
@@ -43,7 +41,7 @@ func EnsureRole(role models.Role) gin.HandlerFunc {
 	}
 }
 
-func TOTPTempAuthRequired() gin.HandlerFunc {
+func (m *Middleware) TOTPTempAuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
 		userID := session.Get("totpUserID")
@@ -54,7 +52,7 @@ func TOTPTempAuthRequired() gin.HandlerFunc {
 	}
 }
 
-func CSRFTokenRequired() gin.HandlerFunc {
+func (m *Middleware) CSRFTokenRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("X-CSRF-Token")
 		if token == "" {
@@ -62,7 +60,7 @@ func CSRFTokenRequired() gin.HandlerFunc {
 			return
 		}
 
-		user, err := helpers.GetUserFromSession(c)
+		user, err := m.helper.GetUserFromSession(c)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthenticated"})
 			return
@@ -74,7 +72,7 @@ func CSRFTokenRequired() gin.HandlerFunc {
 		}
 
 		user.GenerateCSRFToken()
-		err = database.DB.UserRepository.Update(&user)
+		err = m.db.UserRepository.Update(&user)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 			return

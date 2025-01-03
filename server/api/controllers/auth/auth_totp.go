@@ -2,7 +2,6 @@ package auth
 
 import (
 	"net/http"
-	"server/internal/helpers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,7 +18,7 @@ import (
 // @Failure 500 {object} models.ErrorResponse "error: internal server error"
 // @Router /api/v1/auth/totp/generate [post]
 func (a *AuthController) GenerateTOTP(c *gin.Context) {
-	user, err := helpers.GetUserFromSession(c)
+	user, err := a.helperService.GetUserFromSession(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -57,7 +56,7 @@ func (a *AuthController) EnableTOTP(c *gin.Context) {
 		return
 	}
 
-	user, err := helpers.GetUserFromSession(c)
+	user, err := a.helperService.GetUserFromSession(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -94,7 +93,7 @@ func (a *AuthController) DisableTOTP(c *gin.Context) {
 		return
 	}
 
-	user, err := helpers.GetUserFromSession(c)
+	user, err := a.helperService.GetUserFromSession(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -129,7 +128,7 @@ func (a *AuthController) ConfirmTOTP(c *gin.Context) {
 		return
 	}
 
-	user, err := helpers.GetUserFromSession(c)
+	user, err := a.helperService.GetUserFromSession(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -141,12 +140,12 @@ func (a *AuthController) ConfirmTOTP(c *gin.Context) {
 		return
 	}
 
-	if err := helpers.CreateLoginSession(c, user.ID); err != nil {
+	if err := a.helperService.CreateLoginSession(c, user.ID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
 
-	if err := helpers.ClearTOTPSession(c); err != nil {
+	if err := a.helperService.ClearTOTPSession(c); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}

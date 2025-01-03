@@ -2,7 +2,6 @@ package auth
 
 import (
 	"net/http"
-	"server/internal/helpers"
 	"server/models"
 
 	"github.com/gin-gonic/contrib/sessions"
@@ -33,7 +32,7 @@ func (a *AuthController) ChangePassword(c *gin.Context) {
 
 	var input AuthChangePasswordRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": helpers.ParseValidationError(err)})
+		c.JSON(http.StatusBadRequest, gin.H{"error": a.helperService.ParseValidationError(err)})
 		return
 	}
 
