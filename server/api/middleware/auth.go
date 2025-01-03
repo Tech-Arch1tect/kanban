@@ -58,7 +58,10 @@ func (m *Middleware) EnsureCSRFTokenExistsInSession() gin.HandlerFunc {
 		session := sessions.Default(c)
 		csrfToken := session.Get("csrfToken")
 		if csrfToken == nil {
-			m.updateCSRFToken(c, m.generateCSRFToken())
+			if err := m.updateCSRFToken(c, m.generateCSRFToken()); err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+				return
+			}
 		}
 		c.Next()
 	}
@@ -77,7 +80,10 @@ func (m *Middleware) CSRFTokenRequired() gin.HandlerFunc {
 			return
 		}
 
-		m.updateCSRFToken(c, m.generateCSRFToken())
+		if err := m.updateCSRFToken(c, m.generateCSRFToken()); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			return
+		}
 
 		c.Next()
 	}
@@ -93,8 +99,11 @@ func (m *Middleware) validateCSRFToken(c *gin.Context, token string) bool {
 	return csrfToken == token
 }
 
-func (m *Middleware) updateCSRFToken(c *gin.Context, token string) {
+func (m *Middleware) updateCSRFToken(c *gin.Context, token string) error {
 	session := sessions.Default(c)
 	session.Set("csrfToken", token)
-	session.Save()
+	if err := session.Save(); err != nil {
+		return err
+	}
+	return nil
 }
