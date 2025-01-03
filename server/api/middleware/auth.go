@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func (m *Middleware) AuthRequired() gin.HandlerFunc {
@@ -52,6 +53,17 @@ func (m *Middleware) TOTPTempAuthRequired() gin.HandlerFunc {
 	}
 }
 
+func (m *Middleware) EnsureCSRFTokenExistsInSession() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+		csrfToken := session.Get("csrfToken")
+		if csrfToken == nil {
+			m.updateCSRFToken(c, m.generateCSRFToken())
+		}
+		c.Next()
+	}
+}
+
 func (m *Middleware) CSRFTokenRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("X-CSRF-Token")
@@ -60,24 +72,29 @@ func (m *Middleware) CSRFTokenRequired() gin.HandlerFunc {
 			return
 		}
 
-		user, err := m.helper.GetUserFromSession(c)
-		if err != nil {
+		if !m.validateCSRFToken(c, token) {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthenticated"})
 			return
 		}
 
-		if user.CSRFToken != token {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthenticated"})
-			return
-		}
-
-		user.GenerateCSRFToken()
-		err = m.db.UserRepository.Update(&user)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-			return
-		}
+		m.updateCSRFToken(c, m.generateCSRFToken())
 
 		c.Next()
 	}
+}
+
+func (m *Middleware) generateCSRFToken() string {
+	return uuid.New().String()
+}
+
+func (m *Middleware) validateCSRFToken(c *gin.Context, token string) bool {
+	session := sessions.Default(c)
+	csrfToken := session.Get("csrfToken")
+	return csrfToken == token
+}
+
+func (m *Middleware) updateCSRFToken(c *gin.Context, token string) {
+	session := sessions.Default(c)
+	session.Set("csrfToken", token)
+	session.Save()
 }

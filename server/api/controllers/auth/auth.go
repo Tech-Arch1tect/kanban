@@ -145,18 +145,15 @@ func (a *AuthController) Profile(c *gin.Context) {
 // @Failure 500 {object} models.ErrorResponse
 // @Router /api/v1/auth/csrf-token [get]
 func (a *AuthController) GetCSRFToken(c *gin.Context) {
-	user, err := a.helperService.GetUserFromSession(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "unauthorized"})
-		return
-	}
+	session := sessions.Default(c)
+	csrfToken := session.Get("csrfToken")
 
-	if user.CSRFToken == "" {
+	if csrfToken == nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "internal server error"})
 		return
 	}
 
 	c.JSON(http.StatusOK, AuthGetCSRFTokenResponse{
-		CSRFToken: user.CSRFToken,
+		CSRFToken: csrfToken.(string),
 	})
 }

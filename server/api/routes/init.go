@@ -57,29 +57,29 @@ func (r *router) registerMiscRoutes(api *gin.RouterGroup) {
 func (r *router) registerAuthRoutes(api *gin.RouterGroup) {
 	auth := api.Group("/auth")
 	{
+		auth.GET("/csrf-token", r.cr.AuthController.GetCSRFToken)
 		if r.cfg.RateLimit.Enabled {
-			auth.POST("/login", middleware.RateLimit(r.cfg.RateLimit.LoginLimit, time.Duration(r.cfg.RateLimit.LoginWindow)*time.Minute), r.cr.AuthController.Login)
+			auth.POST("/login", r.mw.CSRFTokenRequired(), middleware.RateLimit(r.cfg.RateLimit.LoginLimit, time.Duration(r.cfg.RateLimit.LoginWindow)*time.Minute), r.cr.AuthController.Login)
 		} else {
-			auth.POST("/login", r.cr.AuthController.Login)
+			auth.POST("/login", r.mw.CSRFTokenRequired(), r.cr.AuthController.Login)
 		}
-		auth.POST("/register", r.cr.AuthController.Register)
+		auth.POST("/register", r.mw.CSRFTokenRequired(), r.cr.AuthController.Register)
 		auth.POST("/logout", r.mw.CSRFTokenRequired(), r.mw.AuthRequired(), r.cr.AuthController.Logout)
 		auth.GET("/profile", r.mw.AuthRequired(), r.cr.AuthController.Profile)
-		auth.GET("/csrf-token", r.mw.AuthRequired(), r.cr.AuthController.GetCSRFToken)
 		auth.POST("/change-password", r.mw.AuthRequired(), r.mw.CSRFTokenRequired(), r.cr.AuthController.ChangePassword)
 		if r.cfg.RateLimit.Enabled {
-			auth.POST("/password-reset", middleware.RateLimit(r.cfg.RateLimit.PasswordResetLimit, time.Duration(r.cfg.RateLimit.PasswordResetWindow)*time.Minute), r.cr.AuthController.PasswordReset)
-			auth.POST("/reset-password", middleware.RateLimit(r.cfg.RateLimit.PasswordResetLimit, time.Duration(r.cfg.RateLimit.PasswordResetWindow)*time.Minute), r.cr.AuthController.ResetPassword)
+			auth.POST("/password-reset", r.mw.CSRFTokenRequired(), middleware.RateLimit(r.cfg.RateLimit.PasswordResetLimit, time.Duration(r.cfg.RateLimit.PasswordResetWindow)*time.Minute), r.cr.AuthController.PasswordReset)
+			auth.POST("/reset-password", r.mw.CSRFTokenRequired(), middleware.RateLimit(r.cfg.RateLimit.PasswordResetLimit, time.Duration(r.cfg.RateLimit.PasswordResetWindow)*time.Minute), r.cr.AuthController.ResetPassword)
 		} else {
-			auth.POST("/password-reset", r.cr.AuthController.PasswordReset)
-			auth.POST("/reset-password", r.cr.AuthController.ResetPassword)
+			auth.POST("/password-reset", r.mw.CSRFTokenRequired(), r.cr.AuthController.PasswordReset)
+			auth.POST("/reset-password", r.mw.CSRFTokenRequired(), r.cr.AuthController.ResetPassword)
 		}
 	}
 
 	authtotpLoginRequired := api.Group("/auth")
 	authtotpLoginRequired.Use(r.mw.TOTPTempAuthRequired())
 	{
-		authtotpLoginRequired.POST("/totp/confirm", r.cr.AuthController.ConfirmTOTP)
+		authtotpLoginRequired.POST("/totp/confirm", r.mw.CSRFTokenRequired(), r.cr.AuthController.ConfirmTOTP)
 	}
 
 	authLoginRequired := api.Group("/auth")

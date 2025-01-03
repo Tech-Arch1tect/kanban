@@ -62,7 +62,7 @@ func (i *Initialiser) Initialise() (*gin.Engine, error) {
 		router.Use(rateLimitMiddleware)
 	}
 	router.Use(sessionMiddleware)
-
+	router.Use(i.mw.EnsureCSRFTokenExistsInSession())
 	i.es = email.NewEmailService(i.c)
 	i.hs = helpers.NewHelperService(i.db)
 	i.mw = middleware.NewMiddleware(i.db, i.hs)
