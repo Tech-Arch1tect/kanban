@@ -2,6 +2,11 @@ package initialisation
 
 import (
 	"fmt"
+	"time"
+
+	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-gonic/gin"
+
 	"server/api/controllers"
 	"server/api/middleware"
 	"server/api/routes"
@@ -11,10 +16,6 @@ import (
 	"server/internal/email"
 	"server/internal/helpers"
 	"server/services"
-	"time"
-
-	"github.com/gin-gonic/contrib/sessions"
-	"github.com/gin-gonic/gin"
 )
 
 type Initialiser struct {
@@ -28,7 +29,6 @@ type Initialiser struct {
 }
 
 func NewInitialiser(cfg *config.Config) *Initialiser {
-
 	return &Initialiser{
 		c: cfg,
 	}
@@ -53,6 +53,7 @@ func (i *Initialiser) Initialise() (*gin.Engine, error) {
 			time.Duration(i.c.RateLimit.Window)*time.Minute,
 		)
 	}
+
 	sessionStore := sessions.NewCookieStore([]byte(i.c.CookieSecret))
 	sessionMiddleware := sessions.Sessions(i.c.SessionName, sessionStore)
 
@@ -63,16 +64,12 @@ func (i *Initialiser) Initialise() (*gin.Engine, error) {
 	router.Use(sessionMiddleware)
 
 	i.es = email.NewEmailService(i.c)
-
 	i.hs = helpers.NewHelperService(i.db)
-
 	i.mw = middleware.NewMiddleware(i.db, i.hs)
-
 	i.authS = services.NewAuthService(i.c, i.es, i.db, i.hs)
 	i.adminS = services.NewAdminService(i.db)
 
 	controllers := controllers.NewControllers(i.c, i.authS, i.adminS, i.db, i.hs)
-
 	appRouter := routes.NewRouter(controllers, i.c, i.db, i.mw)
 
 	appRouter.RegisterRoutes(router)
