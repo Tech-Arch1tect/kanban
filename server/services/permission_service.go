@@ -31,7 +31,9 @@ func (ps *PermissionService) SeedPermissions() error {
 		_, err := ps.db.BoardPermissionRepository.GetFirst(repository.WithWhere("name = ?", permission))
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				ps.db.BoardPermissionRepository.Create(&models.BoardPermission{Name: permission})
+				if err := ps.db.BoardPermissionRepository.Create(&models.BoardPermission{Name: permission}); err != nil {
+					return err
+				}
 			}
 		}
 	}
