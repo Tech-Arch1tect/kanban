@@ -118,7 +118,7 @@ func (bs *BoardService) ListBoards(userID uint) ([]models.Board, error) {
 		return []models.Board{}, err
 	}
 
-	userBoardPermissions, err := bs.db.UserBoardPermissionRepository.GetAll(repository.WithWhere("user_id = ? AND permission_id = ?", userID, ViewPermission.ID), repository.WithPreload("Board"))
+	userBoardPermissions, err := bs.db.UserBoardPermissionRepository.GetAll(repository.WithWhere("user_id = ? AND id = ?", userID, ViewPermission.ID), repository.WithPreload("Board"))
 	if err != nil {
 		return []models.Board{}, err
 	}

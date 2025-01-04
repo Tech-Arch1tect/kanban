@@ -50,7 +50,7 @@ func (ps *PermissionService) CheckPermission(userID, boardID uint, permissionNam
 		return false, err
 	}
 
-	_, err = ps.db.UserBoardPermissionRepository.GetFirst(repository.WithWhere("user_id = ? AND board_id = ? AND permission_id = ?", userID, boardID, permission.ID))
+	_, err = ps.db.UserBoardPermissionRepository.GetFirst(repository.WithWhere("user_id = ? AND board_id = ? AND id = ?", userID, boardID, permission.ID))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, nil
@@ -72,7 +72,7 @@ func (ps *PermissionService) GrantPermission(userID, boardID, permissionID uint)
 }
 
 func (ps *PermissionService) RevokePermission(userID, boardID, permissionID uint) error {
-	userBoardPermission, err := ps.db.UserBoardPermissionRepository.GetFirst(repository.WithWhere("user_id = ? AND board_id = ? AND permission_id = ?", userID, boardID, permissionID))
+	userBoardPermission, err := ps.db.UserBoardPermissionRepository.GetFirst(repository.WithWhere("user_id = ? AND board_id = ? AND id = ?", userID, boardID, permissionID))
 	if err != nil {
 		return err
 	}
