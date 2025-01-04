@@ -41,6 +41,15 @@ func (rs *RoleService) SeedRoles() error {
 }
 
 func (rs *RoleService) CheckRole(userID, boardID uint, roleNames ...string) (bool, error) {
+	user, err := rs.db.UserRepository.GetByID(userID)
+	if err != nil {
+		return false, err
+	}
+
+	if user.Role == models.RoleAdmin {
+		return true, nil
+	}
+
 	for _, roleName := range roleNames {
 		role, err := rs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", roleName))
 		if err != nil {
