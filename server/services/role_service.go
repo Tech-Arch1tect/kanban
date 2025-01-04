@@ -40,24 +40,26 @@ func (rs *RoleService) SeedRoles() error {
 	return nil
 }
 
-func (rs *RoleService) CheckRole(userID, boardID uint, roleName string) (bool, error) {
-	role, err := rs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", roleName))
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return false, nil
+func (rs *RoleService) CheckRole(userID, boardID uint, roleNames ...string) (bool, error) {
+	for _, roleName := range roleNames {
+		role, err := rs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", roleName))
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				continue
+			}
+			return false, err
 		}
-		return false, err
+
+		_, err = rs.db.UserBoardRoleRepository.GetFirst(repository.WithWhere("user_id = ? AND board_id = ? AND board_role_id = ?", userID, boardID, role.ID))
+		if err == nil {
+			return true, nil
+		}
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, err
+		}
 	}
 
-	_, err = rs.db.UserBoardRoleRepository.GetFirst(repository.WithWhere("user_id = ? AND board_id = ? AND board_role_id = ?", userID, boardID, role.ID))
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return false, nil
-		}
-		return false, err
-	}
-
-	return true, nil
+	return false, nil
 }
 
 func (rs *RoleService) AssignRole(userID, boardID, roleID uint) error {
