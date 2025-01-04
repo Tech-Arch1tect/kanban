@@ -74,3 +74,15 @@ func WithWhere(query interface{}, args ...interface{}) QueryOption {
 		return db.Where(query, args...)
 	}
 }
+
+func WithOrder(order string) QueryOption {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Order(order)
+	}
+}
+
+func WithLimit(limit int) QueryOption {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Limit(limit)
+	}
+}
