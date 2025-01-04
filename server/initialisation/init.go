@@ -26,6 +26,7 @@ type Initialiser struct {
 	es     *email.EmailService
 	mw     *middleware.Middleware
 	hs     *helpers.HelperService
+	ps     *services.PermissionService
 }
 
 func NewInitialiser(cfg *config.Config) *Initialiser {
