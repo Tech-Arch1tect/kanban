@@ -77,5 +77,10 @@ func (i *Initialiser) Initialise() (*gin.Engine, error) {
 
 	appRouter.RegisterRoutes(router)
 
+	err = i.ps.SeedPermissions()
+	if err != nil {
+		return nil, fmt.Errorf("failed to seed permissions: %w", err)
+	}
+
 	return router, nil
 }
