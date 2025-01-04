@@ -16,11 +16,11 @@ type BoardPermission struct {
 
 type UserBoardPermission struct {
 	Model
-	UserID            uint            `gorm:"not null" json:"user_id"`
+	UserID            uint            `gorm:"not null;uniqueIndex:idx_user_board_permission" json:"user_id"`
 	User              User            `gorm:"foreignKey:UserID" json:"user"`
-	BoardID           uint            `gorm:"not null" json:"board_id"`
+	BoardID           uint            `gorm:"not null;uniqueIndex:idx_user_board_permission" json:"board_id"`
 	Board             Board           `gorm:"foreignKey:BoardID" json:"board"`
-	BoardPermissionID uint            `gorm:"not null" json:"board_permission_id"`
+	BoardPermissionID uint            `gorm:"not null;uniqueIndex:idx_user_board_permission" json:"board_permission_id"`
 	BoardPermission   BoardPermission `gorm:"foreignKey:BoardPermissionID" json:"board_permission"`
 }
 
