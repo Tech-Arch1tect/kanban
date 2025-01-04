@@ -16,9 +16,50 @@ type Repository[T any] interface {
 }
 
 type Database struct {
-	UserRepository UserRepository
+	UserRepository                UserRepository
+	BoardRepository               BoardRepository
+	SwimlaneRepository            SwimlaneRepository
+	TaskRepository                TaskRepository
+	UserBoardPermissionRepository UserBoardPermissionRepository
+	CommentRepository             CommentRepository
+	ColumnRepository              ColumnRepository
 }
 
 func (db *Database) Migrate() error {
-	return db.UserRepository.Migrate()
+	err := db.UserRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.BoardRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.SwimlaneRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.TaskRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.UserBoardPermissionRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.CommentRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.ColumnRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

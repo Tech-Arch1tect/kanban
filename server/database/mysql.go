@@ -36,6 +36,12 @@ func newMySQLDB(cfg *config.Config) (*repository.Database, error) {
 	}
 
 	return &repository.Database{
-		UserRepository: repository.NewUserRepository(gormDB),
+		UserRepository:                repository.NewUserRepository(gormDB),
+		BoardRepository:               repository.NewBoardRepository(gormDB),
+		SwimlaneRepository:            repository.NewSwimlaneRepository(gormDB),
+		TaskRepository:                repository.NewTaskRepository(gormDB),
+		UserBoardPermissionRepository: repository.NewUserBoardPermissionRepository(gormDB),
+		CommentRepository:             repository.NewCommentRepository(gormDB),
+		ColumnRepository:              repository.NewColumnRepository(gormDB),
 	}, nil
 }

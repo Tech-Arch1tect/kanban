@@ -1,0 +1,27 @@
+package models
+
+type Task struct {
+	Model
+	BoardID     uint      `json:"board_id"`
+	Swimlane    Swimlane  `gorm:"foreignKey:SwimlaneID" json:"swimlane"`
+	SwimlaneID  uint      `json:"swimlane_id"`
+	ColumnID    uint      `json:"column_id"`
+	Column      Column    `gorm:"foreignKey:ColumnID" json:"column"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Status      string    `json:"status"`
+	Comments    []Comment `gorm:"foreignKey:TaskID" json:"comments"`
+	Position    int       `json:"position"`
+	CreatorID   uint      `json:"creator_id"`
+	Creator     User      `gorm:"foreignKey:CreatorID" json:"creator"`
+	AssigneeID  uint      `json:"assignee_id"`
+	Assignee    User      `gorm:"foreignKey:AssigneeID" json:"assignee"`
+}
+
+type Comment struct {
+	Model
+	User   User   `gorm:"foreignKey:UserID" json:"user"`
+	UserID uint   `json:"user_id"`
+	TaskID uint   `json:"task_id"`
+	Text   string `json:"text"`
+}
