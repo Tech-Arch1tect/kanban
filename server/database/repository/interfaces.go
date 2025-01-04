@@ -18,6 +18,7 @@ type Repository[T any] interface {
 type Database struct {
 	UserRepository                UserRepository
 	BoardRepository               BoardRepository
+	BoardPermissionRepository     BoardPermissionRepository
 	SwimlaneRepository            SwimlaneRepository
 	TaskRepository                TaskRepository
 	UserBoardPermissionRepository UserBoardPermissionRepository
@@ -32,6 +33,11 @@ func (db *Database) Migrate() error {
 	}
 
 	err = db.BoardRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.BoardPermissionRepository.Migrate()
 	if err != nil {
 		return err
 	}
