@@ -8,6 +8,12 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	ViewPermission   = "view"
+	EditPermission   = "edit"
+	DeletePermission = "delete"
+)
+
 type PermissionService struct {
 	db *repository.Database
 }

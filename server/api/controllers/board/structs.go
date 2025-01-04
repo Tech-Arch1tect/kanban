@@ -12,3 +12,31 @@ type CreateBoardRequest struct {
 type CreateBoardResponse struct {
 	Board models.Board `json:"board"`
 }
+
+type DeleteBoardRequest struct {
+	ID uint `json:"id" binding:"required"`
+}
+
+type DeleteBoardResponse struct {
+	Message string `json:"message"`
+}
+
+type GetBoardRequest struct {
+	ID uint `uri:"id" binding:"required"`
+}
+
+type GetBoardResponse struct {
+	Board models.Board `json:"board"`
+}
+
+type GetBoardBySlugRequest struct {
+	Slug string `uri:"slug" binding:"required"`
+}
+
+type GetBoardBySlugResponse struct {
+	Board models.Board `json:"board"`
+}
+
+type ListBoardsResponse struct {
+	Boards []models.Board `json:"boards"`
+}

@@ -8,7 +8,11 @@ import (
 
 func (r *router) RegisterBoardRoutes(router *gin.RouterGroup) {
 	board := router.Group("/boards")
+	board.Use(r.mw.AuthRequired())
 	{
-		board.POST("/create", r.mw.CSRFTokenRequired(), r.mw.AuthRequired(), r.mw.EnsureRole(models.RoleAdmin), r.cr.BoardController.CreateBoard)
+		board.POST("/create", r.mw.CSRFTokenRequired(), r.mw.EnsureRole(models.RoleAdmin), r.cr.BoardController.CreateBoard)
+		board.GET("/get/:id", r.cr.BoardController.GetBoard)
+		board.GET("/get-by-slug/:slug", r.cr.BoardController.GetBoardBySlug)
+		board.POST("/delete", r.mw.CSRFTokenRequired(), r.mw.EnsureRole(models.RoleAdmin), r.cr.BoardController.DeleteBoard)
 	}
 }

@@ -18,11 +18,11 @@ type Controllers struct {
 	BoardController *board.BoardController
 }
 
-func NewControllers(cfg *config.Config, authService *services.AuthService, adminService *services.AdminService, db *repository.Database, helperService *helpers.HelperService, bs *services.BoardService, ps *services.PermissionService) *Controllers {
+func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *services.AdminService, db *repository.Database, hs *helpers.HelperService, bs *services.BoardService, ps *services.PermissionService) *Controllers {
 	return &Controllers{
-		AuthController:  auth.NewAuthController(authService, db, helperService),
-		AdminController: admin.NewAdminController(adminService),
+		AuthController:  auth.NewAuthController(authS, db, hs),
+		AdminController: admin.NewAdminController(adminS),
 		MiscController:  misc.NewMiscController(cfg),
-		BoardController: board.NewBoardController(bs, ps, db),
+		BoardController: board.NewBoardController(bs, ps, db, hs),
 	}
 }

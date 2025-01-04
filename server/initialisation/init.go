@@ -70,7 +70,7 @@ func (i *Initialiser) Initialise() (*gin.Engine, error) {
 	i.mw = middleware.NewMiddleware(i.db, i.hs)
 	i.authS = services.NewAuthService(i.c, i.es, i.db, i.hs)
 	i.adminS = services.NewAdminService(i.db)
-	i.bs = services.NewBoardService(i.db)
+	i.bs = services.NewBoardService(i.db, i.ps)
 	i.ps = services.NewPermissionService(i.db)
 	controllers := controllers.NewControllers(i.c, i.authS, i.adminS, i.db, i.hs, i.bs, i.ps)
 	appRouter := routes.NewRouter(controllers, i.c, i.db, i.mw)
