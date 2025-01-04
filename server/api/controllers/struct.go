@@ -22,13 +22,13 @@ type Controllers struct {
 	SwimlaneController *swimlane.SwimlaneController
 }
 
-func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *services.AdminService, db *repository.Database, hs *helpers.HelperService, bs *services.BoardService, ps *services.PermissionService, cs *services.ColumnService, ss *services.SwimlaneService) *Controllers {
+func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *services.AdminService, db *repository.Database, hs *helpers.HelperService, bs *services.BoardService, rs *services.RoleService, cs *services.ColumnService, ss *services.SwimlaneService) *Controllers {
 	return &Controllers{
 		AuthController:     auth.NewAuthController(authS, db, hs),
 		AdminController:    admin.NewAdminController(adminS),
 		MiscController:     misc.NewMiscController(cfg),
-		BoardController:    board.NewBoardController(bs, ps, db, hs),
-		ColumnController:   column.NewColumnController(db, cs, ps, hs),
-		SwimlaneController: swimlane.NewSwimlaneController(db, ss, ps, hs),
+		BoardController:    board.NewBoardController(bs, rs, db, hs),
+		ColumnController:   column.NewColumnController(db, cs, rs, hs),
+		SwimlaneController: swimlane.NewSwimlaneController(db, ss, rs, hs),
 	}
 }

@@ -9,19 +9,19 @@ type Board struct {
 	Slug      string     `gorm:"not null;unique" json:"slug"`
 }
 
-type BoardPermission struct {
+type BoardRole struct {
 	Model
 	Name string `gorm:"not null" json:"name" binding:"oneof=admin member viewer"`
 }
 
-type UserBoardPermission struct {
+type UserBoardRole struct {
 	Model
-	UserID            uint            `gorm:"not null;uniqueIndex:idx_user_board_permission" json:"user_id"`
-	User              User            `gorm:"foreignKey:UserID" json:"user"`
-	BoardID           uint            `gorm:"not null;uniqueIndex:idx_user_board_permission" json:"board_id"`
-	Board             Board           `gorm:"foreignKey:BoardID" json:"board"`
-	BoardPermissionID uint            `gorm:"not null;uniqueIndex:idx_user_board_permission" json:"board_permission_id"`
-	BoardPermission   BoardPermission `gorm:"foreignKey:BoardPermissionID" json:"board_permission"`
+	UserID      uint      `gorm:"not null;uniqueIndex:idx_user_board_role" json:"user_id"`
+	User        User      `gorm:"foreignKey:UserID" json:"user"`
+	BoardID     uint      `gorm:"not null;uniqueIndex:idx_user_board_role" json:"board_id"`
+	Board       Board     `gorm:"foreignKey:BoardID" json:"board"`
+	BoardRoleID uint      `gorm:"not null;" json:"board_role_id"`
+	BoardRole   BoardRole `gorm:"foreignKey:BoardRoleID" json:"role"`
 }
 
 type Swimlane struct {

@@ -8,15 +8,15 @@ import (
 
 type ColumnService struct {
 	db *repository.Database
-	ps *PermissionService
+	rs *RoleService
 }
 
-func NewColumnService(db *repository.Database, ps *PermissionService) *ColumnService {
-	return &ColumnService{db: db, ps: ps}
+func NewColumnService(db *repository.Database, rs *RoleService) *ColumnService {
+	return &ColumnService{db: db, rs: rs}
 }
 
 func (cs *ColumnService) CreateColumn(userID uint, boardID uint, name string) (models.Column, error) {
-	can, err := cs.ps.CheckPermission(userID, boardID, EditPermission)
+	can, err := cs.rs.CheckRole(userID, boardID, AdminRole)
 	if err != nil {
 		return models.Column{}, err
 	}
@@ -55,7 +55,7 @@ func (cs *ColumnService) DeleteColumn(userID uint, columnID uint) (models.Column
 		return models.Column{}, err
 	}
 
-	can, err := cs.ps.CheckPermission(userID, column.BoardID, EditPermission)
+	can, err := cs.rs.CheckRole(userID, column.BoardID, AdminRole)
 	if err != nil {
 		return models.Column{}, err
 	}
@@ -78,7 +78,7 @@ func (cs *ColumnService) EditColumn(userID uint, columnID uint, name string) (mo
 		return models.Column{}, err
 	}
 
-	can, err := cs.ps.CheckPermission(userID, column.BoardID, EditPermission)
+	can, err := cs.rs.CheckRole(userID, column.BoardID, AdminRole)
 	if err != nil {
 		return models.Column{}, err
 	}
@@ -112,7 +112,7 @@ func (cs *ColumnService) MoveColumn(userID uint, columnID uint, relativeID uint,
 		return models.Column{}, errors.New("columns are not on the same board")
 	}
 
-	can, err := cs.ps.CheckPermission(userID, column.BoardID, EditPermission)
+	can, err := cs.rs.CheckRole(userID, column.BoardID, AdminRole)
 	if err != nil {
 		return models.Column{}, err
 	}

@@ -16,14 +16,14 @@ type Repository[T any] interface {
 }
 
 type Database struct {
-	UserRepository                UserRepository
-	BoardRepository               BoardRepository
-	BoardPermissionRepository     BoardPermissionRepository
-	SwimlaneRepository            SwimlaneRepository
-	TaskRepository                TaskRepository
-	UserBoardPermissionRepository UserBoardPermissionRepository
-	CommentRepository             CommentRepository
-	ColumnRepository              ColumnRepository
+	UserRepository          UserRepository
+	BoardRepository         BoardRepository
+	BoardRoleRepository     BoardRoleRepository
+	SwimlaneRepository      SwimlaneRepository
+	TaskRepository          TaskRepository
+	UserBoardRoleRepository UserBoardRoleRepository
+	CommentRepository       CommentRepository
+	ColumnRepository        ColumnRepository
 }
 
 func (db *Database) Migrate() error {
@@ -37,7 +37,7 @@ func (db *Database) Migrate() error {
 		return err
 	}
 
-	err = db.BoardPermissionRepository.Migrate()
+	err = db.BoardRoleRepository.Migrate()
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func (db *Database) Migrate() error {
 		return err
 	}
 
-	err = db.UserBoardPermissionRepository.Migrate()
+	err = db.UserBoardRoleRepository.Migrate()
 	if err != nil {
 		return err
 	}

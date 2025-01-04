@@ -26,7 +26,7 @@ type Initialiser struct {
 	es     *email.EmailService
 	mw     *middleware.Middleware
 	hs     *helpers.HelperService
-	ps     *services.PermissionService
+	rs     *services.RoleService
 	bs     *services.BoardService
 	cs     *services.ColumnService
 	ss     *services.SwimlaneService
@@ -72,18 +72,18 @@ func (i *Initialiser) Initialise() (*gin.Engine, error) {
 	i.mw = middleware.NewMiddleware(i.db, i.hs)
 	i.authS = services.NewAuthService(i.c, i.es, i.db, i.hs)
 	i.adminS = services.NewAdminService(i.db)
-	i.bs = services.NewBoardService(i.db, i.ps)
-	i.ps = services.NewPermissionService(i.db)
-	i.cs = services.NewColumnService(i.db, i.ps)
-	i.ss = services.NewSwimlaneService(i.db, i.ps)
-	controllers := controllers.NewControllers(i.c, i.authS, i.adminS, i.db, i.hs, i.bs, i.ps, i.cs, i.ss)
+	i.bs = services.NewBoardService(i.db, i.rs)
+	i.rs = services.NewRoleService(i.db)
+	i.cs = services.NewColumnService(i.db, i.rs)
+	i.ss = services.NewSwimlaneService(i.db, i.rs)
+	controllers := controllers.NewControllers(i.c, i.authS, i.adminS, i.db, i.hs, i.bs, i.rs, i.cs, i.ss)
 	appRouter := routes.NewRouter(controllers, i.c, i.db, i.mw)
 
 	appRouter.RegisterRoutes(router)
 
-	err = i.ps.SeedPermissions()
+	err = i.rs.SeedRoles()
 	if err != nil {
-		return nil, fmt.Errorf("failed to seed permissions: %w", err)
+		return nil, fmt.Errorf("failed to seed roles: %w", err)
 	}
 
 	return router, nil

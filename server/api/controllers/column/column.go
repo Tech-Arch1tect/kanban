@@ -12,12 +12,12 @@ import (
 type ColumnController struct {
 	db *repository.Database
 	cs *services.ColumnService
-	ps *services.PermissionService
+	rs *services.RoleService
 	hs *helpers.HelperService
 }
 
-func NewColumnController(db *repository.Database, cs *services.ColumnService, ps *services.PermissionService, hs *helpers.HelperService) *ColumnController {
-	return &ColumnController{db: db, cs: cs, ps: ps, hs: hs}
+func NewColumnController(db *repository.Database, cs *services.ColumnService, rs *services.RoleService, hs *helpers.HelperService) *ColumnController {
+	return &ColumnController{db: db, cs: cs, rs: rs, hs: hs}
 }
 
 // @Summary Create a column

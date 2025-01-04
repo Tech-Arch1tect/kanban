@@ -12,12 +12,12 @@ import (
 type SwimlaneController struct {
 	db *repository.Database
 	cs *services.SwimlaneService
-	ps *services.PermissionService
+	rs *services.RoleService
 	hs *helpers.HelperService
 }
 
-func NewSwimlaneController(db *repository.Database, cs *services.SwimlaneService, ps *services.PermissionService, hs *helpers.HelperService) *SwimlaneController {
-	return &SwimlaneController{db: db, cs: cs, ps: ps, hs: hs}
+func NewSwimlaneController(db *repository.Database, cs *services.SwimlaneService, rs *services.RoleService, hs *helpers.HelperService) *SwimlaneController {
+	return &SwimlaneController{db: db, cs: cs, rs: rs, hs: hs}
 }
 
 // @Summary Create a swimlane

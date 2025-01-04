@@ -9,13 +9,13 @@ import (
 
 type BoardService struct {
 	db *repository.Database
-	ps *PermissionService
+	rs *RoleService
 }
 
-func NewBoardService(db *repository.Database, ps *PermissionService) *BoardService {
+func NewBoardService(db *repository.Database, rs *RoleService) *BoardService {
 	return &BoardService{
 		db: db,
-		ps: ps,
+		rs: rs,
 	}
 }
 
@@ -72,7 +72,7 @@ func (bs *BoardService) GetBoardBySlug(slug string) (models.Board, error) {
 }
 
 func (bs *BoardService) GetBoardWithPermissions(userID, boardID uint) (models.Board, error) {
-	can, err := bs.ps.CheckPermission(userID, boardID, ViewPermission)
+	can, err := bs.rs.CheckRole(userID, boardID, MemberRole)
 	if err != nil {
 		return models.Board{}, err
 	}
@@ -95,7 +95,7 @@ func (bs *BoardService) GetBoardBySlugWithPermissions(userID uint, slug string) 
 		return models.Board{}, err
 	}
 
-	can, err := bs.ps.CheckPermission(userID, board.ID, ViewPermission)
+	can, err := bs.rs.CheckRole(userID, board.ID, MemberRole)
 	if err != nil {
 		return models.Board{}, err
 	}
@@ -113,19 +113,19 @@ func (bs *BoardService) SortBoard(board *models.Board) {
 }
 
 func (bs *BoardService) ListBoards(userID uint) ([]models.Board, error) {
-	ViewPermission, err := bs.db.BoardPermissionRepository.GetFirst(repository.WithWhere("name = ?", ViewPermission))
+	MemberRole, err := bs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", MemberRole))
 	if err != nil {
 		return []models.Board{}, err
 	}
 
-	userBoardPermissions, err := bs.db.UserBoardPermissionRepository.GetAll(repository.WithWhere("user_id = ? AND id = ?", userID, ViewPermission.ID), repository.WithPreload("Board"))
+	userBoardRoles, err := bs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("user_id = ? AND id = ?", userID, MemberRole.ID), repository.WithPreload("Board"))
 	if err != nil {
 		return []models.Board{}, err
 	}
 
-	boards := make([]models.Board, len(userBoardPermissions))
-	for i, userBoardPermission := range userBoardPermissions {
-		boards[i] = userBoardPermission.Board
+	boards := make([]models.Board, len(userBoardRoles))
+	for i, userBoardRole := range userBoardRoles {
+		boards[i] = userBoardRole.Board
 	}
 
 	return boards, nil

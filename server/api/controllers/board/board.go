@@ -11,15 +11,15 @@ import (
 
 type BoardController struct {
 	bs *services.BoardService
-	ps *services.PermissionService
+	rs *services.RoleService
 	db *repository.Database
 	hs *helpers.HelperService
 }
 
-func NewBoardController(bs *services.BoardService, ps *services.PermissionService, db *repository.Database, hs *helpers.HelperService) *BoardController {
+func NewBoardController(bs *services.BoardService, rs *services.RoleService, db *repository.Database, hs *helpers.HelperService) *BoardController {
 	return &BoardController{
 		bs: bs,
-		ps: ps,
+		rs: rs,
 		db: db,
 		hs: hs,
 	}

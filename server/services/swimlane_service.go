@@ -8,15 +8,15 @@ import (
 
 type SwimlaneService struct {
 	db *repository.Database
-	ps *PermissionService
+	rs *RoleService
 }
 
-func NewSwimlaneService(db *repository.Database, ps *PermissionService) *SwimlaneService {
-	return &SwimlaneService{db: db, ps: ps}
+func NewSwimlaneService(db *repository.Database, rs *RoleService) *SwimlaneService {
+	return &SwimlaneService{db: db, rs: rs}
 }
 
 func (ss *SwimlaneService) CreateSwimlane(userID uint, boardID uint, name string) (models.Swimlane, error) {
-	can, err := ss.ps.CheckPermission(userID, boardID, EditPermission)
+	can, err := ss.rs.CheckRole(userID, boardID, AdminRole)
 	if err != nil {
 		return models.Swimlane{}, err
 	}
@@ -55,7 +55,7 @@ func (ss *SwimlaneService) DeleteSwimlane(userID uint, swimlaneID uint) (models.
 		return models.Swimlane{}, err
 	}
 
-	can, err := ss.ps.CheckPermission(userID, swimlane.BoardID, EditPermission)
+	can, err := ss.rs.CheckRole(userID, swimlane.BoardID, AdminRole)
 	if err != nil {
 		return models.Swimlane{}, err
 	}
@@ -78,7 +78,7 @@ func (ss *SwimlaneService) EditSwimlane(userID uint, swimlaneID uint, name strin
 		return models.Swimlane{}, err
 	}
 
-	can, err := ss.ps.CheckPermission(userID, swimlane.BoardID, EditPermission)
+	can, err := ss.rs.CheckRole(userID, swimlane.BoardID, AdminRole)
 	if err != nil {
 		return models.Swimlane{}, err
 	}
@@ -112,7 +112,7 @@ func (ss *SwimlaneService) MoveSwimlane(userID uint, swimlaneID uint, relativeID
 		return models.Swimlane{}, errors.New("swimlanes are not on the same board")
 	}
 
-	can, err := ss.ps.CheckPermission(userID, swimlane.BoardID, EditPermission)
+	can, err := ss.rs.CheckRole(userID, swimlane.BoardID, AdminRole)
 	if err != nil {
 		return models.Swimlane{}, err
 	}
