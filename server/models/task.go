@@ -1,5 +1,10 @@
 package models
 
+import (
+	"errors"
+	"slices"
+)
+
 type Task struct {
 	Model
 	BoardID     uint      `json:"board_id"`
@@ -16,6 +21,20 @@ type Task struct {
 	Creator     User      `gorm:"foreignKey:CreatorID" json:"creator"`
 	AssigneeID  uint      `json:"assignee_id"`
 	Assignee    User      `gorm:"foreignKey:AssigneeID" json:"assignee"`
+}
+
+var allowedStatuses = []string{"open", "closed"}
+
+func (t *Task) Validate() error {
+	if t.Title == "" {
+		return errors.New("title is required")
+	}
+
+	if !slices.Contains(allowedStatuses, t.Status) {
+		return errors.New("status is not valid")
+	}
+
+	return nil
 }
 
 type Comment struct {

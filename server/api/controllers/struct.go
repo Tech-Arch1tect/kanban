@@ -7,6 +7,7 @@ import (
 	"server/api/controllers/column"
 	"server/api/controllers/misc"
 	"server/api/controllers/swimlane"
+	"server/api/controllers/task"
 	"server/config"
 	"server/database/repository"
 	"server/internal/helpers"
@@ -20,9 +21,10 @@ type Controllers struct {
 	BoardController    *board.BoardController
 	ColumnController   *column.ColumnController
 	SwimlaneController *swimlane.SwimlaneController
+	TaskController     *task.TaskController
 }
 
-func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *services.AdminService, db *repository.Database, hs *helpers.HelperService, bs *services.BoardService, rs *services.RoleService, cs *services.ColumnService, ss *services.SwimlaneService) *Controllers {
+func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *services.AdminService, db *repository.Database, hs *helpers.HelperService, bs *services.BoardService, rs *services.RoleService, cs *services.ColumnService, ss *services.SwimlaneService, ts *services.TaskService) *Controllers {
 	return &Controllers{
 		AuthController:     auth.NewAuthController(authS, db, hs),
 		AdminController:    admin.NewAdminController(adminS),
@@ -30,5 +32,6 @@ func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *ser
 		BoardController:    board.NewBoardController(bs, rs, db, hs),
 		ColumnController:   column.NewColumnController(db, cs, rs, hs),
 		SwimlaneController: swimlane.NewSwimlaneController(db, ss, rs, hs),
+		TaskController:     task.NewTaskController(db, ts, rs, hs),
 	}
 }
