@@ -4,6 +4,7 @@ import (
 	"server/api/controllers/admin"
 	"server/api/controllers/auth"
 	"server/api/controllers/board"
+	"server/api/controllers/column"
 	"server/api/controllers/misc"
 	"server/config"
 	"server/database/repository"
@@ -12,17 +13,19 @@ import (
 )
 
 type Controllers struct {
-	AuthController  *auth.AuthController
-	AdminController *admin.AdminController
-	MiscController  *misc.MiscController
-	BoardController *board.BoardController
+	AuthController   *auth.AuthController
+	AdminController  *admin.AdminController
+	MiscController   *misc.MiscController
+	BoardController  *board.BoardController
+	ColumnController *column.ColumnController
 }
 
-func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *services.AdminService, db *repository.Database, hs *helpers.HelperService, bs *services.BoardService, ps *services.PermissionService) *Controllers {
+func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *services.AdminService, db *repository.Database, hs *helpers.HelperService, bs *services.BoardService, ps *services.PermissionService, cs *services.ColumnService) *Controllers {
 	return &Controllers{
-		AuthController:  auth.NewAuthController(authS, db, hs),
-		AdminController: admin.NewAdminController(adminS),
-		MiscController:  misc.NewMiscController(cfg),
-		BoardController: board.NewBoardController(bs, ps, db, hs),
+		AuthController:   auth.NewAuthController(authS, db, hs),
+		AdminController:  admin.NewAdminController(adminS),
+		MiscController:   misc.NewMiscController(cfg),
+		BoardController:  board.NewBoardController(bs, ps, db, hs),
+		ColumnController: column.NewColumnController(db, cs, ps, hs),
 	}
 }

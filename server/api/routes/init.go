@@ -45,6 +45,7 @@ func (r *router) RegisterRoutes(engine *gin.Engine) {
 		r.registerAuthRoutes(api)
 		r.registerAdminRoutes(api)
 		r.RegisterBoardRoutes(api)
+		r.RegisterColumnRoutes(api)
 	}
 }
 
