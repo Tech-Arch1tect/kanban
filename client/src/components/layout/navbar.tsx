@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useAuth } from "../../hooks/auth/useAuth";
 import { useDropdown } from "../../hooks/useDropdown";
+import BoardsSelect from "./BoardsSelect";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -49,6 +50,9 @@ const Navbar = () => {
           >
             About
           </Link>
+        </div>
+        <div className="flex items-center space-x-4">
+          <BoardsSelect />
         </div>
         <div className="flex items-center space-x-4">
           {/* User Profile Dropdown */}
