@@ -29,6 +29,7 @@ type Initialiser struct {
 	ps     *services.PermissionService
 	bs     *services.BoardService
 	cs     *services.ColumnService
+	ss     *services.SwimlaneService
 }
 
 func NewInitialiser(cfg *config.Config) *Initialiser {
@@ -74,7 +75,8 @@ func (i *Initialiser) Initialise() (*gin.Engine, error) {
 	i.bs = services.NewBoardService(i.db, i.ps)
 	i.ps = services.NewPermissionService(i.db)
 	i.cs = services.NewColumnService(i.db, i.ps)
-	controllers := controllers.NewControllers(i.c, i.authS, i.adminS, i.db, i.hs, i.bs, i.ps, i.cs)
+	i.ss = services.NewSwimlaneService(i.db, i.ps)
+	controllers := controllers.NewControllers(i.c, i.authS, i.adminS, i.db, i.hs, i.bs, i.ps, i.cs, i.ss)
 	appRouter := routes.NewRouter(controllers, i.c, i.db, i.mw)
 
 	appRouter.RegisterRoutes(router)
