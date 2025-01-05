@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"server/database/repository"
 	"server/models"
+	"sort"
 	"strings"
 
 	"gorm.io/gorm"
@@ -311,7 +312,13 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 		return nil, err
 	}
 
+	ts.SortTasks(tasks)
+
 	return tasks, nil
+}
+
+func (ts *TaskService) SortTasks(tasks []models.Task) {
+	sort.Slice(tasks, func(i, j int) bool { return tasks[i].Position < tasks[j].Position })
 }
 
 // parseQuery is a naive parser that extracts:
