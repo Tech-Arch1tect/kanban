@@ -104,14 +104,22 @@ func (sc *SampleDataController) InsertSampleData(c *gin.Context) {
 			ColumnID:    column.ID,
 			SwimlaneID:  swimlane.ID,
 		}
-		sc.db.TaskRepository.Create(&fakeTask)
+		err = sc.db.TaskRepository.Create(&fakeTask)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 		tasks = append(tasks, fakeTask)
 	}
 
 	// reposition all tasks
 	for _, column := range columns {
 		for _, swimlane := range simlanes {
-			sc.ts.RePositionAll(column.ID, swimlane.ID)
+			err = sc.ts.RePositionAll(column.ID, swimlane.ID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 		}
 	}
 
@@ -122,7 +130,11 @@ func (sc *SampleDataController) InsertSampleData(c *gin.Context) {
 			Text:   fmt.Sprintf("Fake Comment %d", i),
 			UserID: task.CreatorID,
 		}
-		sc.db.CommentRepository.Create(&comment)
+		err = sc.db.CommentRepository.Create(&comment)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, InsertSampleDataResponse{Message: "Sample data inserted"})
