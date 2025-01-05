@@ -49,6 +49,7 @@ func (r *router) RegisterRoutes(engine *gin.Engine) {
 		r.RegisterSwimlaneRoutes(api)
 		r.RegisterTaskRoutes(api)
 		r.RegisterCommentRoutes(api)
+		r.RegisterSampleDataRoutes(api)
 	}
 }
 
