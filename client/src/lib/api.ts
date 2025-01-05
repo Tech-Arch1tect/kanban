@@ -10,6 +10,7 @@ import {
   BoardsApi,
   CommentsApi,
   TasksApi,
+  SampleDataApi,
 } from "../typescript-fetch-client";
 
 // @ts-ignore
@@ -30,6 +31,7 @@ export const columnsApi = new ColumnsApi(configuration);
 export const boardsApi = new BoardsApi(configuration);
 export const tasksApi = new TasksApi(configuration);
 export const commentsApi = new CommentsApi(configuration);
+export const sampleDataApi = new SampleDataApi(configuration);
 
 async function GetCSRFToken(): Promise<string | undefined> {
   const response: AuthAuthGetCSRFTokenResponse =
