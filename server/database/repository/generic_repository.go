@@ -86,3 +86,15 @@ func WithLimit(limit int) QueryOption {
 		return db.Limit(limit)
 	}
 }
+
+func WithOrWhere(query string, args ...interface{}) QueryOption {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Or(query, args...)
+	}
+}
+
+func WithCustom(f func(*gorm.DB) *gorm.DB) QueryOption {
+	return func(db *gorm.DB) *gorm.DB {
+		return f(db)
+	}
+}
