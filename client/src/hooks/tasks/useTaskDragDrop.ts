@@ -80,6 +80,11 @@ export function useTaskDragDrop({
     [hoveredTaskId]
   );
 
+  const handleDragLeave = useCallback(() => {
+    setHoveredTaskId(null);
+    setHoveredPosition(null);
+  }, []);
+
   return {
     draggedTaskId,
     hoveredTaskId,
@@ -87,6 +92,7 @@ export function useTaskDragDrop({
     handleDragStart,
     handleDragOver,
     handleDrop,
+    handleDragLeave,
     isDraggedTask,
     isHoveredTask,
   };

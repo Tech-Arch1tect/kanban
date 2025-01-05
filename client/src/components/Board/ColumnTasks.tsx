@@ -26,12 +26,13 @@ export default function ColumnTasks({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const { handleDragOver, handleDrop, ...dragStates } = useTaskDragDrop({
-    column,
-    swimlane,
-    moveTask,
-    tasks,
-  });
+  const { handleDragOver, handleDrop, handleDragLeave, ...dragStates } =
+    useTaskDragDrop({
+      column,
+      swimlane,
+      moveTask,
+      tasks,
+    });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +58,7 @@ export default function ColumnTasks({
       className="bg-gray-100 rounded shadow min-h-[10px]"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
     >
       {!isFormVisible && (
         <button
