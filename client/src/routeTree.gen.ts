@@ -19,6 +19,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as ProfileProfileImport } from './routes/profile/profile'
 import { Route as Profile2faImport } from './routes/profile/2fa'
 import { Route as AdminUsersImport } from './routes/admin/users'
+import { Route as AdminBoardsImport } from './routes/admin/boards'
 
 // Create/Update Routes
 
@@ -70,6 +71,12 @@ const AdminUsersRoute = AdminUsersImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AdminBoardsRoute = AdminBoardsImport.update({
+  id: '/admin/boards',
+  path: '/admin/boards',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -109,6 +116,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterImport
       parentRoute: typeof rootRoute
     }
+    '/admin/boards': {
+      id: '/admin/boards'
+      path: '/admin/boards'
+      fullPath: '/admin/boards'
+      preLoaderRoute: typeof AdminBoardsImport
+      parentRoute: typeof rootRoute
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/admin/users'
@@ -141,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/password-reset': typeof PasswordResetRoute
   '/register': typeof RegisterRoute
+  '/admin/boards': typeof AdminBoardsRoute
   '/admin/users': typeof AdminUsersRoute
   '/profile/2fa': typeof Profile2faRoute
   '/profile/profile': typeof ProfileProfileRoute
@@ -152,6 +167,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/password-reset': typeof PasswordResetRoute
   '/register': typeof RegisterRoute
+  '/admin/boards': typeof AdminBoardsRoute
   '/admin/users': typeof AdminUsersRoute
   '/profile/2fa': typeof Profile2faRoute
   '/profile/profile': typeof ProfileProfileRoute
@@ -164,6 +180,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/password-reset': typeof PasswordResetRoute
   '/register': typeof RegisterRoute
+  '/admin/boards': typeof AdminBoardsRoute
   '/admin/users': typeof AdminUsersRoute
   '/profile/2fa': typeof Profile2faRoute
   '/profile/profile': typeof ProfileProfileRoute
@@ -177,6 +194,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/password-reset'
     | '/register'
+    | '/admin/boards'
     | '/admin/users'
     | '/profile/2fa'
     | '/profile/profile'
@@ -187,6 +205,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/password-reset'
     | '/register'
+    | '/admin/boards'
     | '/admin/users'
     | '/profile/2fa'
     | '/profile/profile'
@@ -197,6 +216,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/password-reset'
     | '/register'
+    | '/admin/boards'
     | '/admin/users'
     | '/profile/2fa'
     | '/profile/profile'
@@ -209,6 +229,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PasswordResetRoute: typeof PasswordResetRoute
   RegisterRoute: typeof RegisterRoute
+  AdminBoardsRoute: typeof AdminBoardsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   Profile2faRoute: typeof Profile2faRoute
   ProfileProfileRoute: typeof ProfileProfileRoute
@@ -220,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PasswordResetRoute: PasswordResetRoute,
   RegisterRoute: RegisterRoute,
+  AdminBoardsRoute: AdminBoardsRoute,
   AdminUsersRoute: AdminUsersRoute,
   Profile2faRoute: Profile2faRoute,
   ProfileProfileRoute: ProfileProfileRoute,
@@ -242,6 +264,7 @@ export const routeTree = rootRoute
         "/login",
         "/password-reset",
         "/register",
+        "/admin/boards",
         "/admin/users",
         "/profile/2fa",
         "/profile/profile"
@@ -261,6 +284,9 @@ export const routeTree = rootRoute
     },
     "/register": {
       "filePath": "register.tsx"
+    },
+    "/admin/boards": {
+      "filePath": "admin/boards.tsx"
     },
     "/admin/users": {
       "filePath": "admin/users.tsx"
