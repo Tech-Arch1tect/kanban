@@ -8,6 +8,7 @@ import (
 type Task struct {
 	Model
 	BoardID     uint      `json:"board_id"`
+	Board       Board     `gorm:"foreignKey:BoardID" json:"board"`
 	Swimlane    Swimlane  `gorm:"foreignKey:SwimlaneID" json:"swimlane"`
 	SwimlaneID  uint      `json:"swimlane_id"`
 	ColumnID    uint      `json:"column_id"`
