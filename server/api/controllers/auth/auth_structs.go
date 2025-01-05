@@ -1,8 +1,9 @@
 package auth
 
 type AuthRegisterRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
 }
 
 type AuthLoginRequest struct {
@@ -20,6 +21,14 @@ type AuthChangePasswordRequest struct {
 }
 
 type AuthChangePasswordResponse struct {
+	Message string `json:"message"`
+}
+
+type AuthChangeUsernameRequest struct {
+	Username string `json:"username" binding:"required"`
+}
+
+type AuthChangeUsernameResponse struct {
 	Message string `json:"message"`
 }
 

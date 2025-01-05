@@ -6,6 +6,7 @@ import (
 
 type User struct {
 	Model
+	Username            string    `gorm:"uniqueIndex;not null" json:"username" binding:"required"`
 	Email               string    `gorm:"uniqueIndex;not null" json:"email" binding:"required,email"`
 	Password            string    `gorm:"not null" json:"-" binding:"required,min=6"`
 	Role                Role      `gorm:"default:user" json:"role"`

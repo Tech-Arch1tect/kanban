@@ -39,7 +39,7 @@ func (a *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	err := a.authService.Register(input.Email, input.Password)
+	err := a.authService.Register(input.Username, input.Email, input.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return

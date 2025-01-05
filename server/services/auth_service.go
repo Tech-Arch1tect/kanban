@@ -29,8 +29,9 @@ func NewAuthService(config *config.Config, email *e.EmailService, db *repository
 	}
 }
 
-func (s *AuthService) Register(email, password string) error {
+func (s *AuthService) Register(username, email, password string) error {
 	user := models.User{
+		Username: username,
 		Email:    email,
 		Password: password,
 		Role:     models.RoleUser,
@@ -97,6 +98,20 @@ func (s *AuthService) ChangePassword(userID uint, currentPassword, newPassword s
 	}
 
 	user.Password = string(hashedPassword)
+	if err := s.db.UserRepository.Update(&user); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *AuthService) ChangeUsername(userID uint, username string) error {
+	user, err := s.db.UserRepository.GetByID(userID)
+	if err != nil {
+		return err
+	}
+
+	user.Username = username
 	if err := s.db.UserRepository.Update(&user); err != nil {
 		return err
 	}

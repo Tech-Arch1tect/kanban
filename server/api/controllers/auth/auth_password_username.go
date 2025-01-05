@@ -101,3 +101,39 @@ func (a *AuthController) ResetPassword(c *gin.Context) {
 
 	c.JSON(200, AuthResetPasswordResponse{Message: "Password reset successful"})
 }
+
+// AuthChangeUsername godoc
+// @Summary Change user username
+// @Description Change the username of the logged-in user
+// @Tags auth
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param usernameChange body AuthChangeUsernameRequest true "Username change details"
+// @Success 200 {object} AuthChangeUsernameResponse "message: username changed successfully"
+// @Failure 400 {object} models.ErrorResponse "error: bad request"
+// @Failure 401 {object} models.ErrorResponse "error: unauthorized"
+// @Failure 500 {object} models.ErrorResponse "error: internal server error"
+// @Router /api/v1/auth/change-username [post]
+func (a *AuthController) ChangeUsername(c *gin.Context) {
+	user, err := a.helperService.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "unauthorized"})
+		return
+	}
+
+	var input AuthChangeUsernameRequest
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": a.helperService.ParseValidationError(err)})
+		return
+	}
+
+	err = a.authService.ChangeUsername(user.ID, input.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, AuthChangeUsernameResponse{Message: "username changed successfully"})
+}

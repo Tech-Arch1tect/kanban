@@ -71,6 +71,7 @@ func (r *router) registerAuthRoutes(api *gin.RouterGroup) {
 		auth.POST("/logout", r.mw.CSRFTokenRequired(), r.mw.AuthRequired(), r.cr.AuthController.Logout)
 		auth.GET("/profile", r.mw.AuthRequired(), r.cr.AuthController.Profile)
 		auth.POST("/change-password", r.mw.AuthRequired(), r.mw.CSRFTokenRequired(), r.cr.AuthController.ChangePassword)
+		auth.POST("/change-username", r.mw.AuthRequired(), r.mw.CSRFTokenRequired(), r.cr.AuthController.ChangeUsername)
 		if r.cfg.RateLimit.Enabled {
 			auth.POST("/password-reset", r.mw.CSRFTokenRequired(), middleware.RateLimit(r.cfg.RateLimit.PasswordResetLimit, time.Duration(r.cfg.RateLimit.PasswordResetWindow)*time.Minute), r.cr.AuthController.PasswordReset)
 			auth.POST("/reset-password", r.mw.CSRFTokenRequired(), middleware.RateLimit(r.cfg.RateLimit.PasswordResetLimit, time.Duration(r.cfg.RateLimit.PasswordResetWindow)*time.Minute), r.cr.AuthController.ResetPassword)
