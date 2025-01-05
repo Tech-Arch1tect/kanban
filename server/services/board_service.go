@@ -50,7 +50,7 @@ func (bs *BoardService) DeleteBoard(id uint) error {
 }
 
 func (bs *BoardService) GetBoard(id uint) (models.Board, error) {
-	board, err := bs.db.BoardRepository.GetByID(id)
+	board, err := bs.db.BoardRepository.GetByID(id, repository.WithPreload("Swimlanes"), repository.WithPreload("Columns"))
 	if err != nil {
 		return models.Board{}, err
 	}
