@@ -1,4 +1,4 @@
-import { useState, DragEvent, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   ModelsColumn,
   ModelsSwimlane,
@@ -6,6 +6,7 @@ import {
   TaskMoveTaskRequest,
 } from "../../typescript-fetch-client";
 import { UseMutateFunction } from "@tanstack/react-query";
+import useDebounce from "../useDebounce";
 
 interface UseTaskDragDropProps {
   column: ModelsColumn;
@@ -21,36 +22,49 @@ export function useTaskDragDrop({
   tasks,
 }: UseTaskDragDropProps) {
   const [draggedTaskId, setDraggedTaskId] = useState<number | null>(null);
-  const [hoveredTaskId, setHoveredTaskId] = useState<number | null>(null);
-  const [hoveredPosition, setHoveredPosition] = useState<number | null>(null);
+  const [rawHoveredTaskId, setRawHoveredTaskId] = useState<number | null>(null);
+  const [rawHoveredPosition, setRawHoveredPosition] = useState<number | null>(
+    null
+  );
+
+  const hoveredTaskId = useDebounce(rawHoveredTaskId, 5);
+  const hoveredPosition = useDebounce(rawHoveredPosition, 5);
 
   const handleDragStart = useCallback(
-    (event: DragEvent<HTMLDivElement>, taskId: number) => {
+    (event: React.DragEvent<HTMLDivElement>, taskId: number) => {
       event.dataTransfer.setData("text/plain", JSON.stringify({ taskId }));
       setDraggedTaskId(taskId);
     },
     []
   );
 
-  const handleDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const targetElement = (event.target as HTMLElement).closest(".task");
-    if (targetElement) {
-      const pos = targetElement.getAttribute("data-position");
-      const hoveredId = targetElement.getAttribute("data-task-id");
+  const handleDragOver = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const targetElement = (event.target as HTMLElement).closest(".task");
+      if (targetElement) {
+        const pos = targetElement.getAttribute("data-position");
+        const hoveredId = targetElement.getAttribute("data-task-id");
 
-      if (pos !== null && hoveredId !== null) {
-        setHoveredTaskId(Number(hoveredId));
-        setHoveredPosition(Number(pos));
+        if (pos !== null && hoveredId !== null) {
+          setRawHoveredTaskId(Number(hoveredId));
+          setRawHoveredPosition(Number(pos));
+        }
+      } else {
+        setRawHoveredTaskId(null);
+        setRawHoveredPosition(null);
       }
-    } else {
-      setHoveredTaskId(null);
-      setHoveredPosition(null);
-    }
+    },
+    []
+  );
+
+  const handleDragLeave = useCallback(() => {
+    setRawHoveredTaskId(null);
+    setRawHoveredPosition(null);
   }, []);
 
   const handleDrop = useCallback(
-    (event: DragEvent<HTMLDivElement>) => {
+    (event: React.DragEvent<HTMLDivElement>) => {
       event.preventDefault();
       const data = JSON.parse(event.dataTransfer.getData("text/plain"));
       const { taskId } = data;
@@ -65,8 +79,8 @@ export function useTaskDragDrop({
       });
 
       setDraggedTaskId(null);
-      setHoveredTaskId(null);
-      setHoveredPosition(null);
+      setRawHoveredTaskId(null);
+      setRawHoveredPosition(null);
     },
     [column.id, swimlane.id, hoveredPosition, moveTask]
   );
@@ -75,15 +89,11 @@ export function useTaskDragDrop({
     (taskId: number) => draggedTaskId === taskId,
     [draggedTaskId]
   );
+
   const isHoveredTask = useCallback(
     (taskId: number) => hoveredTaskId === taskId,
     [hoveredTaskId]
   );
-
-  const handleDragLeave = useCallback(() => {
-    setHoveredTaskId(null);
-    setHoveredPosition(null);
-  }, []);
 
   return {
     draggedTaskId,
@@ -91,8 +101,8 @@ export function useTaskDragDrop({
     hoveredPosition,
     handleDragStart,
     handleDragOver,
-    handleDrop,
     handleDragLeave,
+    handleDrop,
     isDraggedTask,
     isHoveredTask,
   };
