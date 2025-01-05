@@ -2,8 +2,10 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"server/database/repository"
 	"server/models"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -273,8 +275,76 @@ func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Ta
 func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string) ([]models.Task, error) {
 	can, _ := ts.rs.CheckRole(userID, boardID, ReaderRole, MemberRole)
 	if !can {
-		return []models.Task{}, errors.New("forbidden")
+		return nil, errors.New("forbidden")
 	}
-	// todo implement query language
-	return []models.Task{}, nil
+
+	statuses, assigneeEmail, searchTerm := parseQuery(query)
+
+	var qopts []repository.QueryOption
+
+	qopts = append(qopts, repository.WithWhere("board_id = ?", boardID))
+
+	if len(statuses) > 0 {
+		qopts = append(qopts, repository.WithWhere("status IN ?", statuses))
+	}
+
+	if assigneeEmail != "" {
+		user, err := ts.db.UserRepository.GetFirst(repository.WithWhere("email = ?", assigneeEmail))
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return []models.Task{}, nil
+			}
+			return nil, err
+		}
+		qopts = append(qopts, repository.WithWhere("assignee_id = ?", user.ID))
+	}
+
+	if searchTerm != "" {
+		likeValue := fmt.Sprintf("%%%s%%", searchTerm)
+		qopts = append(qopts, repository.WithCustom(func(db *gorm.DB) *gorm.DB {
+			return db.Where("title LIKE ? OR description LIKE ?", likeValue, likeValue)
+		}))
+	}
+
+	tasks, err := ts.db.TaskRepository.GetAll(qopts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
+}
+
+// parseQuery is a naive parser that extracts:
+//   - `status:open|closed` → []string{"open","closed"}
+//   - `assignee:email`  → "email"
+//   - Everything else → appended into one search string
+func parseQuery(q string) (statuses []string, assignee string, searchTerm string) {
+	tokens := strings.Split(strings.TrimSpace(q), " ")
+
+	var searchParts []string
+
+	for _, token := range tokens {
+		token = strings.TrimSpace(token)
+		if token == "" {
+			continue
+		}
+
+		switch {
+		case strings.HasPrefix(token, "status:"):
+			raw := strings.TrimPrefix(token, "status:")
+			statuses = strings.Split(raw, "|")
+
+		case strings.HasPrefix(token, "assignee:"):
+			assignee = strings.TrimPrefix(token, "assignee:")
+
+		default:
+			searchParts = append(searchParts, token)
+		}
+	}
+
+	if len(searchParts) > 0 {
+		searchTerm = strings.Join(searchParts, " ")
+	}
+
+	return statuses, assignee, searchTerm
 }
