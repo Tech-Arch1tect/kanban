@@ -113,12 +113,21 @@ func (bs *BoardService) SortBoard(board *models.Board) {
 }
 
 func (bs *BoardService) ListBoards(userID uint) ([]models.Board, error) {
+	user, err := bs.db.UserRepository.GetByID(userID)
+	if err != nil {
+		return []models.Board{}, err
+	}
+
+	if user.Role == models.RoleAdmin {
+		return bs.db.BoardRepository.GetAll(repository.WithPreload("Swimlanes", "Columns"))
+	}
+
 	MemberRole, err := bs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", MemberRole))
 	if err != nil {
 		return []models.Board{}, err
 	}
 
-	userBoardRoles, err := bs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("user_id = ? AND id = ?", userID, MemberRole.ID), repository.WithPreload("Board"))
+	userBoardRoles, err := bs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("user_id = ? AND id = ?", userID, MemberRole.ID), repository.WithPreload("Board"), repository.WithPreload("Board.Swimlanes"), repository.WithPreload("Board.Columns"))
 	if err != nil {
 		return []models.Board{}, err
 	}
