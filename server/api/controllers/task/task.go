@@ -253,12 +253,13 @@ func (tc *TaskController) MoveTask(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param query path string true "Query"
+// @Param board_id path uint true "Board ID"
 // @Success 200 {object} GetTaskQueryResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/tasks/get-query/{query} [get]
+// @Router /api/v1/tasks/get-query/{board_id}/{query} [get]
 func (tc *TaskController) GetTaskQuery(c *gin.Context) {
 	var request GetTaskQueryRequest
 	if err := c.ShouldBindUri(&request); err != nil {
