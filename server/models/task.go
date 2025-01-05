@@ -41,6 +41,7 @@ type Comment struct {
 	Model
 	User   User   `gorm:"foreignKey:UserID" json:"user"`
 	UserID uint   `json:"user_id"`
+	Task   Task   `gorm:"foreignKey:TaskID" json:"task"`
 	TaskID uint   `json:"task_id"`
 	Text   string `json:"text"`
 }
