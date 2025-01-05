@@ -61,7 +61,7 @@ func (bs *BoardService) GetBoard(id uint) (models.Board, error) {
 }
 
 func (bs *BoardService) GetBoardBySlug(slug string) (models.Board, error) {
-	board, err := bs.db.BoardRepository.GetFirst(repository.WithWhere("slug = ?", slug))
+	board, err := bs.db.BoardRepository.GetFirst(repository.WithWhere("slug = ?", slug), repository.WithPreload("Swimlanes"), repository.WithPreload("Columns"))
 	if err != nil {
 		return models.Board{}, err
 	}
