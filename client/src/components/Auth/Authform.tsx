@@ -7,6 +7,7 @@ import { useConfirmTOTP } from "../../hooks/auth/useConfirmTOTP";
 const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [totpCode, setTotpCode] = useState("");
   const [error, setError] = useState("");
@@ -56,7 +57,7 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
       );
     } else if (mode === "register") {
       registerMutation.mutate(
-        { email, password },
+        { email, password, username },
         {
           onSuccess: () => {
             loginMutation.mutate(
@@ -103,6 +104,21 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
               : "Got an account already? Login"}
           </button>
         </div>
+        {mode === "register" && (
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-gray-700">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500"
+              required
+            />
+          </div>
+        )}
         <div className="mb-4">
           <label htmlFor="email" className="block text-gray-700">
             Email
