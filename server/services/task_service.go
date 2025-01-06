@@ -50,7 +50,7 @@ func (ts *TaskService) CreateTask(userID uint, request CreateTaskRequest) (model
 		repository.WithWhere("column_id = ? AND swimlane_id = ?", request.ColumnID, request.SwimlaneID),
 		repository.WithOrder("position DESC"),
 	)
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return models.Task{}, err
 	}
 
