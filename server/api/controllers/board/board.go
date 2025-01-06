@@ -186,3 +186,38 @@ func (bc *BoardController) ListBoards(c *gin.Context) {
 
 	c.JSON(http.StatusOK, ListBoardsResponse{Boards: boards})
 }
+
+// @Summary Get users with access to a board
+// @Description Get users with access to a board
+// @Tags boards
+// @Security cookieAuth
+// @Accept json
+// @Produce json
+// @Param board_id path uint true "Board ID"
+// @Success 200 {object} GetUsersWithAccessToBoardResponse
+// @Router /api/v1/boards/permissions/{board_id} [get]
+func (bc *BoardController) GetUsersWithAccessToBoard(c *gin.Context) {
+	var req GetUsersWithAccessToBoardRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := bc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	users, err := bc.bs.GetUsersWithAccess(user.ID, req.BoardID)
+	if err != nil {
+		if err.Error() == "forbidden" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, GetUsersWithAccessToBoardResponse{Users: users})
+}

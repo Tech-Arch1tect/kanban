@@ -40,3 +40,11 @@ type GetBoardBySlugResponse struct {
 type ListBoardsResponse struct {
 	Boards []models.Board `json:"boards"`
 }
+
+type GetUsersWithAccessToBoardRequest struct {
+	BoardID uint `uri:"board_id" binding:"required"`
+}
+
+type GetUsersWithAccessToBoardResponse struct {
+	Users []models.User `json:"users"`
+}

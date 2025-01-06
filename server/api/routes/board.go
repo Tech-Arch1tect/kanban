@@ -15,5 +15,6 @@ func (r *router) RegisterBoardRoutes(router *gin.RouterGroup) {
 		board.GET("/get-by-slug/:slug", r.cr.BoardController.GetBoardBySlug)
 		board.POST("/delete", r.mw.CSRFTokenRequired(), r.mw.EnsureRole(models.RoleAdmin), r.cr.BoardController.DeleteBoard)
 		board.GET("/list", r.cr.BoardController.ListBoards)
+		board.GET("/permissions/:board_id", r.cr.BoardController.GetUsersWithAccessToBoard)
 	}
 }

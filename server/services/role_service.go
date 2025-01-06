@@ -116,3 +116,16 @@ func (rs *RoleService) GetRoleByUserAndBoard(userID, boardID uint) (models.Board
 func (rs *RoleService) GetRolesByBoard(boardID uint) ([]models.BoardRole, error) {
 	return rs.db.BoardRoleRepository.GetAll(repository.WithWhere("board_id = ?", boardID))
 }
+
+func (rs *RoleService) GetUsersWithAccessToBoard(boardID uint) ([]models.User, error) {
+	perms, err := rs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("board_id = ?", boardID))
+	if err != nil {
+		return nil, err
+	}
+
+	users := make([]models.User, 0)
+	for _, perm := range perms {
+		users = append(users, perm.User)
+	}
+	return users, nil
+}

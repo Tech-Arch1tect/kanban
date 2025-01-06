@@ -139,3 +139,20 @@ func (bs *BoardService) ListBoards(userID uint) ([]models.Board, error) {
 
 	return boards, nil
 }
+
+func (bs *BoardService) GetUsersWithAccess(userID, boardID uint) ([]models.User, error) {
+	can, err := bs.rs.CheckRole(userID, boardID, MemberRole)
+	if err != nil {
+		return nil, err
+	}
+	if !can {
+		return nil, errors.New("forbidden")
+	}
+
+	users, err := bs.rs.GetUsersWithAccessToBoard(boardID)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
