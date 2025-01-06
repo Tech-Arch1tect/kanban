@@ -3,7 +3,7 @@ import { tasksApi } from "../../lib/api";
 
 export const useGetTaskQuery = (query: string, boardId: number) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tasks", query],
+    queryKey: ["tasks", query, boardId],
     queryFn: async () => {
       try {
         return await tasksApi.apiV1TasksGetQueryBoardIdQueryGet({
