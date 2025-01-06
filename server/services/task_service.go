@@ -159,7 +159,7 @@ func (ts *TaskService) EditTask(userID uint, request EditTaskRequest) (models.Ta
 func (ts *TaskService) GetTask(userID, taskID uint) (models.Task, error) {
 	task, err := ts.db.TaskRepository.GetFirst(
 		repository.WithWhere("id = ?", taskID),
-		repository.WithPreload("Board", "Swimlane", "Column", "Creator", "Assignee"),
+		repository.WithPreload("Board", "Swimlane", "Column", "Creator", "Assignee", "Comments", "Comments.User"),
 	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
