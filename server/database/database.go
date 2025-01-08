@@ -6,7 +6,7 @@ import (
 	"server/database/repository"
 )
 
-func Init(cfg *config.Config) (repository.Database, error) {
+func Init(cfg *config.Config) (*repository.Database, error) {
 	initFuncs := map[string]func(*config.Config) (*repository.Database, error){
 		"sqlite": newSQLiteDB,
 		"mysql":  newMySQLDB,
@@ -14,17 +14,17 @@ func Init(cfg *config.Config) (repository.Database, error) {
 
 	initFunc, exists := initFuncs[cfg.Database.Type]
 	if !exists {
-		return repository.Database{}, fmt.Errorf("unsupported database type: %s", cfg.Database.Type)
+		return nil, fmt.Errorf("unsupported database type: %s", cfg.Database.Type)
 	}
 
 	db, err := initFunc(cfg)
 	if err != nil {
-		return repository.Database{}, fmt.Errorf("failed to initialise %s database: %w", cfg.Database.Type, err)
+		return nil, fmt.Errorf("failed to initialise %s database: %w", cfg.Database.Type, err)
 	}
 
 	if err := db.Migrate(); err != nil {
-		return repository.Database{}, fmt.Errorf("failed to migrate %s database: %w", cfg.Database.Type, err)
+		return nil, fmt.Errorf("failed to migrate %s database: %w", cfg.Database.Type, err)
 	}
 
-	return *db, nil
+	return db, nil
 }
