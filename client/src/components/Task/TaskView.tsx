@@ -4,6 +4,7 @@ import RenderMarkdown from "../Utility/RenderMarkdown";
 import TaskComments from "./TaskComments";
 import { TaskHeading } from "./Heading/TaskHeading";
 import { ModelsTask } from "../../typescript-fetch-client";
+import { TaskDescription } from "./TaskDescription";
 
 export default function TaskView() {
   const { id } = useParams({ from: "/task/$id" });
@@ -26,12 +27,7 @@ export default function TaskView() {
         <TaskHeading task={data?.task as ModelsTask} />
 
         <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-gray-900">Description</h2>
-          <div className="text-gray-700">
-            <RenderMarkdown
-              markdown={data?.task?.description || "No description provided."}
-            />
-          </div>
+          <TaskDescription task={data?.task as ModelsTask} />
         </div>
 
         <TaskComments taskId={Number(id)} />
