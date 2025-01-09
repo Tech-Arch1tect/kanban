@@ -1,11 +1,12 @@
 import { ModelsTask } from "../../../typescript-fetch-client";
 import { TaskAssignee } from "./TaskAssignee";
 import { TaskStatus } from "./TaskStatus";
+import { TaskTitle } from "./TaskTitle";
 
 export function TaskHeading({ task }: { task: ModelsTask }) {
   return (
     <div className="border-b pb-4">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">{task?.title}</h1>
+      <TaskTitle task={task} />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
         <TaskAssignee task={task} />
         <TaskStatus task={task} />
