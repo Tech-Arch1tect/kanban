@@ -14,5 +14,9 @@ func (r *router) RegisterTaskRoutes(router *gin.RouterGroup) {
 		task.POST("/edit", r.mw.CSRFTokenRequired(), r.cr.TaskController.EditTask)
 		task.POST("/delete", r.mw.CSRFTokenRequired(), r.cr.TaskController.DeleteTask)
 		task.POST("/move", r.mw.CSRFTokenRequired(), r.cr.TaskController.MoveTask)
+		task.POST("/update/title", r.mw.CSRFTokenRequired(), r.cr.TaskController.UpdateTaskTitle)
+		task.POST("/update/description", r.mw.CSRFTokenRequired(), r.cr.TaskController.UpdateTaskDescription)
+		task.POST("/update/status", r.mw.CSRFTokenRequired(), r.cr.TaskController.UpdateTaskStatus)
+		task.POST("/update/assignee", r.mw.CSRFTokenRequired(), r.cr.TaskController.UpdateTaskAssignee)
 	}
 }

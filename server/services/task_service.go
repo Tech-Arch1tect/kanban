@@ -358,3 +358,112 @@ func parseQuery(q string) (statuses []string, assignee string, searchTerm string
 
 	return statuses, assignee, searchTerm
 }
+
+func (ts *TaskService) UpdateTaskTitle(userID uint, taskID uint, title string) (models.Task, error) {
+	task, err := ts.db.TaskRepository.GetByID(taskID)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	if !can {
+		return models.Task{}, errors.New("forbidden")
+	}
+
+	task.Title = title
+
+	err = task.Validate()
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	err = ts.db.TaskRepository.Update(&task)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	return task, nil
+}
+
+func (ts *TaskService) UpdateTaskDescription(userID uint, taskID uint, description string) (models.Task, error) {
+	task, err := ts.db.TaskRepository.GetByID(taskID)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	if !can {
+		return models.Task{}, errors.New("forbidden")
+	}
+
+	task.Description = description
+
+	err = task.Validate()
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	err = ts.db.TaskRepository.Update(&task)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	return task, nil
+}
+
+func (ts *TaskService) UpdateTaskStatus(userID uint, taskID uint, status string) (models.Task, error) {
+	task, err := ts.db.TaskRepository.GetByID(taskID)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	if !can {
+		return models.Task{}, errors.New("forbidden")
+	}
+
+	task.Status = status
+
+	err = task.Validate()
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	err = ts.db.TaskRepository.Update(&task)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	return task, nil
+}
+
+func (ts *TaskService) UpdateTaskAssignee(userID uint, taskID uint, assigneeID uint) (models.Task, error) {
+	task, err := ts.db.TaskRepository.GetByID(taskID)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	if !can {
+		return models.Task{}, errors.New("forbidden")
+	}
+
+	if assigneeID != 0 {
+		can, _ = ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+		if !can {
+			return models.Task{}, errors.New("forbidden")
+		}
+	}
+
+	err = task.Validate()
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	err = ts.db.TaskRepository.Update(&task)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	return task, nil
+}
