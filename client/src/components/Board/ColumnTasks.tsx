@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   ModelsColumn,
   ModelsSwimlane,
@@ -9,6 +9,8 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 import { Task } from "./Task/Task";
 import { useMoveTask } from "../../hooks/tasks/useMoveTask";
 import { useTaskDragDrop } from "../../hooks/tasks/useTaskDragDrop";
+
+const TASKS_CHUNK_SIZE = 100;
 
 export default function ColumnTasks({
   column,
@@ -25,6 +27,9 @@ export default function ColumnTasks({
   const [isFormVisible, setFormVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [visibleTaskCount, setVisibleTaskCount] = useState(TASKS_CHUNK_SIZE);
+
+  const loaderRef = useRef<HTMLDivElement | null>(null);
 
   const { handleDragOver, handleDrop, handleDragLeave, ...dragStates } =
     useTaskDragDrop({
@@ -52,6 +57,31 @@ export default function ColumnTasks({
   const columnTasks = tasks.filter(
     (task) => task.swimlaneId === swimlane.id && task.columnId === column.id
   );
+
+  const visibleTasks = columnTasks.slice(0, visibleTaskCount);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleTaskCount((prev) =>
+            Math.min(prev + TASKS_CHUNK_SIZE, columnTasks.length)
+          );
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
+  }, [columnTasks.length]);
 
   return (
     <div
@@ -107,9 +137,17 @@ export default function ColumnTasks({
       )}
 
       <div className="space-y-2">
-        {columnTasks.map((task) => (
+        {visibleTasks.map((task) => (
           <Task key={task.id} task={task} {...dragStates} />
         ))}
+        {visibleTaskCount < columnTasks.length && (
+          <div
+            ref={loaderRef}
+            className="h-10 flex items-center justify-center text-gray-500"
+          >
+            Loading more tasks...
+          </div>
+        )}
       </div>
     </div>
   );
