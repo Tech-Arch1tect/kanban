@@ -3,21 +3,26 @@ package services
 import (
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
+	"server/config"
 	"server/database/repository"
 	"server/models"
 	"sort"
 	"strings"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type TaskService struct {
-	db *repository.Database
-	rs *RoleService
+	db     *repository.Database
+	rs     *RoleService
+	config *config.Config
 }
 
-func NewTaskService(db *repository.Database, rs *RoleService) *TaskService {
-	return &TaskService{db: db, rs: rs}
+func NewTaskService(db *repository.Database, rs *RoleService, config *config.Config) *TaskService {
+	return &TaskService{db: db, rs: rs, config: config}
 }
 
 type CreateTaskRequest struct {
@@ -159,7 +164,7 @@ func (ts *TaskService) EditTask(userID uint, request EditTaskRequest) (models.Ta
 func (ts *TaskService) GetTask(userID, taskID uint) (models.Task, error) {
 	task, err := ts.db.TaskRepository.GetFirst(
 		repository.WithWhere("id = ?", taskID),
-		repository.WithPreload("Board", "Swimlane", "Column", "Creator", "Assignee", "Comments", "Comments.User"),
+		repository.WithPreload("Board", "Swimlane", "Column", "Creator", "Assignee", "Comments", "Comments.User", "Files"),
 	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -466,4 +471,106 @@ func (ts *TaskService) UpdateTaskAssignee(userID uint, taskID uint, assigneeID u
 	}
 
 	return task, nil
+}
+
+func (ts *TaskService) UploadFile(userID uint, taskID uint, file []byte, name string) (models.File, error) {
+	task, err := ts.db.TaskRepository.GetByID(taskID)
+	if err != nil {
+		return models.File{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	if !can {
+		return models.File{}, errors.New("forbidden")
+	}
+
+	if strings.TrimSpace(name) == "" {
+		return models.File{}, errors.New("file name cannot be empty")
+	}
+
+	path := uuid.New().String()
+
+	storagePath := fmt.Sprintf("%s/tasks/%d/%s", ts.config.DataDir, task.ID, path)
+
+	err = saveFileToStorage(storagePath, file)
+	if err != nil {
+		return models.File{}, fmt.Errorf("failed to save file: %w", err)
+	}
+
+	fileType := "file"
+	// if the file type is an image, set the type to image
+	if strings.HasSuffix(name, ".png") || strings.HasSuffix(name, ".jpg") || strings.HasSuffix(name, ".jpeg") || strings.HasSuffix(name, ".gif") {
+		fileType = "image"
+	}
+
+	fileRecord := models.File{
+		Name:       name,
+		Path:       path,
+		TaskID:     task.ID,
+		UploadedBy: userID,
+		Type:       fileType,
+	}
+
+	err = ts.db.FileRepository.Create(&fileRecord)
+	if err != nil {
+		return models.File{}, fmt.Errorf("failed to create file record: %w", err)
+	}
+
+	return fileRecord, nil
+}
+
+func saveFileToStorage(path string, data []byte) error {
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return err
+	}
+
+	return os.WriteFile(path, data, os.ModePerm)
+}
+
+func (ts *TaskService) GetFile(userID uint, fileID uint) (models.File, []byte, error) {
+	file, err := ts.db.FileRepository.GetByID(fileID, repository.WithPreload("Task"))
+	if err != nil {
+		return models.File{}, nil, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, file.Task.BoardID, MemberRole)
+	if !can {
+		return models.File{}, nil, errors.New("forbidden")
+	}
+
+	filePath := fmt.Sprintf("%s/tasks/%d/%s", ts.config.DataDir, file.Task.ID, file.Path)
+
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		return models.File{}, nil, err
+	}
+
+	return file, content, nil
+}
+
+func (ts *TaskService) DeleteFile(userID uint, fileID uint) (models.File, error) {
+	file, err := ts.db.FileRepository.GetByID(fileID, repository.WithPreload("Task"))
+	if err != nil {
+		return models.File{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, file.Task.BoardID, MemberRole)
+	if !can {
+		return models.File{}, errors.New("forbidden")
+	}
+
+	filePath := fmt.Sprintf("%s/tasks/%d/%s", ts.config.DataDir, file.Task.ID, file.Path)
+
+	err = os.Remove(filePath)
+	if err != nil {
+		return models.File{}, err
+	}
+
+	err = ts.db.FileRepository.Delete(file.ID)
+	if err != nil {
+		return models.File{}, err
+	}
+
+	return file, nil
 }
