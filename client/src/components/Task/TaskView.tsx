@@ -5,6 +5,8 @@ import TaskComments from "./TaskComments";
 import { TaskHeading } from "./Heading/TaskHeading";
 import { ModelsTask } from "../../typescript-fetch-client";
 import { TaskDescription } from "./TaskDescription";
+import { UploadFile } from "./Files/UploadFile";
+import { ViewFiles } from "./Files/ViewFiles";
 
 export default function TaskView() {
   const { id } = useParams({ from: "/task/$id" });
@@ -29,6 +31,8 @@ export default function TaskView() {
         <div className="space-y-2">
           <TaskDescription task={data?.task as ModelsTask} />
         </div>
+
+        <ViewFiles task={data?.task as ModelsTask} />
 
         <TaskComments taskId={Number(id)} />
       </div>
