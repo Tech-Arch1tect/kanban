@@ -22,6 +22,7 @@ type Task struct {
 	Creator     User      `gorm:"foreignKey:CreatorID" json:"creator"`
 	AssigneeID  uint      `json:"assignee_id"`
 	Assignee    User      `gorm:"foreignKey:AssigneeID" json:"assignee"`
+	Files       []File    `gorm:"foreignKey:TaskID" json:"files"`
 }
 
 var allowedStatuses = []string{"open", "closed"}
@@ -45,4 +46,15 @@ type Comment struct {
 	Task   Task   `gorm:"foreignKey:TaskID" json:"task"`
 	TaskID uint   `json:"task_id"`
 	Text   string `json:"text"`
+}
+
+type File struct {
+	Model
+	Name           string `json:"name"`
+	Task           Task   `gorm:"foreignKey:TaskID" json:"task"`
+	TaskID         uint   `json:"task_id"`
+	Path           string `json:"-"`
+	Type           string `json:"type"` // image, file, etc
+	UploadedBy     uint   `json:"uploaded_by"`
+	UploadedByUser User   `gorm:"foreignKey:UploadedBy" json:"uploaded_by_user"`
 }
