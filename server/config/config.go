@@ -34,6 +34,7 @@ type Config struct {
 	AppUrl       string `validate:"required,url"`
 	SMTP         SMTPConfig
 	RateLimit    RateLimitConfig
+	DataDir      string `validate:"required"`
 }
 
 type RateLimitConfig struct {
@@ -96,6 +97,7 @@ func LoadConfig() (*Config, error) {
 			PasswordResetLimit:  getIntEnv("RATE_LIMIT_PASSWORD_RESET_LIMIT", 5),
 			PasswordResetWindow: getIntEnv("RATE_LIMIT_PASSWORD_RESET_WINDOW", 10),
 		},
+		DataDir: os.Getenv("DATA_DIR"),
 	}
 
 	setDefaults(cfg)
@@ -147,6 +149,10 @@ func setDefaults(cfg *Config) {
 	if cfg.SMTP.From == "" {
 		cfg.SMTP.From = "no-reply@example.com"
 		log.Printf("Using default SMTP_FROM: %s", cfg.SMTP.From)
+	}
+	if cfg.DataDir == "" {
+		cfg.DataDir = "./data"
+		log.Printf("Using default DATA_DIR: %s", cfg.DataDir)
 	}
 }
 
