@@ -1,10 +1,13 @@
 package task
 
 import (
+	"encoding/base64"
 	"net/http"
 	"server/database/repository"
 	"server/internal/helpers"
+	"server/models"
 	"server/services"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -280,4 +283,207 @@ func (tc *TaskController) GetTaskQuery(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, GetTaskQueryResponse{Tasks: tasks})
+}
+
+type UploadFileRequest struct {
+	TaskID uint   `json:"task_id"`
+	File   []byte `json:"file"`
+	Name   string `json:"name"`
+}
+
+type UploadFileResponse struct {
+	File models.File `json:"file"`
+}
+
+// @Summary Upload a file
+// @Description Upload a file to a task
+// @Tags tasks
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body UploadFileRequest true "Upload file request"
+// @Success 200 {object} UploadFileResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/upload [post]
+func (tc *TaskController) UploadFile(c *gin.Context) {
+	var request UploadFileRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	file, err := tc.ts.UploadFile(user.ID, request.TaskID, request.File, request.Name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, UploadFileResponse{File: file})
+}
+
+type GetImageRequest struct {
+	FileID uint `uri:"file_id"`
+}
+
+type GetImageResponse struct {
+	File    models.File `json:"file"`
+	Content string      `json:"content"`
+}
+
+// @Summary Get an image
+// @Description Get an image
+// @Tags tasks
+// @Security cookieAuth
+// @Accept json
+// @Produce json
+// @Param file_id path uint true "File ID"
+// @Success 200 {object} GetImageResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/get-image/{file_id} [get]
+func (tc *TaskController) GetImage(c *gin.Context) {
+	var request GetImageRequest
+	if err := c.ShouldBindUri(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	file, content, err := tc.ts.GetFile(user.ID, request.FileID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if file.Type != "image" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "File is not an image"})
+		return
+	}
+
+	contentString := base64.StdEncoding.EncodeToString(content)
+
+	if strings.HasSuffix(file.Name, ".png") {
+		contentString = "data:image/png;base64," + contentString
+	} else if strings.HasSuffix(file.Name, ".jpg") || strings.HasSuffix(file.Name, ".jpeg") {
+		contentString = "data:image/jpeg;base64," + contentString
+	} else if strings.HasSuffix(file.Name, ".gif") {
+		contentString = "data:image/gif;base64," + contentString
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "File is not an image"})
+		return
+	}
+
+	response := GetImageResponse{
+		File:    file,
+		Content: contentString,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+type DownloadFileRequest struct {
+	FileID uint `uri:"file_id"`
+}
+
+// todo serve file as binary
+type DownloadFileResponse struct {
+	File    models.File `json:"file"`
+	Content string      `json:"content"`
+}
+
+// @Summary Download a file
+// @Description Download a file
+// @Tags tasks
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param file_id path uint true "File ID"
+// @Success 200 {object} DownloadFileResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/download/{file_id} [get]
+func (tc *TaskController) DownloadFile(c *gin.Context) {
+	var request DownloadFileRequest
+	if err := c.ShouldBindUri(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	file, content, err := tc.ts.GetFile(user.ID, request.FileID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, DownloadFileResponse{File: file, Content: base64.StdEncoding.EncodeToString(content)})
+}
+
+type DeleteFileRequest struct {
+	FileID uint `json:"file_id"`
+}
+
+type DeleteFileResponse struct {
+	File models.File `json:"file"`
+}
+
+// @Summary Delete a file
+// @Description Delete a file
+// @Tags tasks
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body DeleteFileRequest true "Delete file request"
+// @Success 200 {object} DeleteFileResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/delete-file [post]
+func (tc *TaskController) DeleteFile(c *gin.Context) {
+	var request DeleteFileRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	file, err := tc.ts.DeleteFile(user.ID, request.FileID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, DeleteFileResponse{File: file})
 }
