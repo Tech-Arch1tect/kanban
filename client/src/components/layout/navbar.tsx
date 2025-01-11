@@ -131,6 +131,13 @@ const Navbar = () => {
                     >
                       Users
                     </Link>
+                    <Link
+                      to="/admin/boards"
+                      onClick={adminDropdown.closeDropdown}
+                      className="dropdown-item block px-4 py-2 hover:bg-gray-100"
+                    >
+                      Boards
+                    </Link>
                   </div>
                 )}
               </div>
