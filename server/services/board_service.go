@@ -5,6 +5,8 @@ import (
 	"server/database/repository"
 	"server/models"
 	"sort"
+
+	"gorm.io/gorm"
 )
 
 type BoardService struct {
@@ -155,4 +157,36 @@ func (bs *BoardService) GetUsersWithAccess(userID, boardID uint) ([]models.User,
 	}
 
 	return users, nil
+}
+
+func (bs *BoardService) AddOrInviteUserToBoard(authUserID, boardID uint, email string, role AppRole) error {
+	authUser, err := bs.db.UserRepository.GetFirst(repository.WithWhere("id = ?", authUserID))
+	if err != nil {
+		return err
+	}
+
+	can, err := bs.rs.CheckRole(authUser.ID, boardID, AdminRole)
+	if err != nil {
+		return err
+	}
+
+	if !can {
+		return errors.New("forbidden")
+	}
+
+	user, err := bs.db.UserRepository.GetFirst(repository.WithWhere("email = ?", email))
+	if err == gorm.ErrRecordNotFound {
+		return bs.InviteUserToBoard(boardID, email)
+	}
+
+	return bs.AddUserToBoard(boardID, user.ID, role)
+}
+
+func (bs *BoardService) AddUserToBoard(boardID, userID uint, role AppRole) error {
+	return bs.rs.AssignRole(userID, boardID, role)
+}
+
+func (bs *BoardService) InviteUserToBoard(boardID uint, email string) error {
+	// todo implement
+	return errors.New("not implemented")
 }

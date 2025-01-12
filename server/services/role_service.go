@@ -80,7 +80,7 @@ func (rs *RoleService) CheckRole(userID, boardID uint, role AppRole) (bool, erro
 	return false, nil
 }
 
-func (rs *RoleService) AssignRole(userID, boardID, roleID uint) error {
+func (rs *RoleService) AssignRole(userID, boardID uint, role AppRole) error {
 	existingRole, err := rs.db.UserBoardRoleRepository.GetFirst(repository.WithWhere("user_id = ? AND board_id = ?", userID, boardID))
 	if err == nil {
 		if err := rs.db.UserBoardRoleRepository.Delete(existingRole.ID); err != nil {
@@ -90,10 +90,15 @@ func (rs *RoleService) AssignRole(userID, boardID, roleID uint) error {
 		return err
 	}
 
+	roleDb, err := rs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", role.Name))
+	if err != nil {
+		return err
+	}
+
 	userBoardRole := models.UserBoardRole{
 		UserID:      userID,
 		BoardID:     boardID,
-		BoardRoleID: roleID,
+		BoardRoleID: roleDb.ID,
 	}
 
 	return rs.db.UserBoardRoleRepository.Create(&userBoardRole)

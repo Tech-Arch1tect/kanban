@@ -221,3 +221,52 @@ func (bc *BoardController) GetUsersWithAccessToBoard(c *gin.Context) {
 
 	c.JSON(http.StatusOK, GetUsersWithAccessToBoardResponse{Users: users})
 }
+
+type AddOrInviteUserToBoardRequest struct {
+	BoardID uint   `json:"board_id" binding:"required"`
+	Email   string `json:"email" binding:"required"`
+	Role    string `json:"role" binding:"required,oneof=admin member reader"`
+}
+
+type AddOrInviteUserToBoardResponse struct {
+	Message string `json:"message"`
+}
+
+// @Summary Add or invite a user to a board
+// @Description Add or invite a user to a board
+// @Tags boards
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body AddOrInviteUserToBoardRequest true "Add or invite user to board request"
+// @Success 200 {object} AddOrInviteUserToBoardResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/boards/add-or-invite [post]
+func (bc *BoardController) AddOrInviteUserToBoard(c *gin.Context) {
+	var req AddOrInviteUserToBoardRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := bc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	role := services.AppRole{
+		Name: req.Role,
+	}
+
+	err = bc.bs.AddOrInviteUserToBoard(user.ID, req.BoardID, req.Email, role)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, AddOrInviteUserToBoardResponse{Message: "User added or invited"})
+}
