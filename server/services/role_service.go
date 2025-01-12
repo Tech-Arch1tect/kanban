@@ -4,6 +4,7 @@ import (
 	"errors"
 	"server/database/repository"
 	"server/models"
+	"slices"
 
 	"gorm.io/gorm"
 )
@@ -135,5 +136,17 @@ func (rs *RoleService) GetUsersWithAccessToBoard(boardID uint) ([]models.User, e
 	for _, perm := range perms {
 		users = append(users, perm.User)
 	}
+
+	globalAdmins, err := rs.db.UserRepository.GetAll(repository.WithWhere("role = ?", models.RoleAdmin))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, globalAdmin := range globalAdmins {
+		if !slices.Contains(users, globalAdmin) {
+			users = append(users, globalAdmin)
+		}
+	}
+
 	return users, nil
 }
