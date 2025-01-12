@@ -12,7 +12,9 @@ export function TaskHeading({ task }: { task: ModelsTask }) {
         <TaskStatus task={task} />
         <div className="flex items-center">
           <span className="font-medium text-gray-600 w-24">Creator:</span>
-          <span className="text-gray-800">{task?.creator?.username}</span>
+          <span className="text-gray-800">
+            {task?.creator?.username || "Unknown User"}
+          </span>
         </div>
         <div className="flex items-center">
           <span className="font-medium text-gray-600 w-24">Created At:</span>
