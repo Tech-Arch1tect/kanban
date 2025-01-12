@@ -8,13 +8,22 @@ import (
 	"gorm.io/gorm"
 )
 
-const (
-	MemberRole = "member"
-	AdminRole  = "admin"
-	ReaderRole = "reader"
+type AppRole struct {
+	Name        string
+	AccessLevel int
+}
+
+var (
+	AdminRole  = AppRole{Name: "admin", AccessLevel: 999}
+	MemberRole = AppRole{Name: "member", AccessLevel: 200}
+	ReaderRole = AppRole{Name: "reader", AccessLevel: 100}
 )
 
-var roles = []string{MemberRole, AdminRole, ReaderRole}
+var roleMap = map[string]AppRole{
+	AdminRole.Name:  AdminRole,
+	MemberRole.Name: MemberRole,
+	ReaderRole.Name: ReaderRole,
+}
 
 type RoleService struct {
 	db *repository.Database
@@ -27,11 +36,11 @@ func NewRoleService(db *repository.Database) *RoleService {
 }
 
 func (rs *RoleService) SeedRoles() error {
-	for _, role := range roles {
-		_, err := rs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", role))
+	for _, role := range roleMap {
+		_, err := rs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", role.Name))
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				if err := rs.db.BoardRoleRepository.Create(&models.BoardRole{Name: role}); err != nil {
+				if err := rs.db.BoardRoleRepository.Create(&models.BoardRole{Name: role.Name}); err != nil {
 					return err
 				}
 			}
@@ -40,7 +49,7 @@ func (rs *RoleService) SeedRoles() error {
 	return nil
 }
 
-func (rs *RoleService) CheckRole(userID, boardID uint, roleNames ...string) (bool, error) {
+func (rs *RoleService) CheckRole(userID, boardID uint, role AppRole) (bool, error) {
 	user, err := rs.db.UserRepository.GetByID(userID)
 	if err != nil {
 		return false, err
@@ -50,22 +59,21 @@ func (rs *RoleService) CheckRole(userID, boardID uint, roleNames ...string) (boo
 		return true, nil
 	}
 
-	for _, roleName := range roleNames {
-		role, err := rs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", roleName))
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				continue
-			}
-			return false, err
+	userBoardRole, err := rs.GetRoleByUserAndBoard(userID, boardID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
 		}
+		return false, err
+	}
 
-		_, err = rs.db.UserBoardRoleRepository.GetFirst(repository.WithWhere("user_id = ? AND board_id = ? AND board_role_id = ?", userID, boardID, role.ID))
-		if err == nil {
-			return true, nil
-		}
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return false, err
-		}
+	userAppRole, exists := roleMap[userBoardRole.Name]
+	if !exists {
+		return false, errors.New("user role not found")
+	}
+
+	if userAppRole.AccessLevel >= role.AccessLevel {
+		return true, nil
 	}
 
 	return false, nil

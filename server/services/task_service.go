@@ -282,7 +282,7 @@ func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Ta
 }
 
 func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string) ([]models.Task, error) {
-	can, _ := ts.rs.CheckRole(userID, boardID, ReaderRole, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, boardID, ReaderRole)
 	if !can {
 		return nil, errors.New("forbidden")
 	}
