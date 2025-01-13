@@ -6,6 +6,7 @@ import { BoardSwimlaneList } from "./BoardSwimlaneList";
 import { BoardColumnsList } from "./BoardColumnsList";
 import { BoardColumnCreate } from "./BoardColumnCreate";
 import { BoardSampleDataInsert } from "./BoardSampleDataInsert";
+import { BoardAddOrInvite } from "./BoardAddOrInvite";
 
 export default function BoardAdministrateIndex() {
   const { boardId } = useParams({ from: "/boards/administrate/$boardId" });
@@ -23,7 +24,9 @@ export default function BoardAdministrateIndex() {
       <div className="bg-white p-4 rounded shadow space-y-4">
         <BoardSampleDataInsert boardId={boardId} />
       </div>
-
+      <div className="bg-white p-4 rounded shadow space-y-4">
+        <BoardAddOrInvite boardId={Number(boardId)} />
+      </div>
       <div className="bg-white p-4 rounded shadow space-y-4">
         <BoardDelete board={board} />
       </div>

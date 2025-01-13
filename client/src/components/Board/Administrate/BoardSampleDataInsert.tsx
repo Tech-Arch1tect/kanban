@@ -16,7 +16,7 @@ export function BoardSampleDataInsert({ boardId }: BoardSampleDataInsertProps) {
   };
 
   return (
-    <div className="bg-white p-4 rounded shadow space-y-4">
+    <div className="bg-white p-4 rounded space-y-4">
       <h2 className="text-2xl font-semibold">Sample Data</h2>
       {isError && <div className="text-red-600">Error: {String(error)}</div>}
       {isSuccess && (
