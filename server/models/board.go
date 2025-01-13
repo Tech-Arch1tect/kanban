@@ -38,3 +38,11 @@ type Column struct {
 	BoardID uint   `json:"board_id"`
 	Order   int    `json:"order"`
 }
+
+type BoardInvite struct {
+	Model
+	BoardID  uint   `json:"board_id" gorm:"not null; uniqueIndex:idx_board_invite"`
+	Board    Board  `gorm:"foreignKey:BoardID" json:"board"`
+	Email    string `json:"email" gorm:"not null; uniqueIndex:idx_board_invite"`
+	RoleName string `json:"role_name" gorm:"not null"`
+}

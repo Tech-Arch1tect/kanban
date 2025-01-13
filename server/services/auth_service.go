@@ -18,14 +18,16 @@ type AuthService struct {
 	email  *e.EmailService
 	db     *repository.Database
 	helper *helpers.HelperService
+	rs     *RoleService
 }
 
-func NewAuthService(config *config.Config, email *e.EmailService, db *repository.Database, helper *helpers.HelperService) *AuthService {
+func NewAuthService(config *config.Config, email *e.EmailService, db *repository.Database, helper *helpers.HelperService, rs *RoleService) *AuthService {
 	return &AuthService{
 		config: config,
 		email:  email,
 		db:     db,
 		helper: helper,
+		rs:     rs,
 	}
 }
 
@@ -54,6 +56,21 @@ func (s *AuthService) Register(username, email, password string) error {
 	user.Password = string(hashedPassword)
 	if err := s.db.UserRepository.Create(&user); err != nil {
 		return err
+	}
+
+	pendingInvites, err := s.db.BoardInviteRepository.GetAll(repository.WithWhere("email = ?", email))
+	if err != nil {
+		return err
+	}
+
+	for _, invite := range pendingInvites {
+		err := s.rs.AssignRole(user.ID, invite.BoardID, AppRole{Name: invite.RoleName})
+		if err != nil {
+			return err
+		}
+		if err := s.db.BoardInviteRepository.Delete(invite.ID); err != nil {
+			return err
+		}
 	}
 
 	return nil

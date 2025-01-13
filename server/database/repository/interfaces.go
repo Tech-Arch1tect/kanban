@@ -25,6 +25,7 @@ type Database struct {
 	CommentRepository       CommentRepository
 	ColumnRepository        ColumnRepository
 	FileRepository          FileRepository
+	BoardInviteRepository   BoardInviteRepository
 }
 
 func (db *Database) Migrate() error {
@@ -69,6 +70,11 @@ func (db *Database) Migrate() error {
 	}
 
 	err = db.FileRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.BoardInviteRepository.Migrate()
 	if err != nil {
 		return err
 	}

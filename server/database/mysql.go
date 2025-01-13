@@ -45,5 +45,6 @@ func newMySQLDB(cfg *config.Config) (*repository.Database, error) {
 		CommentRepository:       repository.NewCommentRepository(gormDB),
 		ColumnRepository:        repository.NewColumnRepository(gormDB),
 		FileRepository:          repository.NewFileRepository(gormDB),
+		BoardInviteRepository:   repository.NewBoardInviteRepository(gormDB),
 	}, nil
 }

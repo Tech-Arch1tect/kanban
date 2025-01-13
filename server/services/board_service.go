@@ -2,22 +2,29 @@ package services
 
 import (
 	"errors"
+	"server/config"
 	"server/database/repository"
 	"server/models"
 	"sort"
+
+	"server/internal/email"
 
 	"gorm.io/gorm"
 )
 
 type BoardService struct {
-	db *repository.Database
-	rs *RoleService
+	db  *repository.Database
+	rs  *RoleService
+	es  *email.EmailService
+	cfg *config.Config
 }
 
-func NewBoardService(db *repository.Database, rs *RoleService) *BoardService {
+func NewBoardService(db *repository.Database, rs *RoleService, es *email.EmailService, cfg *config.Config) *BoardService {
 	return &BoardService{
-		db: db,
-		rs: rs,
+		db:  db,
+		rs:  rs,
+		es:  es,
+		cfg: cfg,
 	}
 }
 
@@ -176,7 +183,7 @@ func (bs *BoardService) AddOrInviteUserToBoard(authUserID, boardID uint, email s
 
 	user, err := bs.db.UserRepository.GetFirst(repository.WithWhere("email = ?", email))
 	if err == gorm.ErrRecordNotFound {
-		return bs.InviteUserToBoard(boardID, email)
+		return bs.InviteUserToBoard(boardID, email, role.Name)
 	}
 
 	return bs.AddUserToBoard(boardID, user.ID, role)
@@ -186,7 +193,31 @@ func (bs *BoardService) AddUserToBoard(boardID, userID uint, role AppRole) error
 	return bs.rs.AssignRole(userID, boardID, role)
 }
 
-func (bs *BoardService) InviteUserToBoard(boardID uint, email string) error {
-	// todo implement
-	return errors.New("not implemented")
+func (bs *BoardService) InviteUserToBoard(boardID uint, email string, roleName string) error {
+	board, err := bs.db.BoardRepository.GetByID(boardID)
+	if err != nil {
+		return err
+	}
+
+	boardInvite := models.BoardInvite{
+		BoardID:  boardID,
+		Email:    email,
+		RoleName: roleName,
+	}
+
+	err = bs.db.BoardInviteRepository.Create(&boardInvite)
+	if err != nil {
+		return err
+	}
+
+	err = bs.es.SendHTMLTemplate(email, "Invite to Board", "inviteToBoard.tmpl", map[string]string{
+		"boardName": board.Name,
+		"appUrl":    bs.cfg.AppUrl,
+		"appName":   bs.cfg.AppName,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
