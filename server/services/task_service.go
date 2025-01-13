@@ -315,6 +315,8 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 		}))
 	}
 
+	qopts = append(qopts, repository.WithPreload("Assignee"))
+
 	tasks, err := ts.db.TaskRepository.GetAll(qopts...)
 	if err != nil {
 		return nil, err
