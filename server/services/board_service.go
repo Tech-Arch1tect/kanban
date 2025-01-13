@@ -221,3 +221,16 @@ func (bs *BoardService) InviteUserToBoard(boardID uint, email string, roleName s
 
 	return nil
 }
+
+func (bs *BoardService) GetPendingInvites(userID uint, boardID uint) ([]models.BoardInvite, error) {
+	can, err := bs.rs.CheckRole(userID, boardID, AdminRole)
+	if err != nil {
+		return nil, err
+	}
+
+	if !can {
+		return nil, errors.New("forbidden")
+	}
+
+	return bs.db.BoardInviteRepository.GetAll(repository.WithWhere("board_id = ?", boardID))
+}

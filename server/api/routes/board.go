@@ -17,5 +17,6 @@ func (r *router) RegisterBoardRoutes(router *gin.RouterGroup) {
 		board.GET("/list", r.cr.BoardController.ListBoards)
 		board.GET("/permissions/:board_id", r.cr.BoardController.GetUsersWithAccessToBoard)
 		board.POST("/add-or-invite", r.mw.CSRFTokenRequired(), r.cr.BoardController.AddOrInviteUserToBoard)
+		board.GET("/pending-invites/:board_id", r.cr.BoardController.GetPendingInvites)
 	}
 }

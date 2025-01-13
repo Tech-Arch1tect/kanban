@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"server/database/repository"
 	"server/internal/helpers"
+	"server/models"
 	"server/services"
 
 	"github.com/gin-gonic/gin"
@@ -269,4 +270,47 @@ func (bc *BoardController) AddOrInviteUserToBoard(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, AddOrInviteUserToBoardResponse{Message: "User added or invited"})
+}
+
+type GetPendingInvitesRequest struct {
+	BoardID uint `uri:"board_id" binding:"required"`
+}
+
+type GetPendingInvitesResponse struct {
+	Invites []models.BoardInvite `json:"invites"`
+}
+
+// @Summary Get pending invites
+// @Description Get pending invites
+// @Tags boards
+// @Security cookieAuth
+// @Accept json
+// @Produce json
+// @Param board_id path uint true "Board ID"
+// @Success 200 {object} GetPendingInvitesResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/boards/pending-invites/{board_id} [get]
+func (bc *BoardController) GetPendingInvites(c *gin.Context) {
+	var req GetPendingInvitesRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := bc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	invites, err := bc.bs.GetPendingInvites(user.ID, req.BoardID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, GetPendingInvitesResponse{Invites: invites})
 }
