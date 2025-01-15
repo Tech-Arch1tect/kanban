@@ -36,7 +36,7 @@ func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *ser
 		BoardController:      board.NewBoardController(bs, rs, db, hs),
 		ColumnController:     column.NewColumnController(db, cols, rs, hs),
 		SwimlaneController:   swimlane.NewSwimlaneController(db, ss, rs, hs),
-		TaskController:       task.NewTaskController(db, ts, rs, hs),
+		TaskController:       task.NewTaskController(db, ts, rs, bs, hs),
 		CommentController:    comment.NewCommentController(coms, hs, rs, db),
 		SampleDataController: sampleData.NewSampleDataController(db, ts),
 	}

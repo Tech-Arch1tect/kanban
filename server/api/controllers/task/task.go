@@ -16,11 +16,12 @@ type TaskController struct {
 	db *repository.Database
 	ts *services.TaskService
 	rs *services.RoleService
+	bs *services.BoardService
 	hs *helpers.HelperService
 }
 
-func NewTaskController(db *repository.Database, ts *services.TaskService, rs *services.RoleService, hs *helpers.HelperService) *TaskController {
-	return &TaskController{db: db, ts: ts, rs: rs, hs: hs}
+func NewTaskController(db *repository.Database, ts *services.TaskService, rs *services.RoleService, bs *services.BoardService, hs *helpers.HelperService) *TaskController {
+	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs}
 }
 
 // @Summary Create a task
@@ -486,4 +487,147 @@ func (tc *TaskController) DeleteFile(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, DeleteFileResponse{File: file})
+}
+
+type CreateTaskLinkRequest struct {
+	SrcTaskID uint   `json:"src_task_id"`
+	DstTaskID uint   `json:"dst_task_id"`
+	LinkType  string `json:"link_type" binding:"required,oneof=depends_on blocks fixes depended_on_by blocked_by fixed_by"`
+}
+
+type CreateTaskLinkResponse struct {
+	Link models.TaskLinks `json:"link"`
+}
+
+// @Summary Create a task link
+// @Description Create a task link
+// @Tags tasks
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body CreateTaskLinkRequest true "Create task link request"
+// @Success 200 {object} CreateTaskLinkResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/create-link [post]
+func (tc *TaskController) CreateTaskLink(c *gin.Context) {
+	var request CreateTaskLinkRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	link, err := tc.ts.CreateTaskLink(user.ID, request.SrcTaskID, request.DstTaskID, request.LinkType)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, CreateTaskLinkResponse{Link: link})
+}
+
+type DeleteTaskLinkRequest struct {
+	LinkID uint `json:"link_id"`
+}
+
+type DeleteTaskLinkResponse struct {
+	Link models.TaskLinks `json:"link"`
+}
+
+// @Summary Delete a task link
+// @Description Delete a task link
+// @Tags tasks
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body DeleteTaskLinkRequest true "Delete task link request"
+// @Success 200 {object} DeleteTaskLinkResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/delete-link [post]
+func (tc *TaskController) DeleteTaskLink(c *gin.Context) {
+	var request DeleteTaskLinkRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	link, err := tc.ts.DeleteTaskLink(user.ID, request.LinkID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, DeleteTaskLinkResponse{Link: link})
+}
+
+type QueryAllBoardsRequest struct {
+	Query string `json:"query"`
+}
+
+type QueryAllBoardsResponse struct {
+	Tasks []models.Task `json:"tasks"`
+}
+
+// @Summary Simple query all boards
+// @Description Simple query all boards
+// @Tags tasks
+// @Security cookieAuth
+// @Accept json
+// @Produce json
+// @Param request body QueryAllBoardsRequest true "Query all boards request"
+// @Success 200 {object} QueryAllBoardsResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/query-all-boards [post]
+func (tc *TaskController) QueryAllBoards(c *gin.Context) {
+	var request QueryAllBoardsRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	boards, err := tc.bs.ListBoards(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	tasks := []models.Task{}
+	for _, board := range boards {
+		t, err := tc.ts.GetTasksWithQuery(user.ID, board.ID, request.Query)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		tasks = append(tasks, t...)
+	}
+
+	c.JSON(http.StatusOK, QueryAllBoardsResponse{Tasks: tasks})
 }

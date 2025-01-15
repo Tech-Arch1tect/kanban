@@ -164,7 +164,7 @@ func (ts *TaskService) EditTask(userID uint, request EditTaskRequest) (models.Ta
 func (ts *TaskService) GetTask(userID, taskID uint) (models.Task, error) {
 	task, err := ts.db.TaskRepository.GetFirst(
 		repository.WithWhere("id = ?", taskID),
-		repository.WithPreload("Board", "Swimlane", "Column", "Creator", "Assignee", "Comments", "Comments.User", "Files"),
+		repository.WithPreload("Board", "Swimlane", "Column", "Creator", "Assignee", "Comments", "Comments.User", "Files", "SrcLinks", "DstLinks", "SrcLinks.SrcTask", "SrcLinks.DstTask", "DstLinks.DstTask", "DstLinks.SrcTask"),
 	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -172,6 +172,21 @@ func (ts *TaskService) GetTask(userID, taskID uint) (models.Task, error) {
 		}
 		return models.Task{}, err
 	}
+
+	// inverse the dst links
+	newDstLinks := []models.TaskLinks{}
+	for _, link := range task.DstLinks {
+		linkType := repository.InverseLinkTypeMap[link.LinkType]
+		newDstLinks = append(newDstLinks, models.TaskLinks{
+			SrcTaskID: link.DstTaskID,
+			SrcTask:   link.DstTask,
+			DstTaskID: link.SrcTaskID,
+			DstTask:   link.SrcTask,
+			LinkType:  string(linkType),
+		})
+	}
+
+	task.DstLinks = newDstLinks
 
 	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
 	if !can {
@@ -575,4 +590,80 @@ func (ts *TaskService) DeleteFile(userID uint, fileID uint) (models.File, error)
 	}
 
 	return file, nil
+}
+
+func (ts *TaskService) CreateTaskLink(userID uint, srcTaskID uint, dstTaskID uint, linkType string) (models.TaskLinks, error) {
+	srcTask, err := ts.db.TaskRepository.GetByID(srcTaskID)
+	if err != nil {
+		return models.TaskLinks{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, srcTask.BoardID, MemberRole)
+	if !can {
+		return models.TaskLinks{}, errors.New("forbidden")
+	}
+
+	dstTask, err := ts.db.TaskRepository.GetByID(dstTaskID)
+	if err != nil {
+		return models.TaskLinks{}, err
+	}
+
+	can, _ = ts.rs.CheckRole(userID, dstTask.BoardID, MemberRole)
+	if !can {
+		return models.TaskLinks{}, errors.New("forbidden")
+	}
+
+	lType, ok := repository.LinkTypeMap[linkType]
+	inverseLType, inverseOk := repository.InverseLinkTypeMap[linkType]
+
+	if !ok && !inverseOk {
+		return models.TaskLinks{}, errors.New("invalid link type")
+	}
+
+	rSrcId := srcTaskID
+	rDstId := dstTaskID
+	rLType := lType
+
+	if !ok {
+		rSrcId = dstTaskID
+		rDstId = srcTaskID
+		rLType = inverseLType
+	}
+
+	link := models.TaskLinks{
+		SrcTaskID: rSrcId,
+		DstTaskID: rDstId,
+		LinkType:  string(rLType),
+	}
+
+	err = ts.db.TaskLinkRepository.Create(&link)
+	if err != nil {
+		return models.TaskLinks{}, err
+	}
+
+	return link, nil
+}
+
+func (ts *TaskService) DeleteTaskLink(userID uint, linkID uint) (models.TaskLinks, error) {
+	link, err := ts.db.TaskLinkRepository.GetByID(linkID)
+	if err != nil {
+		return models.TaskLinks{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, link.SrcTask.BoardID, MemberRole)
+	if !can {
+		return models.TaskLinks{}, errors.New("forbidden")
+	}
+
+	can, _ = ts.rs.CheckRole(userID, link.DstTask.BoardID, MemberRole)
+	if !can {
+		return models.TaskLinks{}, errors.New("forbidden")
+	}
+
+	err = ts.db.TaskLinkRepository.Delete(link.ID)
+	if err != nil {
+		return models.TaskLinks{}, err
+	}
+
+	return link, nil
 }

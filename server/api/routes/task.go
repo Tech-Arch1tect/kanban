@@ -22,5 +22,8 @@ func (r *router) RegisterTaskRoutes(router *gin.RouterGroup) {
 		task.GET("/get-image/:file_id", r.cr.TaskController.GetImage)
 		task.POST("/upload", r.mw.CSRFTokenRequired(), r.cr.TaskController.UploadFile)
 		task.POST("/delete-file", r.mw.CSRFTokenRequired(), r.cr.TaskController.DeleteFile)
+		task.POST("/create-link", r.mw.CSRFTokenRequired(), r.cr.TaskController.CreateTaskLink)
+		task.POST("/delete-link", r.mw.CSRFTokenRequired(), r.cr.TaskController.DeleteTaskLink)
+		task.POST("/query-all-boards", r.mw.CSRFTokenRequired(), r.cr.TaskController.QueryAllBoards)
 	}
 }
