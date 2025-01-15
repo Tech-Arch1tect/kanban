@@ -26,5 +26,6 @@ func newSQLiteDB(cfg *config.Config) (*repository.Database, error) {
 		ColumnRepository:        repository.NewColumnRepository(gormDB),
 		FileRepository:          repository.NewFileRepository(gormDB),
 		BoardInviteRepository:   repository.NewBoardInviteRepository(gormDB),
+		TaskLinkRepository:      repository.NewTaskLinkRepository(gormDB),
 	}, nil
 }

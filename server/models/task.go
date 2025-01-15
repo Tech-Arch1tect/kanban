@@ -7,22 +7,24 @@ import (
 
 type Task struct {
 	Model
-	BoardID     uint      `json:"board_id"`
-	Board       Board     `gorm:"foreignKey:BoardID" json:"board"`
-	Swimlane    Swimlane  `gorm:"foreignKey:SwimlaneID" json:"swimlane"`
-	SwimlaneID  uint      `json:"swimlane_id"`
-	ColumnID    uint      `json:"column_id"`
-	Column      Column    `gorm:"foreignKey:ColumnID" json:"column"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Status      string    `json:"status"`
-	Comments    []Comment `gorm:"foreignKey:TaskID" json:"comments"`
-	Position    int       `json:"position"`
-	CreatorID   uint      `json:"creator_id"`
-	Creator     User      `gorm:"foreignKey:CreatorID" json:"creator"`
-	AssigneeID  uint      `json:"assignee_id"`
-	Assignee    User      `gorm:"foreignKey:AssigneeID" json:"assignee"`
-	Files       []File    `gorm:"foreignKey:TaskID" json:"files"`
+	BoardID     uint        `json:"board_id"`
+	Board       Board       `gorm:"foreignKey:BoardID" json:"board"`
+	Swimlane    Swimlane    `gorm:"foreignKey:SwimlaneID" json:"swimlane"`
+	SwimlaneID  uint        `json:"swimlane_id"`
+	ColumnID    uint        `json:"column_id"`
+	Column      Column      `gorm:"foreignKey:ColumnID" json:"column"`
+	Title       string      `json:"title"`
+	Description string      `json:"description"`
+	Status      string      `json:"status"`
+	Comments    []Comment   `gorm:"foreignKey:TaskID" json:"comments"`
+	Position    int         `json:"position"`
+	CreatorID   uint        `json:"creator_id"`
+	Creator     User        `gorm:"foreignKey:CreatorID" json:"creator"`
+	AssigneeID  uint        `json:"assignee_id"`
+	Assignee    User        `gorm:"foreignKey:AssigneeID" json:"assignee"`
+	Files       []File      `gorm:"foreignKey:TaskID" json:"files"`
+	DstLinks    []TaskLinks `gorm:"foreignKey:DstTaskID" json:"dst_links"`
+	SrcLinks    []TaskLinks `gorm:"foreignKey:SrcTaskID" json:"src_links"`
 }
 
 var allowedStatuses = []string{"open", "closed"}
@@ -57,4 +59,13 @@ type File struct {
 	Type           string `json:"type"` // image, file, etc
 	UploadedBy     uint   `json:"uploaded_by"`
 	UploadedByUser User   `gorm:"foreignKey:UploadedBy" json:"uploaded_by_user"`
+}
+
+type TaskLinks struct {
+	Model
+	SrcTaskID uint   `json:"src_task_id" gorm:"not null; uniqueIndex:idx_task_links"`
+	SrcTask   Task   `gorm:"foreignKey:SrcTaskID" json:"src_task"`
+	DstTaskID uint   `json:"dst_task_id" gorm:"not null; uniqueIndex:idx_task_links"`
+	DstTask   Task   `gorm:"foreignKey:DstTaskID" json:"dst_task"`
+	LinkType  string `json:"link_type" gorm:"not null; uniqueIndex:idx_task_links"`
 }
