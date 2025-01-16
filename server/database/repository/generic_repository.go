@@ -2,6 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type GormRepository[T any] struct {
@@ -46,7 +47,7 @@ func (r *GormRepository[T]) Create(entity *T) error {
 }
 
 func (r *GormRepository[T]) Update(entity *T) error {
-	return r.db.Save(entity).Error
+	return r.db.Omit(clause.Associations).Save(entity).Error
 }
 
 func (r *GormRepository[T]) Delete(id uint) error {

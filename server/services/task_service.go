@@ -272,9 +272,6 @@ func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Ta
 		tasks[i].Position = i
 		tasks[i].ColumnID = request.ColumnID
 		tasks[i].SwimlaneID = request.SwimlaneID
-		// todo look into why these don't update unless I wipe the preloaded swimlane and column
-		tasks[i].Column = models.Column{}
-		tasks[i].Swimlane = models.Swimlane{}
 	}
 
 	for i := range tasks {
