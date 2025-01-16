@@ -85,48 +85,46 @@ export default function ColumnTasks({
 
   return (
     <div
-      className="bg-gray-100 rounded shadow min-h-[10px]"
+      className="bg-white rounded-lg shadow-sm p-4 min-h-[200px]"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
       {!isFormVisible && (
         <button
-          className="flex items-center justify-center w-full p-2 bg-gray-200 rounded"
+          className="flex items-center justify-center w-full p-3 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
           onClick={() => setFormVisible(true)}
           aria-label="Add Task"
         >
           <PlusIcon className="w-6 h-6" />
+          <span className="ml-2">Add Task</span>
         </button>
       )}
 
       {isFormVisible && (
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col space-y-2 mt-4 p-2"
-        >
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-3 mt-4">
           <input
-            className="p-2 border rounded"
+            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Task title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
           />
           <textarea
-            className="p-2 border rounded"
+            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Task description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <div className="flex space-x-2">
+          <div className="flex space-x-3">
             <button
-              className="bg-blue-500 text-white p-2 rounded"
+              className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
               type="submit"
             >
               Create
             </button>
             <button
-              className="bg-gray-300 p-2 rounded"
+              className="bg-gray-200 text-gray-700 p-2 rounded-lg hover:bg-gray-300 transition-colors"
               type="button"
               onClick={() => setFormVisible(false)}
             >
@@ -136,7 +134,7 @@ export default function ColumnTasks({
         </form>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-3 mt-4">
         {visibleTasks.map((task) => (
           <Task key={task.id} task={task} {...dragStates} />
         ))}

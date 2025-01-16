@@ -25,23 +25,27 @@ export function Task({
       data-position={task.position}
       data-task-id={task.id}
       onDragStart={(event) => handleDragStart(event, task.id ?? 0)}
-      className={`bg-white p-3 rounded-md shadow-sm cursor-move task 
-        ${dragged ? "opacity-60" : ""}
-        ${hovered ? "ring ring-blue-400" : ""}
-        flex flex-col space-y-2 transition-all duration-200
+      className={`bg-white p-4 rounded-lg shadow-sm cursor-move transition-all duration-200
+        ${dragged ? "opacity-50" : ""}
+        ${hovered ? "ring-2 ring-blue-500" : ""}
+        hover:shadow-md hover:border-blue-100
       `}
     >
-      <Link to={`/task/${task.id}`}>
-        <div className="flex items-center justify-between text-sm text-gray-600">
+      <Link to={`/task/${task.id}`} className="block">
+        {/* Assignee and Task ID */}
+        <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
           <span className="truncate">
             {task.assignee?.username || "Unassigned"}
           </span>
-
           <span className="text-gray-400">{`#${task.id}`}</span>
         </div>
-        <h3 className="text-base font-medium text-gray-900 truncate">
+
+        {/* Task Title */}
+        <h3 className="text-base font-semibold text-gray-900 truncate mb-2">
           {task.title}
         </h3>
+
+        {/* Task Description */}
         <div className="text-sm text-gray-700 line-clamp-2">
           <RenderMarkdown
             markdown={task.description || ""}

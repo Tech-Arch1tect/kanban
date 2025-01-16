@@ -29,6 +29,16 @@ const BoardsSelect: React.FC = () => {
   if (isLoading) return <p>Loading boards...</p>;
   if (error) return <p>Error loading boards: {error.message}</p>;
 
+  const customStyles = {
+    option: (provided: any, state: any) => ({
+      ...provided,
+      "&:hover": {
+        backgroundColor: "#60a5fa",
+        color: "#ffffff",
+      },
+    }),
+  };
+
   return (
     <Select<Option, false>
       value={selectedOption}
@@ -37,6 +47,7 @@ const BoardsSelect: React.FC = () => {
       placeholder="Select a board..."
       isClearable
       className="w-96"
+      styles={customStyles}
     />
   );
 };
