@@ -86,13 +86,16 @@ func (sc *SampleDataController) InsertSampleData(c *gin.Context) {
 			repository.WithWhere("column_id = ? AND swimlane_id = ?", column.ID, swimlane.ID),
 			repository.WithOrder("position DESC"),
 		)
-		if err != nil && err.Error() != "record not found" {
+
+		var position float64
+
+		if err == nil {
+			position = taskPosition.Position + 1.0
+		} else if err.Error() != "record not found" {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
-		}
-		position := 0.0
-		if taskPosition.Position != 0 {
-			position = taskPosition.Position + 1
+		} else {
+			position = 0.0
 		}
 
 		fakeTask := models.Task{
