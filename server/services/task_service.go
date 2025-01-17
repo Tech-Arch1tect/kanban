@@ -196,28 +196,11 @@ func (ts *TaskService) GetTask(userID, taskID uint) (models.Task, error) {
 	return task, nil
 }
 
-func (ts *TaskService) RePositionAll(columnID, swimlaneID uint) error {
-	tasks, err := ts.db.TaskRepository.GetAll(
-		repository.WithWhere("column_id = ? AND swimlane_id = ?", columnID, swimlaneID),
-		repository.WithOrder("position ASC"),
-	)
-	if err != nil {
-		return err
-	}
-	for i, task := range tasks {
-		task.Position = i
-		if err := ts.db.TaskRepository.Update(&task); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 type MoveTaskRequest struct {
-	TaskID     uint `json:"task_id"`
-	ColumnID   uint `json:"column_id"`
-	SwimlaneID uint `json:"swimlane_id"`
-	Position   int  `json:"position"`
+	TaskID     uint    `json:"task_id"`
+	ColumnID   uint    `json:"column_id"`
+	SwimlaneID uint    `json:"swimlane_id"`
+	Position   float64 `json:"position"`
 }
 
 func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Task, error) {
@@ -226,71 +209,64 @@ func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Ta
 		return models.Task{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
-	if !can {
-		return models.Task{}, errors.New("forbidden")
-	}
-
 	column, err := ts.db.ColumnRepository.GetByID(request.ColumnID)
 	if err != nil {
 		return models.Task{}, err
 	}
-
 	swimlane, err := ts.db.SwimlaneRepository.GetByID(request.SwimlaneID)
 	if err != nil {
 		return models.Task{}, err
 	}
-
 	if column.BoardID != swimlane.BoardID || column.BoardID != task.BoardID {
 		return models.Task{}, errors.New("column, swimlane, and task must belong to the same board")
 	}
 
 	tasks, err := ts.db.TaskRepository.GetAll(
 		repository.WithWhere("column_id = ? AND swimlane_id = ?", request.ColumnID, request.SwimlaneID),
+		repository.WithOrder("position ASC"),
 	)
 	if err != nil {
 		return models.Task{}, err
 	}
 
-	var filteredTasks []models.Task
+	var filtered []models.Task
 	for _, t := range tasks {
 		if t.ID != task.ID {
-			filteredTasks = append(filteredTasks, t)
+			filtered = append(filtered, t)
 		}
 	}
-	tasks = filteredTasks
+	tasks = filtered
 
-	if request.Position > len(tasks) {
-		request.Position = len(tasks)
-	}
+	var newPos float64
 
-	tasks = append(tasks, models.Task{})
-	copy(tasks[request.Position+1:], tasks[request.Position:])
-	tasks[request.Position] = task
-
-	for i := range tasks {
-		tasks[i].Position = i
-		tasks[i].ColumnID = request.ColumnID
-		tasks[i].SwimlaneID = request.SwimlaneID
-	}
-
-	for i := range tasks {
-		if err := ts.db.TaskRepository.Update(&tasks[i]); err != nil {
-			return models.Task{}, err
+	if len(tasks) == 0 {
+		newPos = request.Position
+	} else {
+		var nextPos float64
+		foundNext := false
+		for _, t := range tasks {
+			if t.Position > request.Position {
+				nextPos = t.Position
+				foundNext = true
+				break
+			}
+		}
+		if !foundNext {
+			newPos = request.Position + 1.0
+		} else {
+			newPos = (request.Position + nextPos) / 2.0
 		}
 	}
 
-	updatedTask, err := ts.db.TaskRepository.GetByID(task.ID)
-	if err != nil {
+	task.Position = newPos
+	task.ColumnID = request.ColumnID
+	task.SwimlaneID = request.SwimlaneID
+
+	if err := ts.db.TaskRepository.Update(&task); err != nil {
 		return models.Task{}, err
 	}
 
-	err = ts.RePositionAll(task.ColumnID, task.SwimlaneID)
-	if err != nil {
-		return models.Task{}, err
-	}
-
-	return updatedTask, nil
+	return task, nil
 }
 
 func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string) ([]models.Task, error) {

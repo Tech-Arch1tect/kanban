@@ -90,7 +90,7 @@ func (sc *SampleDataController) InsertSampleData(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		position := 0
+		position := 0.0
 		if taskPosition.Position != 0 {
 			position = taskPosition.Position + 1
 		}
@@ -110,17 +110,6 @@ func (sc *SampleDataController) InsertSampleData(c *gin.Context) {
 			return
 		}
 		tasks = append(tasks, fakeTask)
-	}
-
-	// reposition all tasks
-	for _, column := range columns {
-		for _, swimlane := range simlanes {
-			err = sc.ts.RePositionAll(column.ID, swimlane.ID)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-		}
 	}
 
 	for i := 0; i < request.NumComments; i++ {

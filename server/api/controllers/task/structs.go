@@ -45,10 +45,10 @@ type GetTaskResponse struct {
 }
 
 type MoveTaskRequest struct {
-	TaskID     uint `json:"task_id" binding:"required"`
-	ColumnID   uint `json:"column_id" binding:"required"`
-	SwimlaneID uint `json:"swimlane_id" binding:"required"`
-	Position   int  `json:"position" binding:"number"`
+	TaskID     uint    `json:"task_id" binding:"required"`
+	ColumnID   uint    `json:"column_id" binding:"required"`
+	SwimlaneID uint    `json:"swimlane_id" binding:"required"`
+	Position   float64 `json:"position" binding:"number"`
 }
 
 type MoveTaskResponse struct {
