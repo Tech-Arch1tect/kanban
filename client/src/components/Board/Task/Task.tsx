@@ -25,7 +25,7 @@ export function Task({
       data-position={task.position}
       data-task-id={task.id}
       onDragStart={(event) => handleDragStart(event, task.id ?? 0)}
-      className={`bg-white p-4 rounded-lg shadow-sm cursor-move transition-all duration-200
+      className={`task bg-white p-4 rounded-lg shadow-sm cursor-move transition-all duration-200
         ${dragged ? "opacity-50" : ""}
         ${hovered ? "ring-2 ring-blue-500" : ""}
         hover:shadow-md hover:border-blue-100
