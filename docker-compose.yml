@@ -1,10 +1,30 @@
 # this is a docker compose file used for local development
-# it is used to run mailpit for local email testing
 
 services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./server:/go/src/app
+      - ./data:/data
+    environment:
+      - SQLITE_FILE_PATH=/data/sqlite.db
+      - DATA_DIR=/data/data
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./client:/usr/src/app
+
   mailpit:
     image: axllent/mailpit:latest
-    container_name: mailpit
     ports:
       - "1025:1025"
       - "8025:8025"

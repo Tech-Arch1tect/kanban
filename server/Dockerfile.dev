@@ -1,0 +1,13 @@
+FROM golang:1.23-alpine AS builder
+
+RUN apk update && apk add --no-cache git curl gcc musl-dev
+
+ENV CGO_ENABLED=1
+
+RUN go install github.com/air-verse/air@latest
+
+WORKDIR /go/src/app 
+
+EXPOSE 8090
+
+CMD ["air", "--build.cmd", "go build cmd/main.go", "--build.bin", "./main"]

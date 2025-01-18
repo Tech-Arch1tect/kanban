@@ -4,3 +4,4 @@ docs/
 typescript-fetch-client/
 tmp/
 data/
+server/main
