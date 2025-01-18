@@ -5,6 +5,7 @@ import { routeTree } from "./routeTree.gen";
 
 import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LocalSettingsProvider } from "./context/LocalSettingsContext";
 
 // Set up a Router instance
 const router = createRouter({
@@ -12,7 +13,7 @@ const router = createRouter({
   defaultPreload: "intent",
 });
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 // Register things for typesafety
 declare module "@tanstack/react-router" {
@@ -26,8 +27,10 @@ const rootElement = document.getElementById("app")!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <LocalSettingsProvider>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </LocalSettingsProvider>
   );
 }

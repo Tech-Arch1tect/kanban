@@ -1,21 +1,33 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useAuth } from "../../hooks/auth/useAuth";
 import { useDropdown } from "../../hooks/useDropdown";
 import BoardsSelect from "./BoardsSelect";
 import { ToastContainer } from "react-toastify";
+import { LocalSettingsContext } from "../../context/LocalSettingsContext";
+import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 const Navbar = () => {
+  const { localSettings, updateLocalSettings } =
+    useContext(LocalSettingsContext);
+
   const navigate = useNavigate();
   const location = useLocation();
 
   const { profile, error } = useUserProfile();
-
   const { handleLogout, isAdmin } = useAuth(profile);
 
   const profileDropdown = useDropdown();
   const adminDropdown = useDropdown();
+
+  useEffect(() => {
+    if (localSettings.theme === "dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [localSettings.theme]);
 
   useEffect(() => {
     if (
@@ -30,6 +42,12 @@ const Navbar = () => {
   if (["/login", "/register", "/password-reset"].includes(location.pathname)) {
     return null;
   }
+
+  const toggleTheme = () => {
+    updateLocalSettings({
+      theme: localSettings.theme === "dark" ? "light" : "dark",
+    });
+  };
 
   return (
     <>
@@ -53,10 +71,24 @@ const Navbar = () => {
               About
             </Link>
           </div>
+
           <div className="flex items-center space-x-4">
             <BoardsSelect />
           </div>
+
           <div className="flex items-center space-x-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-blue-700 focus:outline-none"
+              aria-label="Toggle Dark Mode"
+            >
+              {localSettings.theme === "dark" ? (
+                <SunIcon className="h-6 w-6 text-yellow-300" />
+              ) : (
+                <MoonIcon className="h-6 w-6 text-gray-200" />
+              )}
+            </button>
+
             {/* User Profile Dropdown */}
             <div className="relative" ref={profileDropdown.ref}>
               <button
