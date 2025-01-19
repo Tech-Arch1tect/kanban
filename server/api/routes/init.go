@@ -50,6 +50,7 @@ func (r *router) RegisterRoutes(engine *gin.Engine) {
 		r.RegisterTaskRoutes(api)
 		r.RegisterCommentRoutes(api)
 		r.RegisterSampleDataRoutes(api)
+		r.RegisterSettingsRoutes(api)
 	}
 }
 

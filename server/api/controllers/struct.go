@@ -8,6 +8,7 @@ import (
 	"server/api/controllers/comment"
 	"server/api/controllers/misc"
 	"server/api/controllers/sampleData"
+	"server/api/controllers/settings"
 	"server/api/controllers/swimlane"
 	"server/api/controllers/task"
 	"server/config"
@@ -26,9 +27,10 @@ type Controllers struct {
 	TaskController       *task.TaskController
 	CommentController    *comment.CommentController
 	SampleDataController *sampleData.SampleDataController
+	SettingsController   *settings.SettingsController
 }
 
-func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *services.AdminService, db *repository.Database, hs *helpers.HelperService, bs *services.BoardService, rs *services.RoleService, cols *services.ColumnService, ss *services.SwimlaneService, ts *services.TaskService, coms *services.CommentService) *Controllers {
+func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *services.AdminService, db *repository.Database, hs *helpers.HelperService, bs *services.BoardService, rs *services.RoleService, cols *services.ColumnService, ss *services.SwimlaneService, ts *services.TaskService, coms *services.CommentService, settingsS *services.SettingsService) *Controllers {
 	return &Controllers{
 		AuthController:       auth.NewAuthController(authS, db, hs),
 		AdminController:      admin.NewAdminController(adminS),
@@ -39,5 +41,6 @@ func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *ser
 		TaskController:       task.NewTaskController(db, ts, rs, bs, hs),
 		CommentController:    comment.NewCommentController(coms, hs, rs, db),
 		SampleDataController: sampleData.NewSampleDataController(db, ts),
+		SettingsController:   settings.NewSettingsController(settingsS, hs),
 	}
 }
