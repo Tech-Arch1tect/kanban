@@ -85,14 +85,14 @@ export default function ColumnTasks({
 
   return (
     <div
-      className="bg-white rounded-lg shadow-sm p-4 min-h-[200px]"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-md p-4 min-h-[200px]"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
       {!isFormVisible && (
         <button
-          className="flex items-center justify-center w-full p-3 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+          className="flex items-center justify-center w-full p-3 bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors"
           onClick={() => setFormVisible(true)}
           aria-label="Add Task"
         >
@@ -104,27 +104,27 @@ export default function ColumnTasks({
       {isFormVisible && (
         <form onSubmit={handleSubmit} className="flex flex-col space-y-3 mt-4">
           <input
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             placeholder="Task title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
           />
           <textarea
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             placeholder="Task description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
           <div className="flex space-x-3">
             <button
-              className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
+              className="bg-blue-500 dark:bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
               type="submit"
             >
               Create
             </button>
             <button
-              className="bg-gray-200 text-gray-700 p-2 rounded-lg hover:bg-gray-300 transition-colors"
+              className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
               type="button"
               onClick={() => setFormVisible(false)}
             >
@@ -141,7 +141,7 @@ export default function ColumnTasks({
         {visibleTaskCount < columnTasks.length && (
           <div
             ref={loaderRef}
-            className="h-10 flex items-center justify-center text-gray-500"
+            className="h-10 flex items-center justify-center text-gray-500 dark:text-gray-400"
           >
             Loading more tasks...
           </div>

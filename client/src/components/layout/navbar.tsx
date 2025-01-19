@@ -50,21 +50,31 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-blue-800 shadow-lg">
+      <nav className="bg-blue-800 dark:bg-gray-900 shadow-lg">
         <div className="container mx-auto px-6 py-3 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <Link
               to="/"
-              activeProps={{ className: "text-white font-bold" }}
-              inactiveProps={{ className: "text-gray-200 hover:text-white" }}
+              activeProps={{
+                className: "text-white dark:text-gray-100 font-bold",
+              }}
+              inactiveProps={{
+                className:
+                  "text-gray-200 dark:text-gray-400 hover:text-white dark:hover:text-gray-100",
+              }}
               className="text-lg"
             >
               Home
             </Link>
             <Link
               to="/about"
-              activeProps={{ className: "text-white font-bold" }}
-              inactiveProps={{ className: "text-gray-200 hover:text-white" }}
+              activeProps={{
+                className: "text-white dark:text-gray-100 font-bold",
+              }}
+              inactiveProps={{
+                className:
+                  "text-gray-200 dark:text-gray-400 hover:text-white dark:hover:text-gray-100",
+              }}
               className="text-lg"
             >
               About
@@ -78,13 +88,13 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-blue-700 focus:outline-none"
+              className="p-2 rounded-full hover:bg-blue-700 dark:hover:bg-gray-700 focus:outline-none"
               aria-label="Toggle Dark Mode"
             >
               {settings?.theme === "dark" ? (
-                <SunIcon className="h-6 w-6 text-yellow-300" />
+                <SunIcon className="h-6 w-6 text-yellow-300 dark:text-yellow-400" />
               ) : (
-                <MoonIcon className="h-6 w-6 text-gray-200" />
+                <MoonIcon className="h-6 w-6 text-gray-200 dark:text-gray-400" />
               )}
             </button>
 
@@ -92,7 +102,7 @@ const Navbar = () => {
             <div className="relative" ref={profileDropdown.ref}>
               <button
                 onClick={profileDropdown.toggleDropdown}
-                className="text-white text-lg font-medium flex items-center space-x-2"
+                className="text-white dark:text-gray-100 text-lg font-medium flex items-center space-x-2"
               >
                 Settings
                 <svg
@@ -111,18 +121,18 @@ const Navbar = () => {
                 </svg>
               </button>
               {profileDropdown.isOpen && (
-                <div className="dropdown absolute right-0 mt-2 w-48 bg-white shadow-xl rounded">
+                <div className="dropdown absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-xl rounded">
                   <Link
                     to="/profile/profile"
                     onClick={profileDropdown.closeDropdown}
-                    className="dropdown-item block px-4 py-2 hover:bg-gray-100"
+                    className="dropdown-item block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
                   >
                     Profile
                   </Link>
                   <Link
                     to="/profile/2fa"
                     onClick={profileDropdown.closeDropdown}
-                    className="dropdown-item block px-4 py-2 hover:bg-gray-100"
+                    className="dropdown-item block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
                   >
                     Manage 2FA
                   </Link>
@@ -135,7 +145,7 @@ const Navbar = () => {
               <div className="relative" ref={adminDropdown.ref}>
                 <button
                   onClick={adminDropdown.toggleDropdown}
-                  className="text-white text-lg font-medium flex items-center space-x-2"
+                  className="text-white dark:text-gray-100 text-lg font-medium flex items-center space-x-2"
                 >
                   Admin
                   <svg
@@ -154,18 +164,18 @@ const Navbar = () => {
                   </svg>
                 </button>
                 {adminDropdown.isOpen && (
-                  <div className="dropdown absolute right-0 mt-2 w-48 bg-white shadow-xl rounded">
+                  <div className="dropdown absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-xl rounded">
                     <Link
                       to="/admin/users"
                       onClick={adminDropdown.closeDropdown}
-                      className="dropdown-item block px-4 py-2 hover:bg-gray-100"
+                      className="dropdown-item block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
                     >
                       Users
                     </Link>
                     <Link
                       to="/admin/boards"
                       onClick={adminDropdown.closeDropdown}
-                      className="dropdown-item block px-4 py-2 hover:bg-gray-100"
+                      className="dropdown-item block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
                     >
                       Boards
                     </Link>
@@ -176,7 +186,7 @@ const Navbar = () => {
 
             <button
               onClick={handleLogout}
-              className="text-white text-lg font-medium hover:text-gray-200"
+              className="text-white dark:text-gray-100 text-lg font-medium hover:text-gray-200 dark:hover:text-gray-300"
             >
               Logout
             </button>

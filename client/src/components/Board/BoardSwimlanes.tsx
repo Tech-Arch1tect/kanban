@@ -34,18 +34,18 @@ export default function BoardSwimlanes({
   return (
     <div className="mb-2">
       <div
-        className="font-semibold text-lg text-gray-700 text-center bg-white py-3 rounded-t-lg shadow-sm cursor-pointer"
+        className="font-semibold text-lg text-gray-700 dark:text-gray-200 text-center bg-white dark:bg-gray-800 py-3 rounded-t-lg shadow-sm dark:shadow-md cursor-pointer"
         onClick={handleToggle}
       >
         {swimlane.name}{" "}
-        <span className="ml-2 text-sm">
+        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
           ({isCollapsed ? "Expand" : "Collapse"})
         </span>
       </div>
 
       {!isCollapsed && (
         <div
-          className="grid gap-2 bg-gray-50 p-2 rounded-b-lg shadow-sm"
+          className="grid gap-2 bg-gray-50 dark:bg-gray-700 p-2 rounded-b-lg shadow-sm dark:shadow-md"
           style={{
             gridTemplateColumns: `repeat(${columns?.length ?? 0}, minmax(200px, 1fr))`,
           }}
