@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, ReactNode } from "react";
 
 type LocalSettings = {
   theme: string;
+  collapsedSwimlanes: Record<string, boolean>;
 };
 
 type LocalSettingsContextValue = {
@@ -11,6 +12,7 @@ type LocalSettingsContextValue = {
 
 const defaultLocalSettings: LocalSettings = {
   theme: "light",
+  collapsedSwimlanes: {},
 };
 
 export const LocalSettingsContext = createContext<LocalSettingsContextValue>({
@@ -26,7 +28,19 @@ export const LocalSettingsProvider = ({ children }: Props) => {
   const [localSettings, setLocalSettings] = useState<LocalSettings>(() => {
     try {
       const stored = localStorage.getItem("localSettings");
-      return stored ? JSON.parse(stored) : defaultLocalSettings;
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return {
+          ...defaultLocalSettings,
+          ...parsed,
+          collapsedSwimlanes: {
+            ...defaultLocalSettings.collapsedSwimlanes,
+            ...parsed.collapsedSwimlanes,
+          },
+        };
+      } else {
+        return defaultLocalSettings;
+      }
     } catch {
       return defaultLocalSettings;
     }
@@ -37,7 +51,16 @@ export const LocalSettingsProvider = ({ children }: Props) => {
   }, [localSettings]);
 
   const updateLocalSettings = (updates: Partial<LocalSettings>) => {
-    setLocalSettings((prev) => ({ ...prev, ...updates }));
+    setLocalSettings((prev) => ({
+      ...prev,
+      ...updates,
+      collapsedSwimlanes: updates.collapsedSwimlanes
+        ? {
+            ...prev.collapsedSwimlanes,
+            ...updates.collapsedSwimlanes,
+          }
+        : prev.collapsedSwimlanes,
+    }));
   };
 
   return (
