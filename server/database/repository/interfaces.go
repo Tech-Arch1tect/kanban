@@ -27,6 +27,7 @@ type Database struct {
 	FileRepository          FileRepository
 	BoardInviteRepository   BoardInviteRepository
 	TaskLinkRepository      TaskLinkRepository
+	SettingsRepository      SettingsRepository
 }
 
 func (db *Database) Migrate() error {
@@ -81,6 +82,11 @@ func (db *Database) Migrate() error {
 	}
 
 	err = db.TaskLinkRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.SettingsRepository.Migrate()
 	if err != nil {
 		return err
 	}

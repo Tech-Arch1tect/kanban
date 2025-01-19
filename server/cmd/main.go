@@ -40,6 +40,7 @@ type Params struct {
 	SwimlaneS *services.SwimlaneService
 	TaskS     *services.TaskService
 	CommentS  *services.CommentService
+	SettingsS *services.SettingsService
 	EmailS    *email.EmailService
 	Helpers   *helpers.HelperService
 	MW        *middleware.Middleware
@@ -68,7 +69,7 @@ func NewRouter(p Params) (*gin.Engine, error) {
 	router.Use(sessionMiddleware)
 	router.Use(p.MW.EnsureCSRFTokenExistsInSession())
 
-	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS)
+	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS, p.SettingsS)
 	appRouter := routes.NewRouter(controllers, p.Config, p.DB, p.MW)
 
 	appRouter.RegisterRoutes(router)
@@ -96,8 +97,9 @@ func main() {
 			services.NewSwimlaneService,
 			services.NewTaskService,
 			services.NewCommentService,
+			services.NewSettingsService,
 		),
-		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *services.AuthService, adminS *services.AdminService, roleS *services.RoleService, boardS *services.BoardService, columnS *services.ColumnService, swimlaneS *services.SwimlaneService, taskS *services.TaskService, commentS *services.CommentService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware) {
+		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *services.AuthService, adminS *services.AdminService, roleS *services.RoleService, boardS *services.BoardService, columnS *services.ColumnService, swimlaneS *services.SwimlaneService, taskS *services.TaskService, commentS *services.CommentService, settingsS *services.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware) {
 			params := Params{
 				Config:    config,
 				DB:        db,
@@ -109,6 +111,7 @@ func main() {
 				SwimlaneS: swimlaneS,
 				TaskS:     taskS,
 				CommentS:  commentS,
+				SettingsS: settingsS,
 				EmailS:    emailS,
 				Helpers:   helpers,
 				MW:        mw,
