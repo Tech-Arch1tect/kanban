@@ -6,6 +6,7 @@ import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LocalSettingsProvider } from "./context/LocalSettingsContext";
+import { ServerSettingsProvider } from "./context/ServerSettingsContext";
 
 // Set up a Router instance
 const router = createRouter({
@@ -29,7 +30,9 @@ if (!rootElement.innerHTML) {
   root.render(
     <LocalSettingsProvider>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <ServerSettingsProvider>
+          <RouterProvider router={router} />
+        </ServerSettingsProvider>
       </QueryClientProvider>
     </LocalSettingsProvider>
   );

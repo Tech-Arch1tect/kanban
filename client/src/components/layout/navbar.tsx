@@ -1,16 +1,15 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useAuth } from "../../hooks/auth/useAuth";
 import { useDropdown } from "../../hooks/useDropdown";
 import BoardsSelect from "./BoardsSelect";
 import { ToastContainer } from "react-toastify";
-import { LocalSettingsContext } from "../../context/LocalSettingsContext";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
+import { useServerSettings } from "../../context/ServerSettingsContext";
 
 const Navbar = () => {
-  const { localSettings, updateLocalSettings } =
-    useContext(LocalSettingsContext);
+  const { settings, updateSettings } = useServerSettings();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,12 +21,12 @@ const Navbar = () => {
   const adminDropdown = useDropdown();
 
   useEffect(() => {
-    if (localSettings.theme === "dark") {
+    if (settings?.theme === "dark") {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
     }
-  }, [localSettings.theme]);
+  }, [settings?.theme]);
 
   useEffect(() => {
     if (
@@ -44,8 +43,8 @@ const Navbar = () => {
   }
 
   const toggleTheme = () => {
-    updateLocalSettings({
-      theme: localSettings.theme === "dark" ? "light" : "dark",
+    updateSettings({
+      theme: settings?.theme === "dark" ? "light" : "dark",
     });
   };
 
@@ -82,7 +81,7 @@ const Navbar = () => {
               className="p-2 rounded-full hover:bg-blue-700 focus:outline-none"
               aria-label="Toggle Dark Mode"
             >
-              {localSettings.theme === "dark" ? (
+              {settings?.theme === "dark" ? (
                 <SunIcon className="h-6 w-6 text-yellow-300" />
               ) : (
                 <MoonIcon className="h-6 w-6 text-gray-200" />

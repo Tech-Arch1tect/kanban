@@ -1,7 +1,6 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
 
 type LocalSettings = {
-  theme: string;
   collapsedSwimlanes: Record<string, boolean>;
 };
 
@@ -11,7 +10,6 @@ type LocalSettingsContextValue = {
 };
 
 const defaultLocalSettings: LocalSettings = {
-  theme: "light",
   collapsedSwimlanes: {},
 };
 
