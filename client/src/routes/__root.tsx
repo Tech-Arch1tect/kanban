@@ -12,7 +12,6 @@ function RootComponent() {
   return (
     <>
       <Navbar />
-      <hr />
       <Outlet />
     </>
   );
