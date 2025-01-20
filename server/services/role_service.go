@@ -132,7 +132,7 @@ func (rs *RoleService) GetRolesByBoard(boardID uint) ([]models.BoardRole, error)
 }
 
 func (rs *RoleService) GetUsersWithAccessToBoard(boardID uint) ([]models.User, error) {
-	perms, err := rs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("board_id = ?", boardID))
+	perms, err := rs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("board_id = ?", boardID), repository.WithPreload("User"))
 	if err != nil {
 		return nil, err
 	}
