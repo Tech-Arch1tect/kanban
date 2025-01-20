@@ -57,10 +57,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
       ) : (
         <div>
           <div className="text-gray-800 dark:text-gray-200">
-            <RenderMarkdown
-              markdown={comment.text || ""}
-              className="prose-sm dark:prose-invert"
-            />
+            <RenderMarkdown markdown={comment.text || ""} />
           </div>
           <div className="mt-3 text-sm flex justify-between items-center">
             <span className="font-medium text-gray-700 dark:text-gray-200">
