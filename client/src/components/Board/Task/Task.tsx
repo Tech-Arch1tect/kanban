@@ -47,10 +47,7 @@ export function Task({
 
         {/* Task Description */}
         <div className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-          <RenderMarkdown
-            markdown={task.description || ""}
-            className="prose-sm line-clamp-1 dark:prose-invert"
-          />
+          <RenderMarkdown markdown={task.description || ""} />
         </div>
       </Link>
     </div>
