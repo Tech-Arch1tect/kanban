@@ -76,31 +76,37 @@ const TwoFAComponent = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Two-Factor Authentication</h2>
+    <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+      <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-200">
+        Two-Factor Authentication
+      </h2>
       {is2FAEnabled ? (
         <div>
-          <p className="mb-4">2FA is currently enabled.</p>
+          <p className="mb-4 text-gray-700 dark:text-gray-300">
+            2FA is currently enabled.
+          </p>
           <input
             type="text"
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="Enter 2FA code"
-            className="w-full p-2 mb-4 border border-gray-300 rounded"
+            className="w-full p-2 mb-4 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
           />
           <button
             onClick={disable2FA}
-            className="w-full bg-red-500 text-white p-2 rounded hover:bg-red-600"
+            className="w-full bg-red-500 dark:bg-red-600 text-white p-2 rounded hover:bg-red-600 dark:hover:bg-red-700 transition duration-300"
           >
             Disable 2FA
           </button>
         </div>
       ) : (
         <div>
-          <p className="mb-4">2FA is currently disabled.</p>
+          <p className="mb-4 text-gray-700 dark:text-gray-300">
+            2FA is currently disabled.
+          </p>
           {secret ? (
             <div>
-              <p className="mb-4">
+              <p className="mb-4 text-gray-700 dark:text-gray-300">
                 Scan this QR code with your authenticator app:
               </p>
               <div className="flex justify-center mb-4">
@@ -109,17 +115,19 @@ const TwoFAComponent = () => {
                   size={200}
                 />
               </div>
-              <p className="mb-4">Or enter this secret manually: {secret}</p>
+              <p className="mb-4 text-gray-700 dark:text-gray-300">
+                Or enter this secret manually: {secret}
+              </p>
               <input
                 type="text"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="Enter 2FA code"
-                className="w-full p-2 mb-4 border border-gray-300 rounded"
+                className="w-full p-2 mb-4 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
               />
               <button
                 onClick={enable2FA}
-                className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
+                className="w-full bg-green-500 dark:bg-green-600 text-white p-2 rounded hover:bg-green-600 dark:hover:bg-green-700 transition duration-300"
               >
                 Enable 2FA
               </button>
@@ -127,14 +135,18 @@ const TwoFAComponent = () => {
           ) : (
             <button
               onClick={generateQRCode}
-              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+              className="w-full bg-blue-500 dark:bg-blue-600 text-white p-2 rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition duration-300"
             >
               Generate QR Code
             </button>
           )}
         </div>
       )}
-      {message && <p className="mt-4 text-sm text-gray-600">{message}</p>}
+      {message && (
+        <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+          {message}
+        </p>
+      )}
     </div>
   );
 };

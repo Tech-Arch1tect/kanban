@@ -88,16 +88,16 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded shadow-md w-96"
+        className="bg-white dark:bg-gray-800 p-8 rounded shadow-md w-96"
       >
         <div className="mb-4 text-center">
           <button
             type="button"
             onClick={() => setMode(mode === "login" ? "register" : "login")}
-            className="text-indigo-600 hover:underline"
+            className="text-indigo-600 dark:text-indigo-400 hover:underline"
           >
             {mode === "login"
               ? "Not got an account yet? Register"
@@ -106,7 +106,10 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
         </div>
         {mode === "register" && (
           <div className="mb-4">
-            <label htmlFor="username" className="block text-gray-700">
+            <label
+              htmlFor="username"
+              className="block text-gray-700 dark:text-gray-200"
+            >
               Username
             </label>
             <input
@@ -114,13 +117,16 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500"
+              className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
               required
             />
           </div>
         )}
         <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700">
+          <label
+            htmlFor="email"
+            className="block text-gray-700 dark:text-gray-200"
+          >
             Email
           </label>
           <input
@@ -128,12 +134,15 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500"
+            className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             required
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="password" className="block text-gray-700">
+          <label
+            htmlFor="password"
+            className="block text-gray-700 dark:text-gray-200"
+          >
             Password
           </label>
           <input
@@ -141,13 +150,16 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500"
+            className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             required
           />
         </div>
         {mode === "login" && totpRequired && (
           <div className="mb-4">
-            <label htmlFor="totpCode" className="block text-gray-700">
+            <label
+              htmlFor="totpCode"
+              className="block text-gray-700 dark:text-gray-200"
+            >
               Please enter your 2fa code from your authenticator app
             </label>
             <input
@@ -155,23 +167,27 @@ const AuthForm = ({ mode: initialMode }: { mode: "login" | "register" }) => {
               id="totpCode"
               value={totpCode}
               onChange={(e) => setTotpCode(e.target.value)}
-              className="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500"
+              className="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 dark:focus:ring-indigo-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             />
           </div>
         )}
-        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+        {error && (
+          <p className="text-red-500 dark:text-red-400 mb-4 text-center">
+            {error}
+          </p>
+        )}
         {mode === "login" && totpRequired ? (
           <button
             type="button"
             onClick={handleTotp}
-            className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition duration-300"
+            className="w-full bg-indigo-600 dark:bg-indigo-700 text-white py-2 px-4 rounded hover:bg-indigo-700 dark:hover:bg-indigo-800 transition duration-300"
           >
             Confirm TOTP
           </button>
         ) : (
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition duration-300"
+            className="w-full bg-indigo-600 dark:bg-indigo-700 text-white py-2 px-4 rounded hover:bg-indigo-700 dark:hover:bg-indigo-800 transition duration-300"
           >
             {mode === "login" ? "Login" : "Register"}
           </button>
