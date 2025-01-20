@@ -37,33 +37,35 @@ export const UploadFile = ({ taskId }: { taskId: number }) => {
   };
 
   return (
-    <div className="upload-file-container p-4 bg-gray-100 rounded-lg shadow-sm">
-      <h3 className="text-md font-medium text-gray-700 mb-3">Upload a File</h3>
+    <div className="upload-file-container p-4 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm">
+      <h3 className="text-md font-medium text-gray-700 dark:text-gray-200 mb-3">
+        Upload a File
+      </h3>
       <div className="upload-file-input-group flex flex-col gap-3">
         <input
           type="file"
           onChange={handleFileChange}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-300 file:bg-gray-50 file:text-gray-600 hover:file:bg-gray-100"
+          className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-300 dark:file:border-gray-600 file:bg-gray-50 dark:file:bg-gray-600 file:text-gray-600 dark:file:text-gray-200 hover:file:bg-gray-100 dark:hover:file:bg-gray-500"
         />
         <button
           onClick={handleUpload}
           disabled={isPending}
           className={`upload-file-button px-4 py-2 rounded-md text-white ${
             isPending
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-600"
+              ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
           }`}
         >
           {isPending ? "Uploading..." : "Upload"}
         </button>
       </div>
       {isSuccess && (
-        <p className="upload-success mt-2 text-sm text-green-600">
+        <p className="upload-success mt-2 text-sm text-green-600 dark:text-green-400">
           File uploaded successfully!
         </p>
       )}
       {isError && (
-        <p className="upload-error mt-2 text-sm text-red-600">
+        <p className="upload-error mt-2 text-sm text-red-600 dark:text-red-400">
           Error: {error?.message || "Failed to upload file."}
         </p>
       )}

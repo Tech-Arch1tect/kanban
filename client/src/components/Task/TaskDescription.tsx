@@ -36,10 +36,12 @@ export function TaskDescription({ task }: { task: ModelsTask }) {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900">Description</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-200">
+        Description
+      </h2>
       {isEditing ? (
         <textarea
-          className="w-full border rounded p-2 text-gray-700"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600"
           value={description}
           autoFocus
           onChange={(e) => setDescription(e.target.value)}
@@ -49,13 +51,13 @@ export function TaskDescription({ task }: { task: ModelsTask }) {
         />
       ) : (
         <div className="flex items-center">
-          <div className="text-gray-700 flex-1">
+          <div className="text-gray-700 dark:text-gray-300 flex-1">
             <RenderMarkdown
               markdown={description || "No description provided."}
             />
           </div>
           <button
-            className="ml-2 px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"
+            className="ml-2 px-3 py-1 text-sm text-white bg-blue-500 dark:bg-blue-600 rounded hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 transition-colors"
             onClick={handleEditClick}
           >
             Edit

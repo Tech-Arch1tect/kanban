@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ModelsTaskLinks } from "../../typescript-fetch-client";
 import { useDeleteTaskLink } from "../../hooks/tasks/useDeleteTaskLink";
 import { TrashIcon } from "@heroicons/react/24/solid";
+
 export const TaskLinkLoop = ({ links }: { links: ModelsTaskLinks[] }) => {
   const { mutate: deleteTaskLink, isPending: isDeleting } = useDeleteTaskLink();
 
@@ -25,24 +26,24 @@ export const TaskLinkLoop = ({ links }: { links: ModelsTaskLinks[] }) => {
           links.map((link) => (
             <div
               key={link.id}
-              className="flex items-start justify-between p-4 border border-gray-300 rounded-md bg-white"
+              className="flex items-start justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
               <div>
                 <Link
                   to={`/task/${link.dstTaskId}`}
-                  className="text-sm font-medium text-blue-500 hover:text-blue-700"
+                  className="text-sm font-medium text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                 >
-                  <strong className="block text-sm text-gray-700 inline-block">
+                  <strong className="block text-sm text-gray-700 dark:text-gray-200 inline-block">
                     {linkTypeDisplay[link.linkType ?? ""] || link.linkType}:
                   </strong>
-                  <span className="ml-2 text-sm text-gray-700 inline-block">
+                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-200 inline-block">
                     {link.dstTask?.title}
                   </span>
                 </Link>
               </div>
               <button
                 onClick={() => handleDelete(link.id!)}
-                className="text-red-500 hover:text-red-700 text-sm"
+                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm"
                 disabled={isDeleting}
               >
                 <TrashIcon className="w-4 h-4" />
@@ -50,7 +51,7 @@ export const TaskLinkLoop = ({ links }: { links: ModelsTaskLinks[] }) => {
             </div>
           ))
         ) : (
-          <div className="text-gray-500 text-center">
+          <div className="text-gray-500 dark:text-gray-400 text-center">
             No task links available.
           </div>
         )}

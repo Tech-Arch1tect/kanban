@@ -29,11 +29,11 @@ const CommentItem: React.FC<CommentItemProps> = ({
   };
 
   return (
-    <div className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
+    <div className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 shadow-sm">
       {isEditing ? (
         <form onSubmit={handleEditSubmit} className="space-y-3">
           <textarea
-            className="w-full border border-gray-300 rounded-md p-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-gray-400"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700"
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             rows={3}
@@ -41,13 +41,13 @@ const CommentItem: React.FC<CommentItemProps> = ({
           <div className="flex space-x-2">
             <button
               type="submit"
-              className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
             >
               Save
             </button>
             <button
               type="button"
-              className="py-2 px-4 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+              className="py-2 px-4 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500"
               onClick={() => setIsEditing(false)}
             >
               Cancel
@@ -56,17 +56,17 @@ const CommentItem: React.FC<CommentItemProps> = ({
         </form>
       ) : (
         <div>
-          <div className="text-gray-800">
+          <div className="text-gray-800 dark:text-gray-200">
             <RenderMarkdown
               markdown={comment.text || ""}
-              className="prose-sm"
+              className="prose-sm dark:prose-invert"
             />
           </div>
-          <div className="mt-3 text-sm text-gray-600 flex justify-between items-center">
-            <span className="font-medium text-gray-700">
+          <div className="mt-3 text-sm flex justify-between items-center">
+            <span className="font-medium text-gray-700 dark:text-gray-200">
               {comment.user?.username || "Unknown User"}
             </span>
-            <div className="text-gray-400">
+            <div className="text-gray-600 dark:text-gray-300">
               <span className="block">
                 Created:{" "}
                 {comment.createdAt
@@ -87,13 +87,13 @@ const CommentItem: React.FC<CommentItemProps> = ({
             <div className="flex space-x-2 mt-3">
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-blue-500 hover:text-blue-600 text-sm"
+                className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500 text-sm"
               >
                 Edit
               </button>
               <button
                 onClick={() => onDelete(comment.id ?? 0)}
-                className="text-red-500 hover:text-red-600 text-sm"
+                className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-500 text-sm"
               >
                 Delete
               </button>

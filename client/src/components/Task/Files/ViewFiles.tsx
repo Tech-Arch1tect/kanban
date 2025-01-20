@@ -39,24 +39,28 @@ export const ViewFiles = ({ task }: { task: ModelsTask }) => {
   };
 
   return (
-    <div className="view-files-container bg-white rounded-lg">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Task Files</h2>
+    <div className="view-files-container bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+      <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+        Task Files
+      </h2>
       <div className="files-list space-y-2">
         {task.files && task.files.length > 0 ? (
           task.files.map((file) => (
             <div
               key={file.id}
-              className="file-item flex items-center justify-between p-2 border border-gray-300 rounded-md bg-gray-50"
+              className="file-item flex items-center justify-between p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700"
             >
-              <span className="text-sm text-gray-700">{file.name}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-200">
+                {file.name}
+              </span>
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => handleDownload(file.id ?? 0)}
                   disabled={isDownloading}
                   className={`px-3 py-1 text-sm rounded-md text-white ${
                     isDownloading
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-blue-500 hover:bg-blue-600"
+                      ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
+                      : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
                   }`}
                 >
                   {isDownloading ? "Downloading..." : "Download"}
@@ -67,8 +71,8 @@ export const ViewFiles = ({ task }: { task: ModelsTask }) => {
                     disabled={isFetchingImage}
                     className={`px-3 py-1 text-sm rounded-md text-white ${
                       isFetchingImage
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-green-500 hover:bg-green-600"
+                        ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
+                        : "bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
                     }`}
                   >
                     {isFetchingImage ? "Opening..." : "View Image"}
@@ -79,8 +83,8 @@ export const ViewFiles = ({ task }: { task: ModelsTask }) => {
                   disabled={isDeleting}
                   className={`px-3 py-1 text-sm rounded-md text-white ${
                     isDeleting
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-red-500 hover:bg-red-600"
+                      ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
+                      : "bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
                   }`}
                 >
                   {isDeleting ? "Deleting..." : "Delete"}
@@ -89,13 +93,21 @@ export const ViewFiles = ({ task }: { task: ModelsTask }) => {
             </div>
           ))
         ) : (
-          <p className="text-gray-500">No files uploaded yet.</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            No files uploaded yet.
+          </p>
         )}
       </div>
       <div className="mt-6">
         <UploadFile taskId={task.id ?? 0} />
       </div>
-      {image && <img src={image} alt="Task Image" />}
+      {image && (
+        <img
+          src={image}
+          alt="Task Image"
+          className="mt-4 rounded-md shadow-sm"
+        />
+      )}
     </div>
   );
 };

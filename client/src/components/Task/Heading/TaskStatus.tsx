@@ -28,13 +28,15 @@ export function TaskStatus({ task }: { task: ModelsTask }) {
 
   return (
     <div className="flex items-center">
-      <span className="font-medium text-gray-600 w-24">Status:</span>
+      <span className="font-medium text-gray-600 dark:text-gray-400 w-24">
+        Status:
+      </span>
       {isEditing ? (
         <select
           value={newStatus}
           onChange={handleStatusChange}
           onBlur={handleUpdateStatus}
-          className="border px-2 py-1 rounded-md"
+          className="border border-gray-300 dark:border-gray-600 px-2 py-1 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
           disabled={isPending}
           autoFocus
         >
@@ -43,7 +45,7 @@ export function TaskStatus({ task }: { task: ModelsTask }) {
         </select>
       ) : (
         <span
-          className="text-gray-800 cursor-pointer"
+          className="text-gray-800 dark:text-gray-200 cursor-pointer"
           onClick={() => setIsEditing(true)}
         >
           {task?.status}

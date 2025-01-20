@@ -35,7 +35,7 @@ export const QueryAndAddTaskLink = ({ task }: { task: ModelsTask }) => {
 
   return (
     <div className="mx-auto">
-      <h2 className="text-lg font-semibold text-gray-900 pb-1">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-200 pb-1">
         Search for a task to link to
       </h2>
 
@@ -45,13 +45,22 @@ export const QueryAndAddTaskLink = ({ task }: { task: ModelsTask }) => {
           placeholder="Search tasks..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 w-full 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full 
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600
+                     bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
         />
       </form>
 
-      {isLoading && <p className="text-gray-500 mb-2">Loading tasks...</p>}
-      {error && <p className="text-red-500 mb-2">Error fetching tasks</p>}
+      {isLoading && (
+        <p className="text-gray-500 dark:text-gray-400 mb-2">
+          Loading tasks...
+        </p>
+      )}
+      {error && (
+        <p className="text-red-500 dark:text-red-400 mb-2">
+          Error fetching tasks
+        </p>
+      )}
 
       {tasks && tasks.tasks && tasks.tasks.length > 0 && (
         <ul className="space-y-2">
@@ -64,23 +73,26 @@ export const QueryAndAddTaskLink = ({ task }: { task: ModelsTask }) => {
                 onChange={() =>
                   setSelectedTask(foundTask.id?.toString() ?? null)
                 }
-                className="form-radio h-4 w-4 text-blue-600"
+                className="form-radio h-4 w-4 text-blue-600 dark:text-blue-500"
               />
-              <label className="text-gray-700">{foundTask.title}</label>
+              <label className="text-gray-700 dark:text-gray-200">
+                {foundTask.title}
+              </label>
             </li>
           ))}
         </ul>
       )}
 
       <div className="mt-4">
-        <label className="block text-gray-700 font-medium mb-1">
+        <label className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
           Link Type:
         </label>
         <select
           value={linkType}
           onChange={(e) => setLinkType(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 w-full 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-gray-300 dark:border-gray-600 rounded-md p-2 w-full 
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600
+                     bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
         >
           <option value="">Select link type...</option>
           <option value="blocks">Blocks</option>
@@ -95,9 +107,9 @@ export const QueryAndAddTaskLink = ({ task }: { task: ModelsTask }) => {
       <button
         onClick={handleCreateLink}
         disabled={isPending}
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md 
-                   hover:bg-blue-600 disabled:bg-gray-400 
-                   disabled:cursor-not-allowed"
+        className="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-md 
+                   hover:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600
+                   disabled:cursor-not-allowed transition-colors"
       >
         {isPending ? "Creating Link..." : "Create Task Link"}
       </button>

@@ -44,20 +44,22 @@ export default function TaskComments({ taskId }: { taskId: number }) {
   if (isLoading)
     return (
       <div className="flex justify-center items-center py-8">
-        <div className="animate-pulse w-3/4 h-6 bg-gray-300 rounded-md"></div>
+        <div className="animate-pulse w-3/4 h-6 bg-gray-300 dark:bg-gray-600 rounded-md"></div>
       </div>
     );
 
   if (error)
     return (
-      <div className="text-red-500 font-medium text-center py-4">
+      <div className="text-red-500 dark:text-red-400 font-medium text-center py-4">
         Error: {error.message}
       </div>
     );
 
   return (
     <div className="mx-auto">
-      <h2 className="text-lg font-semibold text-gray-900 pb-1">Comments</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-200 pb-1">
+        Comments
+      </h2>
       <div className="space-y-4 mt-4">
         {data?.task?.comments?.length ? (
           data.task.comments.map((comment) => (
@@ -70,7 +72,7 @@ export default function TaskComments({ taskId }: { taskId: number }) {
             />
           ))
         ) : (
-          <div className="text-gray-500 text-center">
+          <div className="text-gray-500 dark:text-gray-400 text-center">
             No comments available.
           </div>
         )}

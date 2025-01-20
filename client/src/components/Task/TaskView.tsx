@@ -15,18 +15,20 @@ export default function TaskView() {
 
   if (isLoading)
     return (
-      <div className="flex justify-center items-center text-gray-500">
+      <div className="flex justify-center items-center text-gray-500 dark:text-gray-400">
         Loading...
       </div>
     );
   if (error)
     return (
-      <div className="text-red-500 font-medium">Error: {error.message}</div>
+      <div className="text-red-500 dark:text-red-400 font-medium">
+        Error: {error.message}
+      </div>
     );
 
   return (
-    <div className="p-4 bg-gray-50 min-h-screen">
-      <div className="max-w-screen-2xl mx-auto bg-white rounded-lg shadow-md p-6 space-y-6">
+    <div className="p-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="max-w-screen-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-6">
         <TaskHeading task={data?.task as ModelsTask} />
 
         <div className="space-y-2">

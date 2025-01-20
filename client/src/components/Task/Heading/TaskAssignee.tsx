@@ -28,10 +28,12 @@ export function TaskAssignee({ task }: { task: ModelsTask }) {
 
   return (
     <div className="flex items-center">
-      <span className="font-medium text-gray-600 w-24">Assignee:</span>
+      <span className="font-medium text-gray-600 dark:text-gray-400 w-24">
+        Assignee:
+      </span>
       {isEditing ? (
         <select
-          className="border p-1 text-gray-800"
+          className="border border-gray-300 dark:border-gray-600 p-1 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md"
           defaultValue={task?.assignee?.id || ""}
           onChange={(e) => handleAssigneeChange(e.target.value)}
         >
@@ -44,7 +46,7 @@ export function TaskAssignee({ task }: { task: ModelsTask }) {
         </select>
       ) : (
         <span
-          className="text-gray-800 cursor-pointer underline"
+          className="text-gray-800 dark:text-gray-200 cursor-pointer underline"
           onClick={() => setIsEditing(true)}
         >
           {task?.assignee?.username || "Unassigned"}

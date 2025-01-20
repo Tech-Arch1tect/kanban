@@ -35,7 +35,7 @@ export function TaskTitle({ task }: { task: ModelsTask }) {
 
   return isEditing ? (
     <input
-      className="text-2xl font-bold text-gray-900 mb-2 border rounded px-2 w-full"
+      className="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-2 border border-gray-300 dark:border-gray-600 rounded px-2 w-full bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600"
       value={title}
       autoFocus
       onChange={(e) => setTitle(e.target.value)}
@@ -44,7 +44,7 @@ export function TaskTitle({ task }: { task: ModelsTask }) {
     />
   ) : (
     <h1
-      className="text-2xl font-bold text-gray-900 mb-2 cursor-pointer"
+      className="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-2 cursor-pointer"
       onClick={handleTitleClick}
     >
       <RenderMarkdown markdown={task?.title || ""} />

@@ -13,7 +13,7 @@ const CommentForm: React.FC<CommentFormProps> = ({
 }) => (
   <form onSubmit={onSubmit} className="mt-6 space-y-3">
     <textarea
-      className="w-full border border-gray-300 rounded-md p-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-gray-400"
+      className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700"
       placeholder={placeholder}
       value={value}
       onChange={(e) => setValue(e.target.value)}
@@ -24,8 +24,8 @@ const CommentForm: React.FC<CommentFormProps> = ({
       disabled={!value.trim()}
       className={`w-full py-2 px-4 rounded-md text-white ${
         value.trim()
-          ? "bg-blue-500 hover:bg-blue-600"
-          : "bg-gray-300 cursor-not-allowed"
+          ? "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+          : "bg-gray-300 dark:bg-gray-600 cursor-not-allowed"
       }`}
     >
       Submit
