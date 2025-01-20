@@ -131,12 +131,12 @@ func (bs *BoardService) ListBoards(userID uint) ([]models.Board, error) {
 		return bs.db.BoardRepository.GetAll(repository.WithPreload("Swimlanes", "Columns"))
 	}
 
-	MemberRole, err := bs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", MemberRole))
+	MemberRole, err := bs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", MemberRole.Name))
 	if err != nil {
 		return []models.Board{}, err
 	}
 
-	userBoardRoles, err := bs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("user_id = ? AND id = ?", userID, MemberRole.ID), repository.WithPreload("Board"), repository.WithPreload("Board.Swimlanes"), repository.WithPreload("Board.Columns"))
+	userBoardRoles, err := bs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("user_id = ? AND board_role_id = ?", userID, MemberRole.ID), repository.WithPreload("Board"), repository.WithPreload("Board.Swimlanes"), repository.WithPreload("Board.Columns"))
 	if err != nil {
 		return []models.Board{}, err
 	}
