@@ -31,7 +31,11 @@ export function Task({
         hover:shadow-md dark:hover:shadow-lg hover:border-blue-100 dark:hover:border-blue-800
       `}
     >
-      <Link to={`/task/${task.id}`} className="block">
+      <Link
+        //@ts-ignore
+        to={`/task/${task.id}`}
+        className="block"
+      >
         {/* Assignee and Task ID */}
         <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 mb-2">
           <span className="truncate">

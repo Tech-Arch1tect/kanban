@@ -30,6 +30,7 @@ export const TaskLinkLoop = ({ links }: { links: ModelsTaskLinks[] }) => {
             >
               <div>
                 <Link
+                  //@ts-ignore
                   to={`/task/${link.dstTaskId}`}
                   className="text-sm font-medium text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                 >
