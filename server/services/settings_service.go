@@ -19,7 +19,14 @@ func (ss *SettingsService) GetSettings(userID uint) (models.Settings, error) {
 	var settings models.Settings
 	settings, err := ss.db.SettingsRepository.GetFirst(repository.WithWhere("user_id = ?", userID))
 	if err == gorm.ErrRecordNotFound {
-		return models.Settings{}, nil
+		settings = models.Settings{
+			UserID: userID,
+		}
+		err = ss.db.SettingsRepository.Create(&settings)
+		if err != nil {
+			return models.Settings{}, err
+		}
+		return settings, nil
 	}
 	if err != nil {
 		return models.Settings{}, err
