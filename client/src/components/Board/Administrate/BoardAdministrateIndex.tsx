@@ -8,6 +8,7 @@ import { BoardColumnCreate } from "./BoardColumnCreate";
 import { BoardSampleDataInsert } from "./BoardSampleDataInsert";
 import { BoardAddOrInvite } from "./BoardAddOrInvite";
 import { BoardPendingInvites } from "./BoardPendingInvites";
+import { BoardUsers } from "./BoardUsers";
 
 export default function BoardAdministrateIndex() {
   const { boardId } = useParams({ from: "/boards/administrate/$boardId" });
@@ -46,6 +47,10 @@ export default function BoardAdministrateIndex() {
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm dark:shadow-md space-y-4">
           <BoardAddOrInvite boardId={Number(boardId)} />
           <BoardPendingInvites boardId={Number(boardId)} />
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm dark:shadow-md space-y-4">
+          <BoardUsers boardId={Number(boardId)} />
         </div>
 
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm dark:shadow-md space-y-4">
