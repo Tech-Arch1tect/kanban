@@ -314,3 +314,94 @@ func (bc *BoardController) GetPendingInvites(c *gin.Context) {
 
 	c.JSON(http.StatusOK, GetPendingInvitesResponse{Invites: invites})
 }
+
+type RemoveUserFromBoardRequest struct {
+	BoardID uint `json:"board_id" binding:"required"`
+	UserID  uint `json:"user_id" binding:"required"`
+}
+
+type RemoveUserFromBoardResponse struct {
+	Message string `json:"message"`
+}
+
+// @Summary Remove a user from a board
+// @Description Remove a user from a board
+// @Tags boards
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body RemoveUserFromBoardRequest true "Remove user from board request"
+// @Success 200 {object} RemoveUserFromBoardResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/boards/remove-user [post]
+func (bc *BoardController) RemoveUserFromBoard(c *gin.Context) {
+	var req RemoveUserFromBoardRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := bc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = bc.bs.RemoveUserFromBoard(user.ID, req.UserID, req.BoardID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, RemoveUserFromBoardResponse{Message: "User removed"})
+}
+
+type ChangeBoardRoleRequest struct {
+	BoardID uint   `json:"board_id" binding:"required"`
+	UserID  uint   `json:"user_id" binding:"required"`
+	Role    string `json:"role" binding:"required,oneof=admin member reader"`
+}
+
+type ChangeBoardRoleResponse struct {
+	Message string `json:"message"`
+}
+
+// @Summary Change a user's role in a board
+// @Description Change a user's role in a board
+// @Tags boards
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body ChangeBoardRoleRequest true "Change board role request"
+// @Success 200 {object} ChangeBoardRoleResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/boards/change-role [post]
+func (bc *BoardController) ChangeBoardRole(c *gin.Context) {
+	var req ChangeBoardRoleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := bc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = bc.bs.ChangeBoardRole(user.ID, req.BoardID, req.UserID, req.Role)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, ChangeBoardRoleResponse{Message: "Role changed"})
+}

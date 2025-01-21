@@ -234,3 +234,43 @@ func (bs *BoardService) GetPendingInvites(userID uint, boardID uint) ([]models.B
 
 	return bs.db.BoardInviteRepository.GetAll(repository.WithWhere("board_id = ?", boardID))
 }
+
+func (bs *BoardService) RemoveUserFromBoard(currentUserID, RequestedUserID, boardID uint) error {
+	can, err := bs.rs.CheckRole(currentUserID, boardID, AdminRole)
+	if err != nil {
+		return err
+	}
+
+	if !can {
+		return errors.New("forbidden")
+	}
+
+	err = bs.rs.RemoveRole(RequestedUserID, boardID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (bs *BoardService) ChangeBoardRole(currentUserID, RequestedUserID, boardID uint, role string) error {
+	can, err := bs.rs.CheckRole(currentUserID, boardID, AdminRole)
+	if err != nil {
+		return err
+	}
+
+	if !can {
+		return errors.New("forbidden")
+	}
+
+	AppRole := AppRole{
+		Name: role,
+	}
+
+	err = bs.rs.AssignRole(RequestedUserID, boardID, AppRole)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
