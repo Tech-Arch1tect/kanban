@@ -25,10 +25,17 @@ jobs:
       - name: Install swag CLI
         run: go install github.com/swaggo/swag/cmd/swag@latest
 
-      - name: Generate Swagger docs
+      - name: Generate Swagger docs (server)
         run: swag init --pd --parseInternal -g cmd/main.go
         working-directory: server
         continue-on-error: true
+
+      - name: Generate API client (client)
+        uses: openapi-generators/openapitools-generator-action@v1
+        with:
+          generator: typescript-fetch
+          openapi-file: server/docs/swagger.yaml
+          command-args: -o client/src/typescript-fetch-client
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
