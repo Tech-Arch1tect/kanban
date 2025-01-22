@@ -14,7 +14,7 @@ import {
   SettingsApi,
 } from "../typescript-fetch-client";
 
-const basePath = import.meta.env.VITE_API_BASE_PATH || "http://localhost:8090";
+const basePath = import.meta.env.VITE_API_BASE_PATH;
 
 const configuration = new Configuration({
   basePath: basePath,
