@@ -36,7 +36,7 @@ const Navbar = () => {
     ) {
       navigate({ to: "/login" });
     }
-  }, [error, location, navigate]);
+  }, [error, navigate]);
 
   if (["/login", "/register", "/password-reset"].includes(location.pathname)) {
     return null;
