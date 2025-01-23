@@ -397,7 +397,7 @@ func (bc *BoardController) ChangeBoardRole(c *gin.Context) {
 		return
 	}
 
-	err = bc.bs.ChangeBoardRole(user.ID, req.BoardID, req.UserID, req.Role)
+	err = bc.bs.ChangeBoardRole(user.ID, req.UserID, req.BoardID, req.Role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
