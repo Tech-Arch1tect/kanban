@@ -1,0 +1,13 @@
+# example deployment using images built in Github Actions
+services:
+  server:
+    image: techarchitect/kanban-server:latest
+    volumes:
+      - ./data:/data
+    environment:
+      - SQLITE_FILE_PATH=/data/sqlite.db
+      - DATA_DIR=/data/data
+  client:
+    image: techarchitect/kanban-client:latest
+    ports:
+      - "80:80"
