@@ -58,16 +58,21 @@ export const BoardUsers = ({ boardId }: { boardId: number }) => {
               </span>
               <div className="flex items-center space-x-4">
                 <select
-                  value={user.role}
                   onChange={(e) =>
                     handleChangeUserRole(user.id || 0, e.target.value)
                   }
                   disabled={user.role === "admin"}
                   className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-gray-700 dark:text-gray-300"
                 >
-                  <option value="reader">Reader</option>
-                  <option value="member">Member</option>
-                  <option value="admin">Admin</option>
+                  <option selected={user.appRole === "reader"} value="reader">
+                    Reader
+                  </option>
+                  <option selected={user.appRole === "member"} value="member">
+                    Member
+                  </option>
+                  <option selected={user.appRole === "admin"} value="admin">
+                    Admin
+                  </option>
                 </select>
                 <button
                   disabled={user.role === "admin"}
