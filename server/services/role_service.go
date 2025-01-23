@@ -83,7 +83,7 @@ func (rs *RoleService) CheckRole(userID, boardID uint, role AppRole) (bool, erro
 func (rs *RoleService) AssignRole(userID, boardID uint, role AppRole) error {
 	existingRole, err := rs.db.UserBoardRoleRepository.GetFirst(repository.WithWhere("user_id = ? AND board_id = ?", userID, boardID))
 	if err == nil {
-		if err := rs.db.UserBoardRoleRepository.Delete(existingRole.ID); err != nil {
+		if err := rs.db.UserBoardRoleRepository.HardDelete(existingRole.ID); err != nil {
 			return err
 		}
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
