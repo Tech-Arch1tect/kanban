@@ -149,7 +149,12 @@ func (bs *BoardService) ListBoards(userID uint) ([]models.Board, error) {
 	return boards, nil
 }
 
-func (bs *BoardService) GetUsersWithAccess(userID, boardID uint) ([]models.User, error) {
+type UserWithAppRole struct {
+	models.User
+	AppRole string `json:"app_role"`
+}
+
+func (bs *BoardService) GetUsersWithAccess(userID, boardID uint) ([]UserWithAppRole, error) {
 	can, err := bs.rs.CheckRole(userID, boardID, MemberRole)
 	if err != nil {
 		return nil, err

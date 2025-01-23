@@ -127,19 +127,18 @@ func (rs *RoleService) GetRoleByUserAndBoard(userID, boardID uint) (models.Board
 	return role, nil
 }
 
-func (rs *RoleService) GetRolesByBoard(boardID uint) ([]models.BoardRole, error) {
-	return rs.db.BoardRoleRepository.GetAll(repository.WithWhere("board_id = ?", boardID))
-}
-
-func (rs *RoleService) GetUsersWithAccessToBoard(boardID uint) ([]models.User, error) {
-	perms, err := rs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("board_id = ?", boardID), repository.WithPreload("User"))
+func (rs *RoleService) GetUsersWithAccessToBoard(boardID uint) ([]UserWithAppRole, error) {
+	perms, err := rs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("board_id = ?", boardID), repository.WithPreload("User"), repository.WithPreload("BoardRole"))
 	if err != nil {
 		return nil, err
 	}
 
-	users := make([]models.User, 0)
+	users := make([]UserWithAppRole, 0)
 	for _, perm := range perms {
-		users = append(users, perm.User)
+		users = append(users, UserWithAppRole{
+			User:    perm.User,
+			AppRole: roleMap[perm.BoardRole.Name].Name,
+		})
 	}
 
 	globalAdmins, err := rs.db.UserRepository.GetAll(repository.WithWhere("role = ?", models.RoleAdmin))
@@ -147,7 +146,15 @@ func (rs *RoleService) GetUsersWithAccessToBoard(boardID uint) ([]models.User, e
 		return nil, err
 	}
 
-	for _, globalAdmin := range globalAdmins {
+	globalAdminsWithRoles := make([]UserWithAppRole, len(globalAdmins))
+	for i, globalAdmin := range globalAdmins {
+		globalAdminsWithRoles[i] = UserWithAppRole{
+			User:    globalAdmin,
+			AppRole: AdminRole.Name,
+		}
+	}
+
+	for _, globalAdmin := range globalAdminsWithRoles {
 		if !slices.Contains(users, globalAdmin) {
 			users = append(users, globalAdmin)
 		}
