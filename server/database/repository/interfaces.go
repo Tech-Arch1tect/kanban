@@ -12,6 +12,7 @@ type Repository[T any] interface {
 	Create(entity *T) error
 	Update(entity *T) error
 	Delete(id uint) error
+	HardDelete(id uint) error
 	Count(opts ...QueryOption) (int64, error)
 }
 

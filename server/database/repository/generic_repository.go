@@ -54,6 +54,10 @@ func (r *GormRepository[T]) Delete(id uint) error {
 	return r.db.Delete(new(T), id).Error
 }
 
+func (r *GormRepository[T]) HardDelete(id uint) error {
+	return r.db.Unscoped().Delete(new(T), id).Error
+}
+
 func (r *GormRepository[T]) Count(opts ...QueryOption) (int64, error) {
 	var count int64
 	db := r.applyOptions(opts...)
