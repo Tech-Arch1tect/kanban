@@ -8,6 +8,7 @@ import { TaskDescription } from "./TaskDescription";
 import { UploadFile } from "./Files/UploadFile";
 import { ViewFiles } from "./Files/ViewFiles";
 import { TaskLinks } from "./TaskLinks";
+import { TaskExternalLinks } from "./TaskExternalLinks";
 
 export default function TaskView() {
   const { id } = useParams({ from: "/task/$id" });
@@ -38,6 +39,8 @@ export default function TaskView() {
         <ViewFiles task={data?.task as ModelsTask} />
 
         <TaskLinks task={data?.task as ModelsTask} />
+
+        <TaskExternalLinks task={data?.task as ModelsTask} />
 
         <TaskComments taskId={Number(id)} />
       </div>
