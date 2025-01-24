@@ -631,3 +631,140 @@ func (tc *TaskController) QueryAllBoards(c *gin.Context) {
 
 	c.JSON(http.StatusOK, QueryAllBoardsResponse{Tasks: tasks})
 }
+
+type CreateTaskExternalLinkRequest struct {
+	Title  string `json:"title"`
+	URL    string `json:"url"`
+	TaskID uint   `json:"task_id"`
+}
+
+type CreateTaskExternalLinkResponse struct {
+	Link models.TaskExternalLink `json:"link"`
+}
+
+// @Summary Create a task external link
+// @Description Create a task external link
+// @Tags tasks
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body CreateTaskExternalLinkRequest true "Create task external link request"
+// @Success 200 {object} CreateTaskExternalLinkResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/create-external-link [post]
+func (tc *TaskController) CreateTaskExternalLink(c *gin.Context) {
+	var request CreateTaskExternalLinkRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	link, err := tc.ts.CreateTaskExternalLink(user.ID, request.TaskID, request.Title, request.URL)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, CreateTaskExternalLinkResponse{Link: link})
+}
+
+type UpdateTaskExternalLinkRequest struct {
+	ID    uint   `json:"id"`
+	Title string `json:"title"`
+	URL   string `json:"url"`
+}
+
+type UpdateTaskExternalLinkResponse struct {
+	Link models.TaskExternalLink `json:"link"`
+}
+
+// @Summary Update a task external link
+// @Description Update a task external link
+// @Tags tasks
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body UpdateTaskExternalLinkRequest true "Update task external link request"
+// @Success 200 {object} UpdateTaskExternalLinkResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/update-external-link [post]
+func (tc *TaskController) UpdateTaskExternalLink(c *gin.Context) {
+	var request UpdateTaskExternalLinkRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	link, err := tc.ts.UpdateTaskExternalLink(user.ID, request.ID, request.Title, request.URL)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, UpdateTaskExternalLinkResponse{Link: link})
+}
+
+type DeleteTaskExternalLinkRequest struct {
+	ID uint `json:"id"`
+}
+
+type DeleteTaskExternalLinkResponse struct {
+	TaskID  uint   `json:"task_id"`
+	Message string `json:"message"`
+}
+
+// @Summary Delete a task external link
+// @Description Delete a task external link
+// @Tags tasks
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body DeleteTaskExternalLinkRequest true "Delete task external link request"
+// @Success 200 {object} DeleteTaskExternalLinkResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/delete-external-link [post]
+func (tc *TaskController) DeleteTaskExternalLink(c *gin.Context) {
+	var request DeleteTaskExternalLinkRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	taskID, err := tc.ts.DeleteTaskExternalLink(user.ID, request.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, DeleteTaskExternalLinkResponse{TaskID: taskID, Message: "deleted"})
+}

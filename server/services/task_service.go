@@ -164,7 +164,7 @@ func (ts *TaskService) EditTask(userID uint, request EditTaskRequest) (models.Ta
 func (ts *TaskService) GetTask(userID, taskID uint) (models.Task, error) {
 	task, err := ts.db.TaskRepository.GetFirst(
 		repository.WithWhere("id = ?", taskID),
-		repository.WithPreload("Board", "Swimlane", "Column", "Creator", "Assignee", "Comments", "Comments.User", "Files", "SrcLinks", "DstLinks", "SrcLinks.SrcTask", "SrcLinks.DstTask", "DstLinks.DstTask", "DstLinks.SrcTask"),
+		repository.WithPreload("Board", "Swimlane", "Column", "Creator", "Assignee", "Comments", "Comments.User", "Files", "SrcLinks", "DstLinks", "SrcLinks.SrcTask", "SrcLinks.DstTask", "DstLinks.DstTask", "DstLinks.SrcTask", "ExternalLinks"),
 	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -639,4 +639,70 @@ func (ts *TaskService) DeleteTaskLink(userID uint, linkID uint) (models.TaskLink
 	}
 
 	return link, nil
+}
+
+func (ts *TaskService) CreateTaskExternalLink(userID uint, taskID uint, title string, url string) (models.TaskExternalLink, error) {
+	task, err := ts.db.TaskRepository.GetByID(taskID)
+	if err != nil {
+		return models.TaskExternalLink{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	if !can {
+		return models.TaskExternalLink{}, errors.New("forbidden")
+	}
+
+	link := models.TaskExternalLink{
+		URL:    url,
+		Title:  title,
+		TaskID: taskID,
+	}
+
+	err = ts.db.TaskExternalLinkRepository.Create(&link)
+	if err != nil {
+		return models.TaskExternalLink{}, err
+	}
+
+	return link, nil
+}
+
+func (ts *TaskService) UpdateTaskExternalLink(userID uint, linkID uint, title string, url string) (models.TaskExternalLink, error) {
+	link, err := ts.db.TaskExternalLinkRepository.GetByID(linkID, repository.WithPreload("Task"))
+	if err != nil {
+		return models.TaskExternalLink{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, link.Task.BoardID, MemberRole)
+	if !can {
+		return models.TaskExternalLink{}, errors.New("forbidden")
+	}
+
+	link.URL = url
+	link.Title = title
+
+	err = ts.db.TaskExternalLinkRepository.Update(&link)
+	if err != nil {
+		return models.TaskExternalLink{}, err
+	}
+
+	return link, nil
+}
+
+func (ts *TaskService) DeleteTaskExternalLink(userID uint, linkID uint) (uint, error) {
+	link, err := ts.db.TaskExternalLinkRepository.GetByID(linkID, repository.WithPreload("Task"))
+	if err != nil {
+		return 0, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, link.Task.BoardID, MemberRole)
+	if !can {
+		return 0, errors.New("forbidden")
+	}
+
+	err = ts.db.TaskExternalLinkRepository.Delete(link.ID)
+	if err != nil {
+		return 0, err
+	}
+
+	return link.TaskID, nil
 }

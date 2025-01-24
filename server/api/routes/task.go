@@ -25,5 +25,8 @@ func (r *router) RegisterTaskRoutes(router *gin.RouterGroup) {
 		task.POST("/create-link", r.mw.CSRFTokenRequired(), r.cr.TaskController.CreateTaskLink)
 		task.POST("/delete-link", r.mw.CSRFTokenRequired(), r.cr.TaskController.DeleteTaskLink)
 		task.POST("/query-all-boards", r.mw.CSRFTokenRequired(), r.cr.TaskController.QueryAllBoards)
+		task.POST("/update-external-link", r.mw.CSRFTokenRequired(), r.cr.TaskController.UpdateTaskExternalLink)
+		task.POST("/delete-external-link", r.mw.CSRFTokenRequired(), r.cr.TaskController.DeleteTaskExternalLink)
+		task.POST("/create-external-link", r.mw.CSRFTokenRequired(), r.cr.TaskController.CreateTaskExternalLink)
 	}
 }
