@@ -7,24 +7,25 @@ import (
 
 type Task struct {
 	Model
-	BoardID     uint        `json:"board_id"`
-	Board       Board       `gorm:"foreignKey:BoardID" json:"board"`
-	Swimlane    Swimlane    `gorm:"foreignKey:SwimlaneID" json:"swimlane"`
-	SwimlaneID  uint        `json:"swimlane_id"`
-	ColumnID    uint        `json:"column_id"`
-	Column      Column      `gorm:"foreignKey:ColumnID" json:"column"`
-	Title       string      `json:"title"`
-	Description string      `json:"description"`
-	Status      string      `json:"status"`
-	Comments    []Comment   `gorm:"foreignKey:TaskID" json:"comments"`
-	Position    float64     `json:"position"`
-	CreatorID   uint        `json:"creator_id"`
-	Creator     User        `gorm:"foreignKey:CreatorID" json:"creator"`
-	AssigneeID  uint        `json:"assignee_id"`
-	Assignee    User        `gorm:"foreignKey:AssigneeID" json:"assignee"`
-	Files       []File      `gorm:"foreignKey:TaskID" json:"files"`
-	DstLinks    []TaskLinks `gorm:"foreignKey:DstTaskID" json:"dst_links"`
-	SrcLinks    []TaskLinks `gorm:"foreignKey:SrcTaskID" json:"src_links"`
+	BoardID       uint               `json:"board_id"`
+	Board         Board              `gorm:"foreignKey:BoardID" json:"board"`
+	Swimlane      Swimlane           `gorm:"foreignKey:SwimlaneID" json:"swimlane"`
+	SwimlaneID    uint               `json:"swimlane_id"`
+	ColumnID      uint               `json:"column_id"`
+	Column        Column             `gorm:"foreignKey:ColumnID" json:"column"`
+	Title         string             `json:"title"`
+	Description   string             `json:"description"`
+	Status        string             `json:"status"`
+	Comments      []Comment          `gorm:"foreignKey:TaskID" json:"comments"`
+	Position      float64            `json:"position"`
+	CreatorID     uint               `json:"creator_id"`
+	Creator       User               `gorm:"foreignKey:CreatorID" json:"creator"`
+	AssigneeID    uint               `json:"assignee_id"`
+	Assignee      User               `gorm:"foreignKey:AssigneeID" json:"assignee"`
+	Files         []File             `gorm:"foreignKey:TaskID" json:"files"`
+	DstLinks      []TaskLinks        `gorm:"foreignKey:DstTaskID" json:"dst_links"`
+	SrcLinks      []TaskLinks        `gorm:"foreignKey:SrcTaskID" json:"src_links"`
+	ExternalLinks []TaskExternalLink `gorm:"foreignKey:TaskID" json:"external_links"`
 }
 
 var allowedStatuses = []string{"open", "closed"}
@@ -68,4 +69,12 @@ type TaskLinks struct {
 	DstTaskID uint   `json:"dst_task_id" gorm:"not null; uniqueIndex:idx_task_links"`
 	DstTask   Task   `gorm:"foreignKey:DstTaskID" json:"dst_task"`
 	LinkType  string `json:"link_type" gorm:"not null; uniqueIndex:idx_task_links"`
+}
+
+type TaskExternalLink struct {
+	Model
+	URL    string `json:"url"`
+	Title  string `json:"title"`
+	Task   Task   `gorm:"foreignKey:TaskID" json:"task"`
+	TaskID uint   `json:"task_id"`
 }

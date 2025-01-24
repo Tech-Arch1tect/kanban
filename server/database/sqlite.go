@@ -16,17 +16,18 @@ func newSQLiteDB(cfg *config.Config) (*repository.Database, error) {
 	}
 
 	return &repository.Database{
-		UserRepository:          repository.NewUserRepository(gormDB),
-		BoardRepository:         repository.NewBoardRepository(gormDB),
-		BoardRoleRepository:     repository.NewBoardRoleRepository(gormDB),
-		SwimlaneRepository:      repository.NewSwimlaneRepository(gormDB),
-		TaskRepository:          repository.NewTaskRepository(gormDB),
-		UserBoardRoleRepository: repository.NewUserBoardRoleRepository(gormDB),
-		CommentRepository:       repository.NewCommentRepository(gormDB),
-		ColumnRepository:        repository.NewColumnRepository(gormDB),
-		FileRepository:          repository.NewFileRepository(gormDB),
-		BoardInviteRepository:   repository.NewBoardInviteRepository(gormDB),
-		TaskLinkRepository:      repository.NewTaskLinkRepository(gormDB),
-		SettingsRepository:      repository.NewSettingsRepository(gormDB),
+		UserRepository:             repository.NewUserRepository(gormDB),
+		BoardRepository:            repository.NewBoardRepository(gormDB),
+		BoardRoleRepository:        repository.NewBoardRoleRepository(gormDB),
+		SwimlaneRepository:         repository.NewSwimlaneRepository(gormDB),
+		TaskRepository:             repository.NewTaskRepository(gormDB),
+		UserBoardRoleRepository:    repository.NewUserBoardRoleRepository(gormDB),
+		CommentRepository:          repository.NewCommentRepository(gormDB),
+		ColumnRepository:           repository.NewColumnRepository(gormDB),
+		FileRepository:             repository.NewFileRepository(gormDB),
+		BoardInviteRepository:      repository.NewBoardInviteRepository(gormDB),
+		TaskLinkRepository:         repository.NewTaskLinkRepository(gormDB),
+		TaskExternalLinkRepository: repository.NewTaskExternalLinkRepository(gormDB),
+		SettingsRepository:         repository.NewSettingsRepository(gormDB),
 	}, nil
 }

@@ -17,18 +17,19 @@ type Repository[T any] interface {
 }
 
 type Database struct {
-	UserRepository          UserRepository
-	BoardRepository         BoardRepository
-	BoardRoleRepository     BoardRoleRepository
-	SwimlaneRepository      SwimlaneRepository
-	TaskRepository          TaskRepository
-	UserBoardRoleRepository UserBoardRoleRepository
-	CommentRepository       CommentRepository
-	ColumnRepository        ColumnRepository
-	FileRepository          FileRepository
-	BoardInviteRepository   BoardInviteRepository
-	TaskLinkRepository      TaskLinkRepository
-	SettingsRepository      SettingsRepository
+	UserRepository             UserRepository
+	BoardRepository            BoardRepository
+	BoardRoleRepository        BoardRoleRepository
+	SwimlaneRepository         SwimlaneRepository
+	TaskRepository             TaskRepository
+	UserBoardRoleRepository    UserBoardRoleRepository
+	CommentRepository          CommentRepository
+	ColumnRepository           ColumnRepository
+	FileRepository             FileRepository
+	BoardInviteRepository      BoardInviteRepository
+	TaskLinkRepository         TaskLinkRepository
+	TaskExternalLinkRepository TaskExternalLinkRepository
+	SettingsRepository         SettingsRepository
 }
 
 func (db *Database) Migrate() error {
@@ -88,6 +89,11 @@ func (db *Database) Migrate() error {
 	}
 
 	err = db.SettingsRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.TaskExternalLinkRepository.Migrate()
 	if err != nil {
 		return err
 	}
