@@ -5,9 +5,10 @@ import {
   BoardAddOrInviteUserToBoardRequestRoleEnum,
   BoardAddOrInviteUserToBoardResponse,
 } from "../../typescript-fetch-client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useAddOrInvite = () => {
+  const queryClient = useQueryClient();
   const { mutate, error, isError, isSuccess, data, isPending } = useMutation<
     BoardAddOrInviteUserToBoardResponse,
     Error,
@@ -23,7 +24,10 @@ export const useAddOrInvite = () => {
           role: role as BoardAddOrInviteUserToBoardRequestRoleEnum,
         },
       }),
-    onSuccess: () => {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["board-pending-invites", response.boardId],
+      });
       toast.success("Invite sent successfully!");
     },
     onError: (error: any) => {
