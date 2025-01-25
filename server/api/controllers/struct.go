@@ -40,7 +40,7 @@ func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *ser
 		SwimlaneController:   swimlane.NewSwimlaneController(db, ss, rs, hs),
 		TaskController:       task.NewTaskController(db, ts, rs, bs, hs),
 		CommentController:    comment.NewCommentController(coms, hs, rs, db),
-		SampleDataController: sampleData.NewSampleDataController(db, ts),
+		SampleDataController: sampleData.NewSampleDataController(db, ts, hs),
 		SettingsController:   settings.NewSettingsController(settingsS, hs),
 	}
 }

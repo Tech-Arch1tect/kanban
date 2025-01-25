@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"server/database/repository"
+	"server/internal/helpers"
 	"server/models"
 	"server/services"
 
@@ -15,10 +16,11 @@ import (
 type SampleDataController struct {
 	db *repository.Database
 	ts *services.TaskService
+	hs *helpers.HelperService
 }
 
-func NewSampleDataController(db *repository.Database, ts *services.TaskService) *SampleDataController {
-	return &SampleDataController{db: db, ts: ts}
+func NewSampleDataController(db *repository.Database, ts *services.TaskService, hs *helpers.HelperService) *SampleDataController {
+	return &SampleDataController{db: db, ts: ts, hs: hs}
 }
 
 // this is a controller which is used to insert sample data into the database for a specific board
@@ -49,13 +51,18 @@ type InsertSampleDataResponse struct {
 // @Failure 500 {object} models.ErrorResponse
 // @Router /api/v1/sample-data/insert [post]
 func (sc *SampleDataController) InsertSampleData(c *gin.Context) {
+	user, err := sc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	var request InsertSampleDataRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	_, err := sc.db.BoardRepository.GetByID(request.BoardID)
+	_, err = sc.db.BoardRepository.GetByID(request.BoardID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -99,6 +106,8 @@ func (sc *SampleDataController) InsertSampleData(c *gin.Context) {
 		}
 
 		fakeTask := models.Task{
+			CreatorID:   user.ID,
+			AssigneeID:  user.ID,
 			Title:       fmt.Sprintf("Fake Task %d", i),
 			Status:      status,
 			BoardID:     request.BoardID,
