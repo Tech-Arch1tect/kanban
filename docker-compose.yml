@@ -13,6 +13,9 @@ services:
     environment:
       - SQLITE_FILE_PATH=/data/sqlite.db
       - DATA_DIR=/data/data
+      - SMTP_PORT=1025
+      - SMTP_NO_TLS=true
+      - SMTP_HOST=mailpit
 
   client:
     build:
