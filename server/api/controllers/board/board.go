@@ -322,6 +322,7 @@ type RemoveUserFromBoardRequest struct {
 }
 
 type RemoveUserFromBoardResponse struct {
+	BoardID uint   `json:"board_id"`
 	Message string `json:"message"`
 }
 
@@ -358,7 +359,7 @@ func (bc *BoardController) RemoveUserFromBoard(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, RemoveUserFromBoardResponse{Message: "User removed"})
+	c.JSON(http.StatusOK, RemoveUserFromBoardResponse{BoardID: req.BoardID, Message: "User removed"})
 }
 
 type ChangeBoardRoleRequest struct {
@@ -368,6 +369,7 @@ type ChangeBoardRoleRequest struct {
 }
 
 type ChangeBoardRoleResponse struct {
+	BoardID uint   `json:"board_id"`
 	Message string `json:"message"`
 }
 
@@ -404,5 +406,5 @@ func (bc *BoardController) ChangeBoardRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, ChangeBoardRoleResponse{Message: "Role changed"})
+	c.JSON(http.StatusOK, ChangeBoardRoleResponse{BoardID: req.BoardID, Message: "Role changed"})
 }
