@@ -230,6 +230,7 @@ type AddOrInviteUserToBoardRequest struct {
 }
 
 type AddOrInviteUserToBoardResponse struct {
+	BoardID uint   `json:"board_id"`
 	Message string `json:"message"`
 }
 
@@ -269,7 +270,7 @@ func (bc *BoardController) AddOrInviteUserToBoard(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, AddOrInviteUserToBoardResponse{Message: "User added or invited"})
+	c.JSON(http.StatusOK, AddOrInviteUserToBoardResponse{Message: "User added or invited", BoardID: req.BoardID})
 }
 
 type GetPendingInvitesRequest struct {
