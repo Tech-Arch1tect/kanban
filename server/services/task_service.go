@@ -178,6 +178,9 @@ func (ts *TaskService) GetTask(userID, taskID uint) (models.Task, error) {
 	for _, link := range task.DstLinks {
 		linkType := repository.InverseLinkTypeMap[link.LinkType]
 		newDstLinks = append(newDstLinks, models.TaskLinks{
+			Model: models.Model{
+				ID: link.ID,
+			},
 			SrcTaskID: link.DstTaskID,
 			SrcTask:   link.DstTask,
 			DstTaskID: link.SrcTaskID,
