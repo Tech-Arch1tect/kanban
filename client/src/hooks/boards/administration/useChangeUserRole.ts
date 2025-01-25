@@ -1,12 +1,13 @@
 import { toast } from "react-toastify";
 import { boardsApi } from "../../../lib/api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ApiV1BoardsChangeRolePostRequest,
   BoardChangeBoardRoleResponse,
 } from "../../../typescript-fetch-client";
 
 export const useChangeUserRole = () => {
+  const queryClient = useQueryClient();
   const { mutate, error, isError, isSuccess, data, isPending } = useMutation<
     BoardChangeBoardRoleResponse,
     Error,
@@ -22,7 +23,10 @@ export const useChangeUserRole = () => {
           role,
         },
       }),
-    onSuccess: () => {
+    onSuccess: ({ boardId }) => {
+      queryClient.invalidateQueries({
+        queryKey: ["board-permissions", boardId],
+      });
       toast.success("User role changed successfully!");
     },
     onError: (error: any) => {

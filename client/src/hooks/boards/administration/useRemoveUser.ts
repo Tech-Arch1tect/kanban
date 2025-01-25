@@ -4,9 +4,10 @@ import {
   ApiV1BoardsRemoveUserPostRequest,
   BoardRemoveUserFromBoardResponse,
 } from "../../../typescript-fetch-client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useRemoveUser = () => {
+  const queryClient = useQueryClient();
   const { mutate, error, isError, isSuccess, data, isPending } = useMutation<
     BoardRemoveUserFromBoardResponse,
     Error,
@@ -21,7 +22,10 @@ export const useRemoveUser = () => {
           userId,
         },
       }),
-    onSuccess: () => {
+    onSuccess: ({ boardId }) => {
+      queryClient.invalidateQueries({
+        queryKey: ["board-permissions", boardId],
+      });
       toast.success("User removed successfully!");
     },
     onError: (error: any) => {
