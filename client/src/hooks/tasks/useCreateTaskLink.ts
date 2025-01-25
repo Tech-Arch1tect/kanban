@@ -17,7 +17,8 @@ export const useCreateTaskLink = () => {
           },
         })
         .then(() => {
-          queryClient.invalidateQueries({ queryKey: ["tasks"] });
+          queryClient.invalidateQueries({ queryKey: ["task", link.srcTaskId] });
+          queryClient.invalidateQueries({ queryKey: ["task", link.dstTaskId] });
         });
     },
     onSuccess: () => {

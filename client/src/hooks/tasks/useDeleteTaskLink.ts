@@ -14,8 +14,13 @@ export const useDeleteTaskLink = () => {
             linkId: link.linkId,
           },
         })
-        .then(() => {
-          queryClient.invalidateQueries({ queryKey: ["tasks"] });
+        .then((response) => {
+          queryClient.invalidateQueries({
+            queryKey: ["task", response.link?.srcTaskId],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["task", response.link?.dstTaskId],
+          });
         });
     },
     onSuccess: () => {
