@@ -1,12 +1,15 @@
 import React, { useState, memo } from "react";
 import RenderMarkdown from "../../Utility/RenderMarkdown";
 import { ModelsComment, ModelsUser } from "../../../typescript-fetch-client";
+import MentionableTextarea from "../../Utility/MentionableTextarea";
+import { useBoardUsernames } from "../../../hooks/boards/useBoardUsernames";
 
 interface CommentItemProps {
   comment: ModelsComment;
   profile: ModelsUser;
   onEdit: (commentId: number, text: string) => void;
   onDelete: (commentId: number) => void;
+  boardId: number;
 }
 
 const CommentItem: React.FC<CommentItemProps> = ({
@@ -14,9 +17,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
   profile,
   onEdit,
   onDelete,
+  boardId,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.text || "");
+
+  const { usernames, isLoading } = useBoardUsernames(boardId);
 
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,16 +34,23 @@ const CommentItem: React.FC<CommentItemProps> = ({
     }
   };
 
+  const handleSelectSuggestion = (username: string) => {
+    console.log(`Selected username: ${username}`);
+  };
+
   return (
     <div className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 shadow-sm">
       {isEditing ? (
         <form onSubmit={handleEditSubmit} className="space-y-3">
-          <textarea
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700"
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
-            rows={3}
-          ></textarea>
+          {!isLoading && (
+            <MentionableTextarea
+              value={editText}
+              setValue={setEditText}
+              placeholder="Edit your comment..."
+              suggestions={usernames}
+              onSelectSuggestion={handleSelectSuggestion}
+            />
+          )}
           <div className="flex space-x-2">
             <button
               type="submit"

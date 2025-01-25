@@ -7,9 +7,11 @@ import { useDeleteComment } from "../../hooks/tasks/Comments/useDeleteComment";
 import CommentForm from "./Comments/CommentForm";
 import CommentItem from "./Comments/CommentItem";
 import { ModelsUser } from "../../typescript-fetch-client";
+import { ModelsTask } from "../../typescript-fetch-client";
 
-export default function TaskComments({ taskId }: { taskId: number }) {
-  const { data, isLoading, error } = useTaskData({ id: taskId });
+export default function TaskComments({ task }: { task: ModelsTask }) {
+  if (!task.id) return null;
+  const { data, isLoading, error } = useTaskData({ id: task.id as number });
   const { profile } = useUserProfile();
   const { mutate: deleteComment } = useDeleteComment();
   const { mutate: editComment } = useEditComment();
@@ -20,25 +22,25 @@ export default function TaskComments({ taskId }: { taskId: number }) {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (newComment.trim()) {
-        createComment({ text: newComment, taskId });
+        createComment({ text: newComment, taskId: task.id as number });
         setNewComment("");
       }
     },
-    [newComment, taskId, createComment]
+    [newComment, task.id, createComment]
   );
 
   const handleEdit = useCallback(
     (commentId: number, text: string) => {
-      editComment({ id: commentId, text, taskId });
+      editComment({ id: commentId, text, taskId: task.id as number });
     },
-    [taskId, editComment]
+    [task.id, editComment]
   );
 
   const handleDelete = useCallback(
     (commentId: number) => {
-      deleteComment({ id: commentId, taskId });
+      deleteComment({ id: commentId, taskId: task.id as number });
     },
-    [taskId, deleteComment]
+    [task.id, deleteComment]
   );
 
   if (isLoading)
@@ -69,6 +71,7 @@ export default function TaskComments({ taskId }: { taskId: number }) {
               profile={profile as ModelsUser}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              boardId={task.boardId as number}
             />
           ))
         ) : (
@@ -82,6 +85,7 @@ export default function TaskComments({ taskId }: { taskId: number }) {
         value={newComment}
         setValue={setNewComment}
         placeholder="Write your comment here..."
+        boardId={task.boardId as number}
       />
     </div>
   );

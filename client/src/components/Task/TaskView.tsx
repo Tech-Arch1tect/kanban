@@ -42,7 +42,7 @@ export default function TaskView() {
 
         <TaskExternalLinks task={data?.task as ModelsTask} />
 
-        <TaskComments taskId={Number(id)} />
+        <TaskComments task={data?.task as ModelsTask} />
       </div>
     </div>
   );
