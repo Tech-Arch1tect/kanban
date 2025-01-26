@@ -290,6 +290,7 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 	var qopts []repository.QueryOption
 
 	qopts = append(qopts, repository.WithWhere("board_id = ?", boardID))
+	qopts = append(qopts, repository.WithWhere("parent_task_id IS NULL"))
 
 	if len(statuses) > 0 {
 		qopts = append(qopts, repository.WithWhere("status IN ?", statuses))
@@ -313,7 +314,7 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 		}))
 	}
 
-	qopts = append(qopts, repository.WithPreload("Assignee"))
+	qopts = append(qopts, repository.WithPreload("Assignee", "Subtasks", "Subtasks.Assignee"))
 
 	tasks, err := ts.db.TaskRepository.GetAll(qopts...)
 	if err != nil {
