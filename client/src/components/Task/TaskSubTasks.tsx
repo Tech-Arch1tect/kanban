@@ -2,7 +2,13 @@ import { useState } from "react";
 import { ModelsTask } from "../../typescript-fetch-client";
 import { useCreateTask } from "../../hooks/tasks/useCreateTask";
 import { useEditTask } from "../../hooks/tasks/useEditTask";
-import { ClipboardIcon } from "@heroicons/react/24/outline";
+import {
+  ClipboardIcon,
+  PencilIcon,
+  CheckIcon,
+  XMarkIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
 import { useGetUsersWithAccessToBoard } from "../../hooks/boards/useGetUsersWithAccessToBoard";
 import { Link } from "@tanstack/react-router";
 
@@ -88,15 +94,15 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
                     />
                     <button
                       onClick={() => handleSaveSubtaskTitle(subtask)}
-                      className="bg-green-500 hover:bg-green-700 text-white p-2 rounded-md"
+                      className="bg-green-500 hover:bg-green-700 text-white p-2 rounded-md flex items-center"
                     >
-                      Save
+                      <CheckIcon className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => setEditingSubtask(null)}
-                      className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-md"
+                      className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-md flex items-center"
                     >
-                      Cancel
+                      <XMarkIcon className="w-5 h-5" />
                     </button>
                   </div>
                 ) : (
@@ -110,9 +116,9 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
                     </div>
                     <button
                       onClick={() => handleEditSubtaskTitle(subtask)}
-                      className="text-blue-500 hover:text-blue-700 text-sm"
+                      className="text-blue-500 hover:text-blue-700 text-sm flex items-center"
                     >
-                      Edit
+                      <PencilIcon className="w-5 h-5 mr-1" />
                     </button>
                   </>
                 )}
@@ -164,8 +170,9 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
           </select>
           <button
             onClick={handleCreateSubtask}
-            className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-md"
+            className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-md flex items-center"
           >
+            <PlusIcon className="w-5 h-5 mr-1" />
             Add Subtask
           </button>
         </div>
