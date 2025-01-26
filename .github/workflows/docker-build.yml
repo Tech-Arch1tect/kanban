@@ -9,6 +9,7 @@ jobs:
   build_and_push:
     name: Build and push Docker images
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -37,8 +38,17 @@ jobs:
           openapi-file: server/docs/swagger.yaml
           command-args: -o client/src/typescript-fetch-client
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: Cross-compile server binaries
+        run: |
+          mkdir -p bin
+          GOOS=linux GOARCH=amd64 go build -o bin/server-amd64 server/cmd/main.go
+          GOOS=linux GOARCH=arm64 go build -o bin/server-arm64 server/cmd/main.go
+
+      - name: Install and build client
+        run: |
+          npm ci
+          npm run build
+        working-directory: client
 
       - name: Set up Docker Buildx
         id: buildx
@@ -53,15 +63,21 @@ jobs:
       - name: Server - Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./server/
+          context: .
+          file: server/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/kanban-server:${{ github.ref_name }} , ${{ secrets.DOCKER_USERNAME }}/kanban-server:latest
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/kanban-server:${{ github.ref_name }}
+            ${{ secrets.DOCKER_USERNAME }}/kanban-server:latest
 
       - name: Client - Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./client/
+          context: .
+          file: client/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/kanban-client:${{ github.ref_name }} , ${{ secrets.DOCKER_USERNAME }}/kanban-client:latest
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/kanban-client:${{ github.ref_name }}
+            ${{ secrets.DOCKER_USERNAME }}/kanban-client:latest
