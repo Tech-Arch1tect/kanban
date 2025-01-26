@@ -114,29 +114,36 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       Assigned to {subtask.assignee?.username || "no one"}
                     </div>
-                    <button
-                      onClick={() => handleEditSubtaskTitle(subtask)}
-                      className="text-blue-500 hover:text-blue-700 text-sm flex items-center"
-                    >
-                      <PencilIcon className="w-5 h-5 mr-1" />
-                    </button>
                   </>
                 )}
               </div>
-              <select
-                value={subtask.assignee?.id || ""}
-                onChange={(e) =>
-                  handleAssigneeChange(subtask, Number(e.target.value) || null)
-                }
-                className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
-              >
-                <option value="">Unassigned</option>
-                {users?.users?.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.username}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center space-x-3">
+                <select
+                  value={subtask.assignee?.id || ""}
+                  onChange={(e) =>
+                    handleAssigneeChange(
+                      subtask,
+                      Number(e.target.value) || null
+                    )
+                  }
+                  className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                >
+                  <option value="">Unassigned</option>
+                  {users?.users?.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.username}
+                    </option>
+                  ))}
+                </select>
+                {!editingSubtask && (
+                  <button
+                    onClick={() => handleEditSubtaskTitle(subtask)}
+                    className="text-blue-500 hover:text-blue-700 text-sm flex items-center"
+                  >
+                    <PencilIcon className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
             </li>
           ))}
         </ul>
