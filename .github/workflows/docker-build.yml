@@ -19,6 +19,11 @@ jobs:
         with:
           go-version: 1.23
 
+      - name: Install musl cross-compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+
       - name: Download Dependencies
         run: go mod download
         working-directory: server
@@ -40,9 +45,9 @@ jobs:
 
       - name: Cross-compile server binaries
         run: |
-          mkdir -p bin
-          GOOS=linux GOARCH=amd64 go build -o ../bin/server-amd64 cmd/main.go
-          GOOS=linux GOARCH=arm64 go build -o ../bin/server-arm64 cmd/main.go
+          mkdir -p ../bin
+          CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=musl-gcc go build -o ../bin/server-amd64 cmd/main.go
+          CGO_ENABLED=1 GOOS=linux GOARCH=arm64 CC=musl-gcc go build -o ../bin/server-arm64 cmd/main.go
         working-directory: server
 
       - name: Install and build client
