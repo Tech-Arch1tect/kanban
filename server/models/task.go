@@ -7,6 +7,9 @@ import (
 
 type Task struct {
 	Model
+	ParentTaskID  *uint              `json:"parent_task_id"`
+	ParentTask    *Task              `gorm:"foreignKey:ParentTaskID" json:"parent_task"`
+	Subtasks      []*Task            `gorm:"foreignKey:ParentTaskID" json:"subtasks"`
 	BoardID       uint               `json:"board_id"`
 	Board         Board              `gorm:"foreignKey:BoardID" json:"board"`
 	Swimlane      Swimlane           `gorm:"foreignKey:SwimlaneID" json:"swimlane"`

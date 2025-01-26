@@ -26,13 +26,14 @@ func NewTaskService(db *repository.Database, rs *RoleService, config *config.Con
 }
 
 type CreateTaskRequest struct {
-	BoardID     uint   `json:"board_id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	SwimlaneID  uint   `json:"swimlane_id"`
-	ColumnID    uint   `json:"column_id"`
-	Status      string `json:"status"`
-	AssigneeID  uint   `json:"assignee_id"`
+	ParentTaskID *uint  `json:"parent_task_id"`
+	BoardID      uint   `json:"board_id"`
+	Title        string `json:"title"`
+	Description  string `json:"description"`
+	SwimlaneID   uint   `json:"swimlane_id"`
+	ColumnID     uint   `json:"column_id"`
+	Status       string `json:"status"`
+	AssigneeID   uint   `json:"assignee_id"`
 }
 
 func (ts *TaskService) CreateTask(userID uint, request CreateTaskRequest) (models.Task, error) {
@@ -68,15 +69,16 @@ func (ts *TaskService) CreateTask(userID uint, request CreateTaskRequest) (model
 	}
 
 	task := models.Task{
-		BoardID:     request.BoardID,
-		Title:       request.Title,
-		Description: request.Description,
-		SwimlaneID:  request.SwimlaneID,
-		Status:      request.Status,
-		ColumnID:    request.ColumnID,
-		Position:    taskPosition.Position + 1,
-		CreatorID:   userID,
-		AssigneeID:  assignee.ID,
+		ParentTaskID: request.ParentTaskID,
+		BoardID:      request.BoardID,
+		Title:        request.Title,
+		Description:  request.Description,
+		SwimlaneID:   request.SwimlaneID,
+		Status:       request.Status,
+		ColumnID:     request.ColumnID,
+		Position:     taskPosition.Position + 1,
+		CreatorID:    userID,
+		AssigneeID:   assignee.ID,
 	}
 
 	err = task.Validate()
@@ -161,10 +163,15 @@ func (ts *TaskService) EditTask(userID uint, request EditTaskRequest) (models.Ta
 	return task, nil
 }
 
+func (ts *TaskService) CommonPreloadFields() []string {
+	return []string{"Board", "Swimlane", "Column", "Creator", "Assignee", "Comments", "Comments.User", "Files", "SrcLinks", "DstLinks", "SrcLinks.SrcTask", "SrcLinks.DstTask", "DstLinks.DstTask", "DstLinks.SrcTask", "ExternalLinks", "ParentTask",
+		"Subtasks", "Subtasks.Board", "Subtasks.Swimlane", "Subtasks.Column", "Subtasks.Creator", "Subtasks.Assignee", "Subtasks.Comments", "Subtasks.Comments.User", "Subtasks.Files", "Subtasks.SrcLinks", "Subtasks.DstLinks", "Subtasks.SrcLinks.SrcTask", "Subtasks.SrcLinks.DstTask", "Subtasks.DstLinks.DstTask", "Subtasks.DstLinks.SrcTask", "Subtasks.ExternalLinks", "Subtasks.ParentTask"}
+}
+
 func (ts *TaskService) GetTask(userID, taskID uint) (models.Task, error) {
 	task, err := ts.db.TaskRepository.GetFirst(
 		repository.WithWhere("id = ?", taskID),
-		repository.WithPreload("Board", "Swimlane", "Column", "Creator", "Assignee", "Comments", "Comments.User", "Files", "SrcLinks", "DstLinks", "SrcLinks.SrcTask", "SrcLinks.DstTask", "DstLinks.DstTask", "DstLinks.SrcTask", "ExternalLinks"),
+		repository.WithPreload(ts.CommonPreloadFields()...),
 	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

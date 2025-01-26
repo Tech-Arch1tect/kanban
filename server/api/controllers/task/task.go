@@ -52,13 +52,14 @@ func (tc *TaskController) CreateTask(c *gin.Context) {
 	}
 
 	task, err := tc.ts.CreateTask(user.ID, services.CreateTaskRequest{
-		BoardID:     request.BoardID,
-		Title:       request.Title,
-		Description: request.Description,
-		SwimlaneID:  request.SwimlaneID,
-		ColumnID:    request.ColumnID,
-		Status:      request.Status,
-		AssigneeID:  request.AssigneeID,
+		ParentTaskID: request.ParentTaskID,
+		BoardID:      request.BoardID,
+		Title:        request.Title,
+		Description:  request.Description,
+		SwimlaneID:   request.SwimlaneID,
+		ColumnID:     request.ColumnID,
+		Status:       request.Status,
+		AssigneeID:   request.AssigneeID,
 	})
 	if err != nil {
 		if err.Error() == "forbidden" {
