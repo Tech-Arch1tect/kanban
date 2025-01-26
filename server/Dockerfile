@@ -1,7 +1,5 @@
-FROM alpine:latest
+FROM debian:stable-slim
 ARG TARGETARCH
-
-RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
