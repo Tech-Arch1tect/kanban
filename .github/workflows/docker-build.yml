@@ -41,8 +41,9 @@ jobs:
       - name: Cross-compile server binaries
         run: |
           mkdir -p bin
-          GOOS=linux GOARCH=amd64 go build -o bin/server-amd64 server/cmd/main.go
-          GOOS=linux GOARCH=arm64 go build -o bin/server-arm64 server/cmd/main.go
+          GOOS=linux GOARCH=amd64 go build -o ../bin/server-amd64 cmd/main.go
+          GOOS=linux GOARCH=arm64 go build -o ../bin/server-arm64 cmd/main.go
+        working-directory: server
 
       - name: Install and build client
         run: |
