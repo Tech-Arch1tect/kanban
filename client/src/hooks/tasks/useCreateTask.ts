@@ -11,16 +11,23 @@ export const useCreateTask = () => {
       return await tasksApi
         .apiV1TasksCreatePost({
           request: {
+            parentTaskId: task.parentTaskId,
             boardId: task.boardId,
             title: task.title,
             description: task.description,
             status: task.status,
             swimlaneId: task.swimlaneId,
             columnId: task.columnId,
+            assigneeId: task.assigneeId,
           },
         })
         .then(() => {
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
+          if (task.parentTaskId) {
+            queryClient.invalidateQueries({
+              queryKey: ["task", task.parentTaskId],
+            });
+          }
         });
     },
     onSuccess: () => {
