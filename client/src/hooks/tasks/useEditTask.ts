@@ -18,9 +18,14 @@ export const useEditTask = () => {
             assigneeId: task.assigneeId,
           },
         })
-        .then(() => {
+        .then((response) => {
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
           queryClient.invalidateQueries({ queryKey: ["task", task.id] });
+          if (response.task?.parentTaskId) {
+            queryClient.invalidateQueries({
+              queryKey: ["task", response.task.parentTaskId],
+            });
+          }
         });
     },
     onSuccess: () => {

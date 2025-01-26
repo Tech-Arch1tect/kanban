@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { ModelsTask } from "../../typescript-fetch-client";
 import { useCreateTask } from "../../hooks/tasks/useCreateTask";
+import { useEditTask } from "../../hooks/tasks/useEditTask";
 import { ClipboardIcon } from "@heroicons/react/24/outline";
+import { useGetUsersWithAccessToBoard } from "../../hooks/boards/useGetUsersWithAccessToBoard";
 
 export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
   const [subtaskTitle, setSubtaskTitle] = useState("");
+  const [assigneeId, setAssigneeId] = useState<number | null>(null);
   const { mutate: createTask } = useCreateTask();
+  const { mutate: editTask } = useEditTask();
+  const { data: users, isLoading: usersLoading } = useGetUsersWithAccessToBoard(
+    { id: task.boardId as number }
+  );
 
   const handleCreateSubtask = () => {
     if (!subtaskTitle.trim()) return;
@@ -17,9 +24,23 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
       status: "open",
       swimlaneId: task.swimlaneId,
       columnId: task.columnId,
-      assigneeId: task.assigneeId,
+      assigneeId: assigneeId || task.assigneeId,
     });
     setSubtaskTitle("");
+    setAssigneeId(null);
+  };
+
+  const handleAssigneeChange = (
+    subtask: ModelsTask,
+    newAssigneeId: number | null
+  ) => {
+    editTask({
+      id: subtask.id as number,
+      title: subtask.title as string,
+      description: subtask.description || " ",
+      status: subtask.status as string,
+      assigneeId: newAssigneeId as number,
+    });
   };
 
   return (
@@ -42,6 +63,20 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
                   Assigned to {subtask.assignee?.username || "no one"}
                 </div>
               </div>
+              <select
+                value={subtask.assignee?.id || ""}
+                onChange={(e) =>
+                  handleAssigneeChange(subtask, Number(e.target.value) || null)
+                }
+                className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+              >
+                <option value="">Unassigned</option>
+                {users?.users?.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.username}
+                  </option>
+                ))}
+              </select>
             </li>
           ))}
         </ul>
@@ -51,20 +86,40 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
         </div>
       )}
 
-      <div className="flex space-x-2">
-        <input
-          type="text"
-          placeholder="New subtask title"
-          value={subtaskTitle}
-          onChange={(e) => setSubtaskTitle(e.target.value)}
-          className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
-        />
-        <button
-          onClick={handleCreateSubtask}
-          className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-md"
-        >
-          Add Subtask
-        </button>
+      <div className="space-y-2">
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            placeholder="New subtask title"
+            value={subtaskTitle}
+            onChange={(e) => setSubtaskTitle(e.target.value)}
+            className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+          />
+          <select
+            value={assigneeId || ""}
+            onChange={(e) => setAssigneeId(Number(e.target.value) || null)}
+            className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+            disabled={usersLoading}
+          >
+            <option value="">Select Assignee</option>
+            {users?.users?.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.username}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={handleCreateSubtask}
+            className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-md"
+          >
+            Add Subtask
+          </button>
+        </div>
+        {usersLoading && (
+          <div className="text-gray-500 dark:text-gray-400 text-sm">
+            Loading users...
+          </div>
+        )}
       </div>
     </div>
   );
