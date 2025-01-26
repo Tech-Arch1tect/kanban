@@ -4,10 +4,13 @@ import { useCreateTask } from "../../hooks/tasks/useCreateTask";
 import { useEditTask } from "../../hooks/tasks/useEditTask";
 import { ClipboardIcon } from "@heroicons/react/24/outline";
 import { useGetUsersWithAccessToBoard } from "../../hooks/boards/useGetUsersWithAccessToBoard";
+import { Link } from "@tanstack/react-router";
 
 export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
   const [subtaskTitle, setSubtaskTitle] = useState("");
   const [assigneeId, setAssigneeId] = useState<number | null>(null);
+  const [editingSubtask, setEditingSubtask] = useState<number | null>(null);
+  const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
   const { mutate: createTask } = useCreateTask();
   const { mutate: editTask } = useEditTask();
   const { data: users, isLoading: usersLoading } = useGetUsersWithAccessToBoard(
@@ -43,6 +46,23 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
     });
   };
 
+  const handleEditSubtaskTitle = (subtask: ModelsTask) => {
+    setEditingSubtask(subtask.id as number);
+    setNewSubtaskTitle(subtask.title as string);
+  };
+
+  const handleSaveSubtaskTitle = (subtask: ModelsTask) => {
+    if (!newSubtaskTitle.trim()) return;
+    editTask({
+      id: subtask.id as number,
+      title: newSubtaskTitle,
+      description: subtask.description || " ",
+      status: subtask.status as string,
+      assigneeId: subtask.assigneeId as number,
+    });
+    setEditingSubtask(null);
+  };
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-4">
@@ -58,10 +78,44 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
             >
               <ClipboardIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
               <div className="flex-1 text-gray-700 dark:text-gray-200">
-                <div className="font-semibold">{subtask.title}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Assigned to {subtask.assignee?.username || "no one"}
-                </div>
+                {editingSubtask === subtask.id ? (
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      value={newSubtaskTitle}
+                      onChange={(e) => setNewSubtaskTitle(e.target.value)}
+                      className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                    />
+                    <button
+                      onClick={() => handleSaveSubtaskTitle(subtask)}
+                      className="bg-green-500 hover:bg-green-700 text-white p-2 rounded-md"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditingSubtask(null)}
+                      className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-md"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {/* @ts-ignore */}
+                    <Link to={`/task/${subtask.id as number}`}>
+                      <div className="font-semibold">{subtask.title}</div>
+                    </Link>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Assigned to {subtask.assignee?.username || "no one"}
+                    </div>
+                    <button
+                      onClick={() => handleEditSubtaskTitle(subtask)}
+                      className="text-blue-500 hover:text-blue-700 text-sm"
+                    >
+                      Edit
+                    </button>
+                  </>
+                )}
               </div>
               <select
                 value={subtask.assignee?.id || ""}
