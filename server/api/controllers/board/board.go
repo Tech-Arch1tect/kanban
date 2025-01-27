@@ -6,6 +6,7 @@ import (
 	"server/internal/helpers"
 	"server/models"
 	"server/services"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -44,7 +45,9 @@ func (bc *BoardController) CreateBoard(c *gin.Context) {
 		return
 	}
 
-	board, err := bc.bs.CreateBoard(request.Name, request.Slug, request.Swimlanes, request.Columns)
+	lowercaseSlug := strings.ToLower(request.Slug)
+
+	board, err := bc.bs.CreateBoard(request.Name, lowercaseSlug, request.Swimlanes, request.Columns)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
