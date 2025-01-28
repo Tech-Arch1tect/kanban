@@ -25,18 +25,6 @@ type DeleteTaskResponse struct {
 	Task models.Task `json:"task"`
 }
 
-type EditTaskRequest struct {
-	ID          uint   `json:"id" binding:"required"`
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description" binding:"required"`
-	Status      string `json:"status" binding:"required"`
-	AssigneeID  uint   `json:"assignee_id"`
-}
-
-type EditTaskResponse struct {
-	Task models.Task `json:"task"`
-}
-
 type GetTaskRequest struct {
 	ID uint `uri:"id" binding:"required"`
 }

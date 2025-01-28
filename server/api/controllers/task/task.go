@@ -115,54 +115,6 @@ func (tc *TaskController) DeleteTask(c *gin.Context) {
 	c.JSON(http.StatusOK, DeleteTaskResponse{Task: task})
 }
 
-// @Summary Edit a task
-// @Description Edit a task
-// @Tags tasks
-// @Security cookieAuth
-// @Security csrf
-// @Accept json
-// @Produce json
-// @Param request body EditTaskRequest true "Edit task request"
-// @Success 200 {object} EditTaskResponse
-// @Failure 400 {object} models.ErrorResponse
-// @Failure 401 {object} models.ErrorResponse
-// @Failure 403 {object} models.ErrorResponse
-// @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/tasks/edit [post]
-func (tc *TaskController) EditTask(c *gin.Context) {
-	var request EditTaskRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	user, err := tc.hs.GetUserFromSession(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	task, err := tc.ts.EditTask(user.ID, services.EditTaskRequest{
-		ID:          request.ID,
-		Title:       request.Title,
-		Description: request.Description,
-		Status:      request.Status,
-		AssigneeID:  request.AssigneeID,
-	})
-	if err != nil {
-		if err.Error() == "forbidden" {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
-		} else if err.Error() == "task not found" {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-		return
-	}
-
-	c.JSON(http.StatusOK, EditTaskResponse{Task: task})
-}
-
 // @Summary Get a task
 // @Description Get a task
 // @Tags tasks

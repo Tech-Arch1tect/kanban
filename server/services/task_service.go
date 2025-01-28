@@ -116,53 +116,6 @@ func (ts *TaskService) DeleteTask(userID, taskID uint) (models.Task, error) {
 	return task, nil
 }
 
-type EditTaskRequest struct {
-	ID          uint   `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
-	AssigneeID  uint   `json:"assignee_id"`
-}
-
-func (ts *TaskService) EditTask(userID uint, request EditTaskRequest) (models.Task, error) {
-	task, err := ts.db.TaskRepository.GetByID(request.ID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.Task{}, errors.New("task not found")
-		}
-		return models.Task{}, err
-	}
-
-	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
-	if !can {
-		return models.Task{}, errors.New("forbidden")
-	}
-
-	if request.AssigneeID != 0 {
-		_, err := ts.db.UserRepository.GetByID(request.AssigneeID)
-		if err != nil {
-			return models.Task{}, err
-		}
-	}
-
-	task.Title = request.Title
-	task.Description = request.Description
-	task.Status = request.Status
-	task.AssigneeID = request.AssigneeID
-
-	err = task.Validate()
-	if err != nil {
-		return models.Task{}, err
-	}
-
-	err = ts.db.TaskRepository.Update(&task)
-	if err != nil {
-		return models.Task{}, err
-	}
-
-	return task, nil
-}
-
 func (ts *TaskService) CommonPreloadFields() []string {
 	return []string{"Board", "Swimlane", "Column", "Creator", "Assignee", "Comments", "Comments.User", "Files", "SrcLinks", "DstLinks", "SrcLinks.SrcTask", "SrcLinks.DstTask", "DstLinks.DstTask", "DstLinks.SrcTask", "ExternalLinks", "ParentTask",
 		"Subtasks", "Subtasks.Board", "Subtasks.Swimlane", "Subtasks.Column", "Subtasks.Creator", "Subtasks.Assignee", "Subtasks.Comments", "Subtasks.Comments.User", "Subtasks.Files", "Subtasks.SrcLinks", "Subtasks.DstLinks", "Subtasks.SrcLinks.SrcTask", "Subtasks.SrcLinks.DstTask", "Subtasks.DstLinks.DstTask", "Subtasks.DstLinks.SrcTask", "Subtasks.ExternalLinks", "Subtasks.ParentTask"}
