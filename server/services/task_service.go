@@ -408,11 +408,13 @@ func (ts *TaskService) UpdateTaskAssignee(userID uint, taskID uint, assigneeID u
 	}
 
 	if assigneeID != 0 {
-		can, _ = ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+		can, _ = ts.rs.CheckRole(assigneeID, task.BoardID, MemberRole)
 		if !can {
 			return models.Task{}, errors.New("forbidden")
 		}
 	}
+
+	task.AssigneeID = assigneeID
 
 	err = task.Validate()
 	if err != nil {

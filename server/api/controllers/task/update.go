@@ -144,7 +144,7 @@ func (tc *TaskController) UpdateTaskStatus(c *gin.Context) {
 
 type UpdateTaskAssigneeRequest struct {
 	TaskID     uint `json:"task_id" binding:"required"`
-	AssigneeID uint `json:"assignee_id" binding:"required"`
+	AssigneeID uint `json:"assignee_id"` // not required so we can unassign tasks
 }
 
 type UpdateTaskAssigneeResponse struct {
