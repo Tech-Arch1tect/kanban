@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ModelsTask } from "../../typescript-fetch-client";
 import { useCreateTask } from "../../hooks/tasks/useCreateTask";
-import { useEditTask } from "../../hooks/tasks/useEditTask";
 import {
   ClipboardIcon,
   PencilIcon,
@@ -11,6 +10,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { useGetUsersWithAccessToBoard } from "../../hooks/boards/useGetUsersWithAccessToBoard";
 import { Link } from "@tanstack/react-router";
+import { useUpdateTaskAssignee } from "../../hooks/tasks/useUpdateTaskAssignee";
+import { useUpdateTaskTitle } from "../../hooks/tasks/useUpdateTaskTitle";
 
 export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
   const [subtaskTitle, setSubtaskTitle] = useState("");
@@ -18,7 +19,8 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
   const [editingSubtask, setEditingSubtask] = useState<number | null>(null);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
   const { mutate: createTask } = useCreateTask();
-  const { mutate: editTask } = useEditTask();
+  const { mutate: updateTaskAssignee } = useUpdateTaskAssignee();
+  const { mutate: updateTaskTitle } = useUpdateTaskTitle();
   const { data: users, isLoading: usersLoading } = useGetUsersWithAccessToBoard(
     { id: task.boardId as number }
   );
@@ -43,11 +45,8 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
     subtask: ModelsTask,
     newAssigneeId: number | null
   ) => {
-    editTask({
-      id: subtask.id as number,
-      title: subtask.title as string,
-      description: subtask.description || " ",
-      status: subtask.status as string,
+    updateTaskAssignee({
+      taskId: subtask.id as number,
       assigneeId: newAssigneeId as number,
     });
   };
@@ -59,12 +58,9 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
 
   const handleSaveSubtaskTitle = (subtask: ModelsTask) => {
     if (!newSubtaskTitle.trim()) return;
-    editTask({
-      id: subtask.id as number,
+    updateTaskTitle({
+      taskId: subtask.id as number,
       title: newSubtaskTitle,
-      description: subtask.description || " ",
-      status: subtask.status as string,
-      assigneeId: subtask.assigneeId as number,
     });
     setEditingSubtask(null);
   };
