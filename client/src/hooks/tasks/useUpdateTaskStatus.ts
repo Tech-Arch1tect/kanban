@@ -8,18 +8,20 @@ export const useUpdateTaskStatus = () => {
 
   const { mutate, error, isError, isSuccess, data, isPending } = useMutation({
     mutationFn: async (task: TaskUpdateTaskStatusRequest) => {
-      return await tasksApi
-        .apiV1TasksUpdateStatusPost({
-          request: {
-            taskId: task.taskId,
-            status: task.status,
-          },
-        })
-        .then(() => {
-          queryClient.invalidateQueries({ queryKey: ["task", task.taskId] });
-        });
+      return await tasksApi.apiV1TasksUpdateStatusPost({
+        request: {
+          taskId: task.taskId,
+          status: task.status,
+        },
+      });
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["task", response.task?.id] });
+      if (response.task?.parentTaskId) {
+        queryClient.invalidateQueries({
+          queryKey: ["task", response.task?.parentTaskId],
+        });
+      }
       toast.success("Task status updated successfully!");
     },
     onError: (error: any) => {

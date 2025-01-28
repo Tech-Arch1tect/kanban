@@ -8,18 +8,17 @@ export const useUpdateTaskDescription = () => {
 
   const { mutate, error, isError, isSuccess, data, isPending } = useMutation({
     mutationFn: async (task: TaskUpdateTaskDescriptionRequest) => {
-      return await tasksApi
-        .apiV1TasksUpdateDescriptionPost({
-          request: {
-            taskId: task.taskId,
-            description: task.description,
-          },
-        })
-        .then(() => {
-          queryClient.invalidateQueries({ queryKey: ["task", task.taskId] });
-        });
+      return await tasksApi.apiV1TasksUpdateDescriptionPost({
+        request: {
+          taskId: task.taskId,
+          description: task.description,
+        },
+      });
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["task", response.task?.id],
+      });
       toast.success("Task description updated successfully!");
     },
     onError: (error: any) => {
