@@ -18,11 +18,14 @@ export function Task({
   isHoveredTask,
 }: TaskProps) {
   const [isSubtasksOpen, setSubtasksOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   if (!task.id) return null;
   const dragged = isDraggedTask(task.id);
   const hovered = isHoveredTask(task.id);
   const subtaskCount = task.subtasks?.length || 0;
+
+  const visibleSubtasks = showMore ? task.subtasks : task.subtasks?.slice(0, 3); // Show up to 3 subtasks initially
 
   return (
     <div
@@ -66,6 +69,7 @@ export function Task({
           <button
             onClick={() => setSubtasksOpen(!isSubtasksOpen)}
             className="flex items-center justify-between w-full text-sm text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+            aria-expanded={isSubtasksOpen ? "true" : "false"}
           >
             <span className="flex items-center space-x-2">
               <span>{subtaskCount} Subtasks</span>
@@ -76,9 +80,10 @@ export function Task({
               />
             </span>
           </button>
+
           {isSubtasksOpen && (
             <div className="mt-2 space-y-2 bg-gray-50 dark:bg-gray-800 p-3 rounded-lg shadow-sm">
-              {task.subtasks?.map((subtask) => (
+              {visibleSubtasks?.map((subtask) => (
                 <Link
                   key={subtask.id}
                   //@ts-ignore
@@ -93,6 +98,25 @@ export function Task({
                     "Unassigned"}
                 </Link>
               ))}
+
+              {/* Show more/less button */}
+              {(task.subtasks?.length as number) > 3 && !showMore && (
+                <button
+                  onClick={() => setShowMore(true)}
+                  className="w-full text-sm text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 mt-2"
+                >
+                  Show More Subtasks
+                </button>
+              )}
+
+              {showMore && (
+                <button
+                  onClick={() => setShowMore(false)}
+                  className="w-full text-sm text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 mt-2"
+                >
+                  Show Less Subtasks
+                </button>
+              )}
             </div>
           )}
         </div>
