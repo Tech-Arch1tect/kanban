@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "@tanstack/react-router";
-import BoardColumns from "./BoardColumns";
 import { ModelsSwimlane } from "../../typescript-fetch-client";
 import BoardSwimlanes from "./BoardSwimlanes";
 import { useGetTaskQuery } from "../../hooks/tasks/useTaskQuery";
@@ -86,7 +85,6 @@ export default function BoardView() {
 
       {/* Board Columns and Swimlanes */}
       <div className="">
-        <BoardColumns columns={board?.columns ?? []} />
         {board?.swimlanes?.map((swimlane: ModelsSwimlane) => (
           <BoardSwimlanes
             key={swimlane.id}
