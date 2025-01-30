@@ -1,15 +1,22 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useAuth } from "../../hooks/auth/useAuth";
 import { useDropdown } from "../../hooks/useDropdown";
 import BoardsSelect from "./BoardsSelect";
 import { ToastContainer } from "react-toastify";
-import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
+import {
+  MoonIcon,
+  SunIcon,
+  ChevronDownIcon,
+  Bars3Icon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { useServerSettings } from "../../context/ServerSettingsContext";
 
 const Navbar = () => {
   const { settings, updateSettings } = useServerSettings();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,11 +28,7 @@ const Navbar = () => {
   const adminDropdown = useDropdown();
 
   useEffect(() => {
-    if (settings?.theme === "dark") {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
-    }
+    document.body.classList.toggle("dark", settings?.theme === "dark");
   }, [settings?.theme]);
 
   useEffect(() => {
@@ -43,9 +46,7 @@ const Navbar = () => {
   }
 
   const toggleTheme = () => {
-    updateSettings({
-      theme: settings?.theme === "dark" ? "light" : "dark",
-    });
+    updateSettings({ theme: settings?.theme === "dark" ? "light" : "dark" });
   };
 
   return (
@@ -53,42 +54,37 @@ const Navbar = () => {
       <nav className="bg-blue-800 dark:bg-gray-900 shadow-lg">
         <div className="container mx-auto px-6 py-3 flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <Link
-              to="/"
-              activeProps={{
-                className: "text-white dark:text-gray-100 font-bold",
-              }}
-              inactiveProps={{
-                className:
-                  "text-gray-200 dark:text-gray-400 hover:text-white dark:hover:text-gray-100",
-              }}
-              className="text-lg"
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden text-white dark:text-gray-100"
             >
+              {isMobileMenuOpen ? (
+                <XMarkIcon className="h-7 w-7" />
+              ) : (
+                <Bars3Icon className="h-7 w-7" />
+              )}
+            </button>
+            <Link to="/" className="text-white text-lg font-bold">
               Home
             </Link>
+          </div>
+
+          {/* Desktop Menu */}
+          <div className="hidden lg:flex items-center space-x-4">
             <Link
               to="/about"
-              activeProps={{
-                className: "text-white dark:text-gray-100 font-bold",
-              }}
-              inactiveProps={{
-                className:
-                  "text-gray-200 dark:text-gray-400 hover:text-white dark:hover:text-gray-100",
-              }}
-              className="text-lg"
+              className="text-gray-200 dark:text-gray-400 hover:text-white dark:hover:text-gray-100 text-lg"
             >
               About
             </Link>
-          </div>
-
-          <div className="flex items-center space-x-4">
             <BoardsSelect />
           </div>
 
-          <div className="flex items-center space-x-4">
+          {/* Right Actions */}
+          <div className="hidden lg:flex items-center space-x-4">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-blue-700 dark:hover:bg-gray-700 focus:outline-none"
+              className="p-2 rounded-full hover:bg-blue-700 dark:hover:bg-gray-700 transition-all"
               aria-label="Toggle Dark Mode"
             >
               {settings?.theme === "dark" ? (
@@ -98,41 +94,27 @@ const Navbar = () => {
               )}
             </button>
 
-            {/* User Profile Dropdown */}
-            <div className="relative" ref={profileDropdown.ref}>
+            {/* Profile Dropdown */}
+            <div className="relative">
               <button
                 onClick={profileDropdown.toggleDropdown}
-                className="text-white dark:text-gray-100 text-lg font-medium flex items-center space-x-2"
+                className="text-white dark:text-gray-100 text-lg flex items-center space-x-2"
               >
-                Settings
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                Settings <ChevronDownIcon className="h-5 w-5" />
               </button>
               {profileDropdown.isOpen && (
-                <div className="dropdown absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-xl rounded">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-xl rounded-lg p-2">
                   <Link
                     to="/profile/profile"
                     onClick={profileDropdown.closeDropdown}
-                    className="dropdown-item block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
+                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
                   >
                     Profile
                   </Link>
                   <Link
                     to="/profile/2fa"
                     onClick={profileDropdown.closeDropdown}
-                    className="dropdown-item block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
+                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
                   >
                     Manage 2FA
                   </Link>
@@ -142,40 +124,24 @@ const Navbar = () => {
 
             {/* Admin Dropdown */}
             {isAdmin && (
-              <div className="relative" ref={adminDropdown.ref}>
+              <div className="relative">
                 <button
                   onClick={adminDropdown.toggleDropdown}
-                  className="text-white dark:text-gray-100 text-lg font-medium flex items-center space-x-2"
+                  className="text-white dark:text-gray-100 text-lg flex items-center space-x-2"
                 >
-                  Admin
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+                  Admin <ChevronDownIcon className="h-5 w-5" />
                 </button>
                 {adminDropdown.isOpen && (
-                  <div className="dropdown absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-xl rounded">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-xl rounded-lg p-2">
                     <Link
                       to="/admin/users"
-                      onClick={adminDropdown.closeDropdown}
-                      className="dropdown-item block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
                     >
                       Users
                     </Link>
                     <Link
                       to="/admin/boards"
-                      onClick={adminDropdown.closeDropdown}
-                      className="dropdown-item block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
                     >
                       Boards
                     </Link>
@@ -186,13 +152,44 @@ const Navbar = () => {
 
             <button
               onClick={handleLogout}
-              className="text-white dark:text-gray-100 text-lg font-medium hover:text-gray-200 dark:hover:text-gray-300"
+              className="text-white dark:text-gray-100 text-lg"
             >
               Logout
             </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden bg-blue-900 dark:bg-gray-800 p-4 space-y-4">
+            <Link
+              to="/about"
+              className="block text-gray-200 dark:text-gray-400 hover:text-white"
+            >
+              About
+            </Link>
+            <BoardsSelect />
+            <button
+              onClick={toggleTheme}
+              className="flex items-center space-x-2 text-white dark:text-gray-100"
+            >
+              {settings?.theme === "dark" ? (
+                <SunIcon className="h-6 w-6 text-yellow-300 dark:text-yellow-400" />
+              ) : (
+                <MoonIcon className="h-6 w-6 text-gray-200 dark:text-gray-400" />
+              )}
+              <span>Toggle Theme</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="text-white dark:text-gray-100"
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </nav>
+
       <ToastContainer position="bottom-right" newestOnTop theme="colored" />
     </>
   );
