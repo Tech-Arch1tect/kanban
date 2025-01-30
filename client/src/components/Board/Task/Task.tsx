@@ -42,10 +42,10 @@ export function Task({
       <Link
         //@ts-ignore
         to={`/task/${task.id}`}
-        className="block"
+        className="block space-y-2"
       >
         {/* Assignee and Task ID */}
-        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 mb-2">
+        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
           <span className="truncate">
             {task.assignee?.username || "Unassigned"}
           </span>
@@ -53,7 +53,7 @@ export function Task({
         </div>
 
         {/* Task Title */}
-        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate mb-2">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
           {task.title}
         </h3>
 
@@ -69,19 +69,23 @@ export function Task({
           <button
             onClick={() => setSubtasksOpen(!isSubtasksOpen)}
             className="flex items-center justify-between w-full text-sm text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
-            aria-expanded={isSubtasksOpen ? "true" : "false"}
+            aria-expanded={isSubtasksOpen}
           >
             <span className="flex items-center space-x-2">
               <span>{subtaskCount} Subtasks</span>
               <ChevronDownIcon
-                className={`w-5 h-5 transform transition-transform ${
+                className={`w-5 h-5 transition-transform ${
                   isSubtasksOpen ? "rotate-180" : ""
                 }`}
               />
             </span>
           </button>
 
-          {isSubtasksOpen && (
+          <div
+            className={`transition-all duration-300 overflow-hidden ${
+              isSubtasksOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+            }`}
+          >
             <div className="mt-2 space-y-2 bg-gray-50 dark:bg-gray-800 p-3 rounded-lg shadow-sm">
               {visibleSubtasks?.map((subtask) => (
                 <Link
@@ -99,26 +103,17 @@ export function Task({
                 </Link>
               ))}
 
-              {/* Show more/less button */}
-              {(task.subtasks?.length as number) > 3 && !showMore && (
+              {/* Show More/Less Button */}
+              {(task.subtasks?.length as number) > 3 && (
                 <button
-                  onClick={() => setShowMore(true)}
+                  onClick={() => setShowMore((prev) => !prev)}
                   className="w-full text-sm text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 mt-2"
                 >
-                  Show More Subtasks
-                </button>
-              )}
-
-              {showMore && (
-                <button
-                  onClick={() => setShowMore(false)}
-                  className="w-full text-sm text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 mt-2"
-                >
-                  Show Less Subtasks
+                  {showMore ? "Show Less Subtasks" : "Show More Subtasks"}
                 </button>
               )}
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>
