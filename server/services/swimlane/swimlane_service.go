@@ -1,22 +1,23 @@
-package services
+package swimlane
 
 import (
 	"errors"
 	"server/database/repository"
 	"server/models"
+	"server/services/role"
 )
 
 type SwimlaneService struct {
 	db *repository.Database
-	rs *RoleService
+	rs *role.RoleService
 }
 
-func NewSwimlaneService(db *repository.Database, rs *RoleService) *SwimlaneService {
+func NewSwimlaneService(db *repository.Database, rs *role.RoleService) *SwimlaneService {
 	return &SwimlaneService{db: db, rs: rs}
 }
 
 func (ss *SwimlaneService) CreateSwimlane(userID uint, boardID uint, name string) (models.Swimlane, error) {
-	can, err := ss.rs.CheckRole(userID, boardID, AdminRole)
+	can, err := ss.rs.CheckRole(userID, boardID, role.AdminRole)
 	if err != nil {
 		return models.Swimlane{}, err
 	}
@@ -55,7 +56,7 @@ func (ss *SwimlaneService) DeleteSwimlane(userID uint, swimlaneID uint) (models.
 		return models.Swimlane{}, err
 	}
 
-	can, err := ss.rs.CheckRole(userID, swimlane.BoardID, AdminRole)
+	can, err := ss.rs.CheckRole(userID, swimlane.BoardID, role.AdminRole)
 	if err != nil {
 		return models.Swimlane{}, err
 	}
@@ -78,7 +79,7 @@ func (ss *SwimlaneService) EditSwimlane(userID uint, swimlaneID uint, name strin
 		return models.Swimlane{}, err
 	}
 
-	can, err := ss.rs.CheckRole(userID, swimlane.BoardID, AdminRole)
+	can, err := ss.rs.CheckRole(userID, swimlane.BoardID, role.AdminRole)
 	if err != nil {
 		return models.Swimlane{}, err
 	}
@@ -112,7 +113,7 @@ func (ss *SwimlaneService) MoveSwimlane(userID uint, swimlaneID uint, relativeID
 		return models.Swimlane{}, errors.New("swimlanes are not on the same board")
 	}
 
-	can, err := ss.rs.CheckRole(userID, swimlane.BoardID, AdminRole)
+	can, err := ss.rs.CheckRole(userID, swimlane.BoardID, role.AdminRole)
 	if err != nil {
 		return models.Swimlane{}, err
 	}

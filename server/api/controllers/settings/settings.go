@@ -4,17 +4,17 @@ import (
 	"net/http"
 	"server/internal/helpers"
 	"server/models"
-	"server/services"
+	"server/services/settings"
 
 	"github.com/gin-gonic/gin"
 )
 
 type SettingsController struct {
-	settingsService *services.SettingsService
+	settingsService *settings.SettingsService
 	hs              *helpers.HelperService
 }
 
-func NewSettingsController(settingsService *services.SettingsService, hs *helpers.HelperService) *SettingsController {
+func NewSettingsController(settingsService *settings.SettingsService, hs *helpers.HelperService) *SettingsController {
 	return &SettingsController{settingsService: settingsService, hs: hs}
 }
 

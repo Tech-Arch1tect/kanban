@@ -1,4 +1,4 @@
-package services
+package task
 
 import (
 	"errors"
@@ -8,6 +8,7 @@ import (
 	"server/config"
 	"server/database/repository"
 	"server/models"
+	"server/services/role"
 	"sort"
 	"strings"
 
@@ -17,11 +18,11 @@ import (
 
 type TaskService struct {
 	db     *repository.Database
-	rs     *RoleService
+	rs     *role.RoleService
 	config *config.Config
 }
 
-func NewTaskService(db *repository.Database, rs *RoleService, config *config.Config) *TaskService {
+func NewTaskService(db *repository.Database, rs *role.RoleService, config *config.Config) *TaskService {
 	return &TaskService{db: db, rs: rs, config: config}
 }
 
@@ -37,7 +38,7 @@ type CreateTaskRequest struct {
 }
 
 func (ts *TaskService) CreateTask(userID uint, request CreateTaskRequest) (models.Task, error) {
-	can, _ := ts.rs.CheckRole(userID, request.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, request.BoardID, role.MemberRole)
 	if !can {
 		return models.Task{}, errors.New("forbidden")
 	}
@@ -103,7 +104,7 @@ func (ts *TaskService) DeleteTask(userID, taskID uint) (models.Task, error) {
 		return models.Task{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
 	if !can {
 		return models.Task{}, errors.New("forbidden")
 	}
@@ -151,7 +152,7 @@ func (ts *TaskService) GetTask(userID, taskID uint) (models.Task, error) {
 
 	task.DstLinks = newDstLinks
 
-	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
 	if !can {
 		return models.Task{}, errors.New("forbidden")
 	}
@@ -233,7 +234,7 @@ func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Ta
 }
 
 func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string) ([]models.Task, error) {
-	can, _ := ts.rs.CheckRole(userID, boardID, ReaderRole)
+	can, _ := ts.rs.CheckRole(userID, boardID, role.ReaderRole)
 	if !can {
 		return nil, errors.New("forbidden")
 	}
@@ -324,7 +325,7 @@ func (ts *TaskService) UpdateTaskTitle(userID uint, taskID uint, title string) (
 		return models.Task{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
 	if !can {
 		return models.Task{}, errors.New("forbidden")
 	}
@@ -350,7 +351,7 @@ func (ts *TaskService) UpdateTaskDescription(userID uint, taskID uint, descripti
 		return models.Task{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
 	if !can {
 		return models.Task{}, errors.New("forbidden")
 	}
@@ -376,7 +377,7 @@ func (ts *TaskService) UpdateTaskStatus(userID uint, taskID uint, status string)
 		return models.Task{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
 	if !can {
 		return models.Task{}, errors.New("forbidden")
 	}
@@ -402,13 +403,13 @@ func (ts *TaskService) UpdateTaskAssignee(userID uint, taskID uint, assigneeID u
 		return models.Task{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
 	if !can {
 		return models.Task{}, errors.New("forbidden")
 	}
 
 	if assigneeID != 0 {
-		can, _ = ts.rs.CheckRole(assigneeID, task.BoardID, MemberRole)
+		can, _ = ts.rs.CheckRole(assigneeID, task.BoardID, role.MemberRole)
 		if !can {
 			return models.Task{}, errors.New("forbidden")
 		}
@@ -435,7 +436,7 @@ func (ts *TaskService) UploadFile(userID uint, taskID uint, file []byte, name st
 		return models.File{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
 	if !can {
 		return models.File{}, errors.New("forbidden")
 	}
@@ -490,7 +491,7 @@ func (ts *TaskService) GetFile(userID uint, fileID uint) (models.File, []byte, e
 		return models.File{}, nil, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, file.Task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, file.Task.BoardID, role.MemberRole)
 	if !can {
 		return models.File{}, nil, errors.New("forbidden")
 	}
@@ -511,7 +512,7 @@ func (ts *TaskService) DeleteFile(userID uint, fileID uint) (models.File, error)
 		return models.File{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, file.Task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, file.Task.BoardID, role.MemberRole)
 	if !can {
 		return models.File{}, errors.New("forbidden")
 	}
@@ -537,7 +538,7 @@ func (ts *TaskService) CreateTaskLink(userID uint, srcTaskID uint, dstTaskID uin
 		return models.TaskLinks{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, srcTask.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, srcTask.BoardID, role.MemberRole)
 	if !can {
 		return models.TaskLinks{}, errors.New("forbidden")
 	}
@@ -547,7 +548,7 @@ func (ts *TaskService) CreateTaskLink(userID uint, srcTaskID uint, dstTaskID uin
 		return models.TaskLinks{}, err
 	}
 
-	can, _ = ts.rs.CheckRole(userID, dstTask.BoardID, MemberRole)
+	can, _ = ts.rs.CheckRole(userID, dstTask.BoardID, role.MemberRole)
 	if !can {
 		return models.TaskLinks{}, errors.New("forbidden")
 	}
@@ -589,12 +590,12 @@ func (ts *TaskService) DeleteTaskLink(userID uint, linkID uint) (models.TaskLink
 		return models.TaskLinks{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, link.SrcTask.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, link.SrcTask.BoardID, role.MemberRole)
 	if !can {
 		return models.TaskLinks{}, errors.New("forbidden")
 	}
 
-	can, _ = ts.rs.CheckRole(userID, link.DstTask.BoardID, MemberRole)
+	can, _ = ts.rs.CheckRole(userID, link.DstTask.BoardID, role.MemberRole)
 	if !can {
 		return models.TaskLinks{}, errors.New("forbidden")
 	}
@@ -613,7 +614,7 @@ func (ts *TaskService) CreateTaskExternalLink(userID uint, taskID uint, title st
 		return models.TaskExternalLink{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
 	if !can {
 		return models.TaskExternalLink{}, errors.New("forbidden")
 	}
@@ -638,7 +639,7 @@ func (ts *TaskService) UpdateTaskExternalLink(userID uint, linkID uint, title st
 		return models.TaskExternalLink{}, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, link.Task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, link.Task.BoardID, role.MemberRole)
 	if !can {
 		return models.TaskExternalLink{}, errors.New("forbidden")
 	}
@@ -660,7 +661,7 @@ func (ts *TaskService) DeleteTaskExternalLink(userID uint, linkID uint) (uint, e
 		return 0, err
 	}
 
-	can, _ := ts.rs.CheckRole(userID, link.Task.BoardID, MemberRole)
+	can, _ := ts.rs.CheckRole(userID, link.Task.BoardID, role.MemberRole)
 	if !can {
 		return 0, errors.New("forbidden")
 	}

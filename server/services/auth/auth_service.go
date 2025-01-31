@@ -1,4 +1,4 @@
-package services
+package auth
 
 import (
 	"errors"
@@ -7,6 +7,7 @@ import (
 	e "server/internal/email"
 	"server/internal/helpers"
 	"server/models"
+	"server/services/role"
 	"time"
 
 	"github.com/pquerna/otp/totp"
@@ -18,10 +19,10 @@ type AuthService struct {
 	email  *e.EmailService
 	db     *repository.Database
 	helper *helpers.HelperService
-	rs     *RoleService
+	rs     *role.RoleService
 }
 
-func NewAuthService(config *config.Config, email *e.EmailService, db *repository.Database, helper *helpers.HelperService, rs *RoleService) *AuthService {
+func NewAuthService(config *config.Config, email *e.EmailService, db *repository.Database, helper *helpers.HelperService, rs *role.RoleService) *AuthService {
 	return &AuthService{
 		config: config,
 		email:  email,
@@ -64,7 +65,7 @@ func (s *AuthService) Register(username, email, password string) error {
 	}
 
 	for _, invite := range pendingInvites {
-		err := s.rs.AssignRole(user.ID, invite.BoardID, AppRole{Name: invite.RoleName})
+		err := s.rs.AssignRole(user.ID, invite.BoardID, role.AppRole{Name: invite.RoleName})
 		if err != nil {
 			return err
 		}

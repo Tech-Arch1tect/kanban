@@ -18,7 +18,15 @@ import (
 	"server/database/repository"
 	"server/internal/email"
 	"server/internal/helpers"
-	"server/services"
+	"server/services/admin"
+	"server/services/auth"
+	"server/services/board"
+	"server/services/column"
+	"server/services/comment"
+	"server/services/role"
+	"server/services/settings"
+	"server/services/swimlane"
+	"server/services/task"
 )
 
 // @title Server API
@@ -32,15 +40,15 @@ type Params struct {
 	fx.In
 	Config    *config.Config
 	DB        *repository.Database
-	AuthS     *services.AuthService
-	AdminS    *services.AdminService
-	RoleS     *services.RoleService
-	BoardS    *services.BoardService
-	ColumnS   *services.ColumnService
-	SwimlaneS *services.SwimlaneService
-	TaskS     *services.TaskService
-	CommentS  *services.CommentService
-	SettingsS *services.SettingsService
+	AuthS     *auth.AuthService
+	AdminS    *admin.AdminService
+	RoleS     *role.RoleService
+	BoardS    *board.BoardService
+	ColumnS   *column.ColumnService
+	SwimlaneS *swimlane.SwimlaneService
+	TaskS     *task.TaskService
+	CommentS  *comment.CommentService
+	SettingsS *settings.SettingsService
 	EmailS    *email.EmailService
 	Helpers   *helpers.HelperService
 	MW        *middleware.Middleware
@@ -89,17 +97,17 @@ func main() {
 			email.NewEmailService,
 			helpers.NewHelperService,
 			middleware.NewMiddleware,
-			services.NewAuthService,
-			services.NewAdminService,
-			services.NewRoleService,
-			services.NewBoardService,
-			services.NewColumnService,
-			services.NewSwimlaneService,
-			services.NewTaskService,
-			services.NewCommentService,
-			services.NewSettingsService,
+			auth.NewAuthService,
+			admin.NewAdminService,
+			role.NewRoleService,
+			board.NewBoardService,
+			column.NewColumnService,
+			swimlane.NewSwimlaneService,
+			task.NewTaskService,
+			comment.NewCommentService,
+			settings.NewSettingsService,
 		),
-		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *services.AuthService, adminS *services.AdminService, roleS *services.RoleService, boardS *services.BoardService, columnS *services.ColumnService, swimlaneS *services.SwimlaneService, taskS *services.TaskService, commentS *services.CommentService, settingsS *services.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware) {
+		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware) {
 			params := Params{
 				Config:    config,
 				DB:        db,

@@ -5,20 +5,21 @@ import (
 	"server/database/repository"
 	"server/internal/helpers"
 	"server/models"
-	"server/services"
+	"server/services/board"
+	"server/services/role"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 type BoardController struct {
-	bs *services.BoardService
-	rs *services.RoleService
+	bs *board.BoardService
+	rs *role.RoleService
 	db *repository.Database
 	hs *helpers.HelperService
 }
 
-func NewBoardController(bs *services.BoardService, rs *services.RoleService, db *repository.Database, hs *helpers.HelperService) *BoardController {
+func NewBoardController(bs *board.BoardService, rs *role.RoleService, db *repository.Database, hs *helpers.HelperService) *BoardController {
 	return &BoardController{
 		bs: bs,
 		rs: rs,
@@ -263,7 +264,7 @@ func (bc *BoardController) AddOrInviteUserToBoard(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	role := services.AppRole{
+	role := role.AppRole{
 		Name: req.Role,
 	}
 

@@ -1,10 +1,11 @@
-package services
+package board
 
 import (
 	"errors"
 	"server/config"
 	"server/database/repository"
 	"server/models"
+	"server/services/role"
 	"sort"
 
 	"server/internal/email"
@@ -14,12 +15,12 @@ import (
 
 type BoardService struct {
 	db  *repository.Database
-	rs  *RoleService
+	rs  *role.RoleService
 	es  *email.EmailService
 	cfg *config.Config
 }
 
-func NewBoardService(db *repository.Database, rs *RoleService, es *email.EmailService, cfg *config.Config) *BoardService {
+func NewBoardService(db *repository.Database, rs *role.RoleService, es *email.EmailService, cfg *config.Config) *BoardService {
 	return &BoardService{
 		db:  db,
 		rs:  rs,
@@ -81,7 +82,7 @@ func (bs *BoardService) GetBoardBySlug(slug string) (models.Board, error) {
 }
 
 func (bs *BoardService) GetBoardWithPermissions(userID, boardID uint) (models.Board, error) {
-	can, err := bs.rs.CheckRole(userID, boardID, MemberRole)
+	can, err := bs.rs.CheckRole(userID, boardID, role.MemberRole)
 	if err != nil {
 		return models.Board{}, err
 	}
@@ -104,7 +105,7 @@ func (bs *BoardService) GetBoardBySlugWithPermissions(userID uint, slug string) 
 		return models.Board{}, err
 	}
 
-	can, err := bs.rs.CheckRole(userID, board.ID, MemberRole)
+	can, err := bs.rs.CheckRole(userID, board.ID, role.MemberRole)
 	if err != nil {
 		return models.Board{}, err
 	}
@@ -131,7 +132,7 @@ func (bs *BoardService) ListBoards(userID uint) ([]models.Board, error) {
 		return bs.db.BoardRepository.GetAll(repository.WithPreload("Swimlanes", "Columns"))
 	}
 
-	MemberRole, err := bs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", MemberRole.Name))
+	MemberRole, err := bs.db.BoardRoleRepository.GetFirst(repository.WithWhere("name = ?", role.MemberRole.Name))
 	if err != nil {
 		return []models.Board{}, err
 	}
@@ -149,13 +150,8 @@ func (bs *BoardService) ListBoards(userID uint) ([]models.Board, error) {
 	return boards, nil
 }
 
-type UserWithAppRole struct {
-	models.User
-	AppRole string `json:"app_role"`
-}
-
-func (bs *BoardService) GetUsersWithAccess(userID, boardID uint) ([]UserWithAppRole, error) {
-	can, err := bs.rs.CheckRole(userID, boardID, MemberRole)
+func (bs *BoardService) GetUsersWithAccess(userID, boardID uint) ([]role.UserWithAppRole, error) {
+	can, err := bs.rs.CheckRole(userID, boardID, role.MemberRole)
 	if err != nil {
 		return nil, err
 	}
@@ -171,13 +167,13 @@ func (bs *BoardService) GetUsersWithAccess(userID, boardID uint) ([]UserWithAppR
 	return users, nil
 }
 
-func (bs *BoardService) AddOrInviteUserToBoard(authUserID, boardID uint, email string, role AppRole) error {
+func (bs *BoardService) AddOrInviteUserToBoard(authUserID, boardID uint, email string, r role.AppRole) error {
 	authUser, err := bs.db.UserRepository.GetFirst(repository.WithWhere("id = ?", authUserID))
 	if err != nil {
 		return err
 	}
 
-	can, err := bs.rs.CheckRole(authUser.ID, boardID, AdminRole)
+	can, err := bs.rs.CheckRole(authUser.ID, boardID, role.AdminRole)
 	if err != nil {
 		return err
 	}
@@ -188,14 +184,14 @@ func (bs *BoardService) AddOrInviteUserToBoard(authUserID, boardID uint, email s
 
 	user, err := bs.db.UserRepository.GetFirst(repository.WithWhere("email = ?", email))
 	if err == gorm.ErrRecordNotFound {
-		return bs.InviteUserToBoard(boardID, email, role.Name)
+		return bs.InviteUserToBoard(boardID, email, r.Name)
 	}
 
-	return bs.AddUserToBoard(boardID, user.ID, role)
+	return bs.AddUserToBoard(boardID, user.ID, r)
 }
 
-func (bs *BoardService) AddUserToBoard(boardID, userID uint, role AppRole) error {
-	return bs.rs.AssignRole(userID, boardID, role)
+func (bs *BoardService) AddUserToBoard(boardID, userID uint, r role.AppRole) error {
+	return bs.rs.AssignRole(userID, boardID, r)
 }
 
 func (bs *BoardService) InviteUserToBoard(boardID uint, email string, roleName string) error {
@@ -228,7 +224,7 @@ func (bs *BoardService) InviteUserToBoard(boardID uint, email string, roleName s
 }
 
 func (bs *BoardService) GetPendingInvites(userID uint, boardID uint) ([]models.BoardInvite, error) {
-	can, err := bs.rs.CheckRole(userID, boardID, AdminRole)
+	can, err := bs.rs.CheckRole(userID, boardID, role.AdminRole)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +237,7 @@ func (bs *BoardService) GetPendingInvites(userID uint, boardID uint) ([]models.B
 }
 
 func (bs *BoardService) RemoveUserFromBoard(currentUserID, RequestedUserID, boardID uint) error {
-	can, err := bs.rs.CheckRole(currentUserID, boardID, AdminRole)
+	can, err := bs.rs.CheckRole(currentUserID, boardID, role.AdminRole)
 	if err != nil {
 		return err
 	}
@@ -258,8 +254,8 @@ func (bs *BoardService) RemoveUserFromBoard(currentUserID, RequestedUserID, boar
 	return nil
 }
 
-func (bs *BoardService) ChangeBoardRole(currentUserID, RequestedUserID, boardID uint, role string) error {
-	can, err := bs.rs.CheckRole(currentUserID, boardID, AdminRole)
+func (bs *BoardService) ChangeBoardRole(currentUserID, RequestedUserID, boardID uint, r string) error {
+	can, err := bs.rs.CheckRole(currentUserID, boardID, role.AdminRole)
 	if err != nil {
 		return err
 	}
@@ -268,8 +264,8 @@ func (bs *BoardService) ChangeBoardRole(currentUserID, RequestedUserID, boardID 
 		return errors.New("forbidden")
 	}
 
-	AppRole := AppRole{
-		Name: role,
+	AppRole := role.AppRole{
+		Name: r,
 	}
 
 	err = bs.rs.AssignRole(RequestedUserID, boardID, AppRole)

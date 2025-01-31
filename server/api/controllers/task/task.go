@@ -6,7 +6,9 @@ import (
 	"server/database/repository"
 	"server/internal/helpers"
 	"server/models"
-	"server/services"
+	"server/services/board"
+	"server/services/role"
+	"server/services/task"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -14,13 +16,13 @@ import (
 
 type TaskController struct {
 	db *repository.Database
-	ts *services.TaskService
-	rs *services.RoleService
-	bs *services.BoardService
+	ts *task.TaskService
+	rs *role.RoleService
+	bs *board.BoardService
 	hs *helpers.HelperService
 }
 
-func NewTaskController(db *repository.Database, ts *services.TaskService, rs *services.RoleService, bs *services.BoardService, hs *helpers.HelperService) *TaskController {
+func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService) *TaskController {
 	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs}
 }
 
@@ -51,7 +53,7 @@ func (tc *TaskController) CreateTask(c *gin.Context) {
 		return
 	}
 
-	task, err := tc.ts.CreateTask(user.ID, services.CreateTaskRequest{
+	task, err := tc.ts.CreateTask(user.ID, task.CreateTaskRequest{
 		ParentTaskID: request.ParentTaskID,
 		BoardID:      request.BoardID,
 		Title:        request.Title,
@@ -183,7 +185,7 @@ func (tc *TaskController) MoveTask(c *gin.Context) {
 		return
 	}
 
-	task, err := tc.ts.MoveTask(user.ID, services.MoveTaskRequest{
+	task, err := tc.ts.MoveTask(user.ID, task.MoveTaskRequest{
 		TaskID:     request.TaskID,
 		ColumnID:   request.ColumnID,
 		SwimlaneID: request.SwimlaneID,

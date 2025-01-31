@@ -4,19 +4,20 @@ import (
 	"net/http"
 	"server/database/repository"
 	"server/internal/helpers"
-	"server/services"
+	"server/services/column"
+	"server/services/role"
 
 	"github.com/gin-gonic/gin"
 )
 
 type ColumnController struct {
 	db *repository.Database
-	cs *services.ColumnService
-	rs *services.RoleService
+	cs *column.ColumnService
+	rs *role.RoleService
 	hs *helpers.HelperService
 }
 
-func NewColumnController(db *repository.Database, cs *services.ColumnService, rs *services.RoleService, hs *helpers.HelperService) *ColumnController {
+func NewColumnController(db *repository.Database, cs *column.ColumnService, rs *role.RoleService, hs *helpers.HelperService) *ColumnController {
 	return &ColumnController{db: db, cs: cs, rs: rs, hs: hs}
 }
 

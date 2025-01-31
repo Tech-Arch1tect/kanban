@@ -2,7 +2,7 @@ package board
 
 import (
 	"server/models"
-	"server/services"
+	"server/services/role"
 )
 
 type CreateBoardRequest struct {
@@ -49,5 +49,5 @@ type GetUsersWithAccessToBoardRequest struct {
 }
 
 type GetUsersWithAccessToBoardResponse struct {
-	Users []services.UserWithAppRole `json:"users"`
+	Users []role.UserWithAppRole `json:"users"`
 }

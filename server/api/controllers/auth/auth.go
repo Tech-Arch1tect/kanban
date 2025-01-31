@@ -5,19 +5,19 @@ import (
 	"server/database/repository"
 	"server/internal/helpers"
 	"server/models"
-	"server/services"
+	"server/services/auth"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 type AuthController struct {
-	authService   *services.AuthService
+	authService   *auth.AuthService
 	db            *repository.Database
 	helperService *helpers.HelperService
 }
 
-func NewAuthController(authService *services.AuthService, db *repository.Database, helperService *helpers.HelperService) *AuthController {
+func NewAuthController(authService *auth.AuthService, db *repository.Database, helperService *helpers.HelperService) *AuthController {
 	return &AuthController{authService: authService, db: db, helperService: helperService}
 }
 

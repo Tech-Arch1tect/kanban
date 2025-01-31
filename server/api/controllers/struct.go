@@ -14,7 +14,16 @@ import (
 	"server/config"
 	"server/database/repository"
 	"server/internal/helpers"
-	"server/services"
+
+	admins "server/services/admin"
+	auths "server/services/auth"
+	boards "server/services/board"
+	columns "server/services/column"
+	comments "server/services/comment"
+	roles "server/services/role"
+	settingss "server/services/settings"
+	swimlanes "server/services/swimlane"
+	tasks "server/services/task"
 )
 
 type Controllers struct {
@@ -30,9 +39,9 @@ type Controllers struct {
 	SettingsController   *settings.SettingsController
 }
 
-func NewControllers(cfg *config.Config, authS *services.AuthService, adminS *services.AdminService, db *repository.Database, hs *helpers.HelperService, bs *services.BoardService, rs *services.RoleService, cols *services.ColumnService, ss *services.SwimlaneService, ts *services.TaskService, coms *services.CommentService, settingsS *services.SettingsService) *Controllers {
+func NewControllers(cfg *config.Config, auths *auths.AuthService, adminS *admins.AdminService, db *repository.Database, hs *helpers.HelperService, bs *boards.BoardService, rs *roles.RoleService, cols *columns.ColumnService, ss *swimlanes.SwimlaneService, ts *tasks.TaskService, coms *comments.CommentService, settingsS *settingss.SettingsService) *Controllers {
 	return &Controllers{
-		AuthController:       auth.NewAuthController(authS, db, hs),
+		AuthController:       auth.NewAuthController(auths, db, hs),
 		AdminController:      admin.NewAdminController(adminS),
 		MiscController:       misc.NewMiscController(cfg),
 		BoardController:      board.NewBoardController(bs, rs, db, hs),

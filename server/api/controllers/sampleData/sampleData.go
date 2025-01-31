@@ -6,7 +6,7 @@ import (
 	"server/database/repository"
 	"server/internal/helpers"
 	"server/models"
-	"server/services"
+	"server/services/task"
 
 	"math/rand"
 
@@ -15,11 +15,11 @@ import (
 
 type SampleDataController struct {
 	db *repository.Database
-	ts *services.TaskService
+	ts *task.TaskService
 	hs *helpers.HelperService
 }
 
-func NewSampleDataController(db *repository.Database, ts *services.TaskService, hs *helpers.HelperService) *SampleDataController {
+func NewSampleDataController(db *repository.Database, ts *task.TaskService, hs *helpers.HelperService) *SampleDataController {
 	return &SampleDataController{db: db, ts: ts, hs: hs}
 }
 

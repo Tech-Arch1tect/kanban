@@ -4,19 +4,20 @@ import (
 	"net/http"
 	"server/database/repository"
 	"server/internal/helpers"
-	"server/services"
+	"server/services/comment"
+	"server/services/role"
 
 	"github.com/gin-gonic/gin"
 )
 
 type CommentController struct {
-	cs *services.CommentService
+	cs *comment.CommentService
 	hs *helpers.HelperService
-	rs *services.RoleService
+	rs *role.RoleService
 	db *repository.Database
 }
 
-func NewCommentController(cs *services.CommentService, hs *helpers.HelperService, rs *services.RoleService, db *repository.Database) *CommentController {
+func NewCommentController(cs *comment.CommentService, hs *helpers.HelperService, rs *role.RoleService, db *repository.Database) *CommentController {
 	return &CommentController{cs: cs, hs: hs, rs: rs, db: db}
 }
 

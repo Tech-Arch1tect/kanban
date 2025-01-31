@@ -3,7 +3,7 @@ package admin
 import (
 	"net/http"
 	"server/models"
-	"server/services"
+	"server/services/admin"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -11,10 +11,10 @@ import (
 )
 
 type AdminController struct {
-	adminService *services.AdminService
+	adminService *admin.AdminService
 }
 
-func NewAdminController(adminService *services.AdminService) *AdminController {
+func NewAdminController(adminService *admin.AdminService) *AdminController {
 	return &AdminController{adminService: adminService}
 }
 

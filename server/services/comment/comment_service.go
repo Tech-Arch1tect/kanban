@@ -1,19 +1,20 @@
-package services
+package comment
 
 import (
 	"errors"
 	"server/database/repository"
 	"server/internal/helpers"
 	"server/models"
+	"server/services/role"
 )
 
 type CommentService struct {
 	db *repository.Database
-	rs *RoleService
+	rs *role.RoleService
 	hs *helpers.HelperService
 }
 
-func NewCommentService(db *repository.Database, rs *RoleService, hs *helpers.HelperService) *CommentService {
+func NewCommentService(db *repository.Database, rs *role.RoleService, hs *helpers.HelperService) *CommentService {
 	return &CommentService{db: db, rs: rs, hs: hs}
 }
 
@@ -23,7 +24,7 @@ func (cs *CommentService) CreateComment(userID, taskID uint, text string) (model
 		return models.Comment{}, err
 	}
 
-	can, err := cs.rs.CheckRole(userID, task.BoardID, MemberRole)
+	can, err := cs.rs.CheckRole(userID, task.BoardID, role.MemberRole)
 	if err != nil {
 		return models.Comment{}, err
 	}
@@ -51,7 +52,7 @@ func (cs *CommentService) DeleteComment(userID, commentID uint) (models.Comment,
 		return models.Comment{}, err
 	}
 
-	can, err := cs.rs.CheckRole(userID, comment.Task.BoardID, MemberRole)
+	can, err := cs.rs.CheckRole(userID, comment.Task.BoardID, role.MemberRole)
 	if err != nil {
 		return models.Comment{}, err
 	}
@@ -77,7 +78,7 @@ func (cs *CommentService) EditComment(user *models.User, commentID uint, text st
 		return models.Comment{}, errors.New("forbidden")
 	}
 
-	can, _ := cs.rs.CheckRole(user.ID, comment.Task.BoardID, MemberRole)
+	can, _ := cs.rs.CheckRole(user.ID, comment.Task.BoardID, role.MemberRole)
 	if !can {
 		return models.Comment{}, errors.New("forbidden")
 	}

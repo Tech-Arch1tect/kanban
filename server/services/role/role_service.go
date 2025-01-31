@@ -1,4 +1,4 @@
-package services
+package role
 
 import (
 	"errors"
@@ -125,6 +125,11 @@ func (rs *RoleService) GetRoleByUserAndBoard(userID, boardID uint) (models.Board
 	}
 
 	return role, nil
+}
+
+type UserWithAppRole struct {
+	models.User
+	AppRole string `json:"app_role"`
 }
 
 func (rs *RoleService) GetUsersWithAccessToBoard(boardID uint) ([]UserWithAppRole, error) {

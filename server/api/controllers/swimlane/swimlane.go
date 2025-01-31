@@ -4,19 +4,20 @@ import (
 	"net/http"
 	"server/database/repository"
 	"server/internal/helpers"
-	"server/services"
+	"server/services/role"
+	"server/services/swimlane"
 
 	"github.com/gin-gonic/gin"
 )
 
 type SwimlaneController struct {
 	db *repository.Database
-	cs *services.SwimlaneService
-	rs *services.RoleService
+	cs *swimlane.SwimlaneService
+	rs *role.RoleService
 	hs *helpers.HelperService
 }
 
-func NewSwimlaneController(db *repository.Database, cs *services.SwimlaneService, rs *services.RoleService, hs *helpers.HelperService) *SwimlaneController {
+func NewSwimlaneController(db *repository.Database, cs *swimlane.SwimlaneService, rs *role.RoleService, hs *helpers.HelperService) *SwimlaneController {
 	return &SwimlaneController{db: db, cs: cs, rs: rs, hs: hs}
 }
 

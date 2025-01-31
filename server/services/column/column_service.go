@@ -1,22 +1,23 @@
-package services
+package column
 
 import (
 	"errors"
 	"server/database/repository"
 	"server/models"
+	"server/services/role"
 )
 
 type ColumnService struct {
 	db *repository.Database
-	rs *RoleService
+	rs *role.RoleService
 }
 
-func NewColumnService(db *repository.Database, rs *RoleService) *ColumnService {
+func NewColumnService(db *repository.Database, rs *role.RoleService) *ColumnService {
 	return &ColumnService{db: db, rs: rs}
 }
 
 func (cs *ColumnService) CreateColumn(userID uint, boardID uint, name string) (models.Column, error) {
-	can, err := cs.rs.CheckRole(userID, boardID, AdminRole)
+	can, err := cs.rs.CheckRole(userID, boardID, role.AdminRole)
 	if err != nil {
 		return models.Column{}, err
 	}
@@ -55,7 +56,7 @@ func (cs *ColumnService) DeleteColumn(userID uint, columnID uint) (models.Column
 		return models.Column{}, err
 	}
 
-	can, err := cs.rs.CheckRole(userID, column.BoardID, AdminRole)
+	can, err := cs.rs.CheckRole(userID, column.BoardID, role.AdminRole)
 	if err != nil {
 		return models.Column{}, err
 	}
@@ -78,7 +79,7 @@ func (cs *ColumnService) EditColumn(userID uint, columnID uint, name string) (mo
 		return models.Column{}, err
 	}
 
-	can, err := cs.rs.CheckRole(userID, column.BoardID, AdminRole)
+	can, err := cs.rs.CheckRole(userID, column.BoardID, role.AdminRole)
 	if err != nil {
 		return models.Column{}, err
 	}
@@ -112,7 +113,7 @@ func (cs *ColumnService) MoveColumn(userID uint, columnID uint, relativeID uint,
 		return models.Column{}, errors.New("columns are not on the same board")
 	}
 
-	can, err := cs.rs.CheckRole(userID, column.BoardID, AdminRole)
+	can, err := cs.rs.CheckRole(userID, column.BoardID, role.AdminRole)
 	if err != nil {
 		return models.Column{}, err
 	}
