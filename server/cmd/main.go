@@ -23,6 +23,7 @@ import (
 	"server/services/board"
 	"server/services/column"
 	"server/services/comment"
+	"server/services/notification"
 	"server/services/role"
 	"server/services/settings"
 	"server/services/swimlane"
@@ -52,6 +53,7 @@ type Params struct {
 	EmailS    *email.EmailService
 	Helpers   *helpers.HelperService
 	MW        *middleware.Middleware
+	NotifS    *notification.NotificationService
 }
 
 func NewRouter(p Params) (*gin.Engine, error) {
@@ -86,6 +88,10 @@ func NewRouter(p Params) (*gin.Engine, error) {
 		return nil, fmt.Errorf("failed to seed roles: %w", err)
 	}
 
+	if err := p.NotifS.SeedNotificationEvents(); err != nil {
+		return nil, fmt.Errorf("failed to seed notification events: %w", err)
+	}
+
 	return router, nil
 }
 
@@ -106,8 +112,9 @@ func main() {
 			task.NewTaskService,
 			comment.NewCommentService,
 			settings.NewSettingsService,
+			notification.NewNotificationService,
 		),
-		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware) {
+		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService) {
 			params := Params{
 				Config:    config,
 				DB:        db,
@@ -123,6 +130,7 @@ func main() {
 				EmailS:    emailS,
 				Helpers:   helpers,
 				MW:        mw,
+				NotifS:    notificationS,
 			}
 
 			router, err := NewRouter(params)
