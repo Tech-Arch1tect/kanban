@@ -1,7 +1,11 @@
 package notification
 
 import (
+	"errors"
+	"server/database/repository"
 	"server/models"
+
+	"gorm.io/gorm"
 )
 
 var taskEvents = []string{
@@ -13,7 +17,16 @@ var taskEvents = []string{
 
 func (ns *NotificationService) SeedNotificationEvents() error {
 	for _, event := range taskEvents {
-		ns.db.NotificationEventRepository.Create(&models.NotificationEvent{Name: event})
+		_, err := ns.db.NotificationEventRepository.GetFirst(repository.WithWhere("name = ?", event))
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				if err := ns.db.NotificationEventRepository.Create(&models.NotificationEvent{Name: event}); err != nil {
+					return err
+				}
+			} else {
+				return err
+			}
+		}
 	}
 	return nil
 }
