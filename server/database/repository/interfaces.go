@@ -17,19 +17,22 @@ type Repository[T any] interface {
 }
 
 type Database struct {
-	UserRepository             UserRepository
-	BoardRepository            BoardRepository
-	BoardRoleRepository        BoardRoleRepository
-	SwimlaneRepository         SwimlaneRepository
-	TaskRepository             TaskRepository
-	UserBoardRoleRepository    UserBoardRoleRepository
-	CommentRepository          CommentRepository
-	ColumnRepository           ColumnRepository
-	FileRepository             FileRepository
-	BoardInviteRepository      BoardInviteRepository
-	TaskLinkRepository         TaskLinkRepository
-	TaskExternalLinkRepository TaskExternalLinkRepository
-	SettingsRepository         SettingsRepository
+	UserRepository                      UserRepository
+	BoardRepository                     BoardRepository
+	BoardRoleRepository                 BoardRoleRepository
+	SwimlaneRepository                  SwimlaneRepository
+	TaskRepository                      TaskRepository
+	UserBoardRoleRepository             UserBoardRoleRepository
+	CommentRepository                   CommentRepository
+	ColumnRepository                    ColumnRepository
+	FileRepository                      FileRepository
+	BoardInviteRepository               BoardInviteRepository
+	TaskLinkRepository                  TaskLinkRepository
+	TaskExternalLinkRepository          TaskExternalLinkRepository
+	SettingsRepository                  SettingsRepository
+	NotificationConfigurationRepository NotificationConfigurationRepository
+	NotificationEventRepository         NotificationEventRepository
+	NotificationLogRepository           NotificationLogRepository
 }
 
 func (db *Database) Migrate() error {
@@ -94,6 +97,21 @@ func (db *Database) Migrate() error {
 	}
 
 	err = db.TaskExternalLinkRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.NotificationConfigurationRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.NotificationEventRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.NotificationLogRepository.Migrate()
 	if err != nil {
 		return err
 	}
