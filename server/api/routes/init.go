@@ -51,6 +51,7 @@ func (r *router) RegisterRoutes(engine *gin.Engine) {
 		r.RegisterCommentRoutes(api)
 		r.RegisterSampleDataRoutes(api)
 		r.RegisterSettingsRoutes(api)
+		r.RegisterNotificationRoutes(api)
 	}
 }
 

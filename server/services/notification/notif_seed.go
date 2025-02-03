@@ -15,6 +15,8 @@ var taskEvents = []string{
 	"task.moved",
 }
 
+var AllEvents = taskEvents // TODO: add other events
+
 func (ns *NotificationService) SeedNotificationEvents() error {
 	for _, event := range taskEvents {
 		_, err := ns.db.NotificationEventRepository.GetFirst(repository.WithWhere("name = ?", event))

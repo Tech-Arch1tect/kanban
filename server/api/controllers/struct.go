@@ -7,6 +7,7 @@ import (
 	"server/api/controllers/column"
 	"server/api/controllers/comment"
 	"server/api/controllers/misc"
+	"server/api/controllers/notification"
 	"server/api/controllers/sampleData"
 	"server/api/controllers/settings"
 	"server/api/controllers/swimlane"
@@ -20,6 +21,7 @@ import (
 	boards "server/services/board"
 	columns "server/services/column"
 	comments "server/services/comment"
+	notifs "server/services/notification"
 	roles "server/services/role"
 	settingss "server/services/settings"
 	swimlanes "server/services/swimlane"
@@ -27,29 +29,31 @@ import (
 )
 
 type Controllers struct {
-	AuthController       *auth.AuthController
-	AdminController      *admin.AdminController
-	MiscController       *misc.MiscController
-	BoardController      *board.BoardController
-	ColumnController     *column.ColumnController
-	SwimlaneController   *swimlane.SwimlaneController
-	TaskController       *task.TaskController
-	CommentController    *comment.CommentController
-	SampleDataController *sampleData.SampleDataController
-	SettingsController   *settings.SettingsController
+	AuthController         *auth.AuthController
+	AdminController        *admin.AdminController
+	MiscController         *misc.MiscController
+	BoardController        *board.BoardController
+	ColumnController       *column.ColumnController
+	SwimlaneController     *swimlane.SwimlaneController
+	TaskController         *task.TaskController
+	CommentController      *comment.CommentController
+	SampleDataController   *sampleData.SampleDataController
+	SettingsController     *settings.SettingsController
+	NotificationController *notification.NotificationController
 }
 
-func NewControllers(cfg *config.Config, auths *auths.AuthService, adminS *admins.AdminService, db *repository.Database, hs *helpers.HelperService, bs *boards.BoardService, rs *roles.RoleService, cols *columns.ColumnService, ss *swimlanes.SwimlaneService, ts *tasks.TaskService, coms *comments.CommentService, settingsS *settingss.SettingsService) *Controllers {
+func NewControllers(cfg *config.Config, auths *auths.AuthService, adminS *admins.AdminService, db *repository.Database, hs *helpers.HelperService, bs *boards.BoardService, rs *roles.RoleService, cols *columns.ColumnService, ss *swimlanes.SwimlaneService, ts *tasks.TaskService, coms *comments.CommentService, settingsS *settingss.SettingsService, notifS *notifs.NotificationService) *Controllers {
 	return &Controllers{
-		AuthController:       auth.NewAuthController(auths, db, hs),
-		AdminController:      admin.NewAdminController(adminS),
-		MiscController:       misc.NewMiscController(cfg),
-		BoardController:      board.NewBoardController(bs, rs, db, hs),
-		ColumnController:     column.NewColumnController(db, cols, rs, hs),
-		SwimlaneController:   swimlane.NewSwimlaneController(db, ss, rs, hs),
-		TaskController:       task.NewTaskController(db, ts, rs, bs, hs),
-		CommentController:    comment.NewCommentController(coms, hs, rs, db),
-		SampleDataController: sampleData.NewSampleDataController(db, ts, hs),
-		SettingsController:   settings.NewSettingsController(settingsS, hs),
+		AuthController:         auth.NewAuthController(auths, db, hs),
+		AdminController:        admin.NewAdminController(adminS),
+		MiscController:         misc.NewMiscController(cfg),
+		BoardController:        board.NewBoardController(bs, rs, db, hs),
+		ColumnController:       column.NewColumnController(db, cols, rs, hs),
+		SwimlaneController:     swimlane.NewSwimlaneController(db, ss, rs, hs),
+		TaskController:         task.NewTaskController(db, ts, rs, bs, hs),
+		CommentController:      comment.NewCommentController(coms, hs, rs, db),
+		SampleDataController:   sampleData.NewSampleDataController(db, ts, hs),
+		SettingsController:     settings.NewSettingsController(settingsS, hs),
+		NotificationController: notification.NewNotificationController(notifS, hs),
 	}
 }
