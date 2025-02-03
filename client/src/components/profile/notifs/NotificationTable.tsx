@@ -49,6 +49,9 @@ export const NotificationTable = () => {
                   Boards
                 </th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Only Assignee
+                </th>
+                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
                   Created At
                 </th>
               </tr>
@@ -91,6 +94,9 @@ export const NotificationTable = () => {
                             : ""}
                         </span>
                       ))}
+                  </td>
+                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                    {notification.onlyAssignee ? "Yes" : "No"}
                   </td>
                   <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
                     {notification.createdAt}

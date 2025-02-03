@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useEventData } from "../../../hooks/notifications/useEventData";
 import { useCreateNotificationConfiguration } from "../../../hooks/notifications/useCreateNotificationConfiguration";
 
@@ -9,6 +9,7 @@ export const NotificationForm = () => {
   const [webhookUrl, setWebhookUrl] = useState("");
   const [boards, setBoards] = useState("");
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
+  const [onlyAssignee, setOnlyAssignee] = useState(false);
 
   const {
     data: eventsData,
@@ -41,6 +42,7 @@ export const NotificationForm = () => {
       events: selectedEvents,
       method,
       webhookUrl: method === "webhook" ? webhookUrl : undefined,
+      onlyAssignee,
     };
 
     createNotification(payload);
@@ -170,10 +172,24 @@ export const NotificationForm = () => {
           </fieldset>
         </div>
 
+        <div>
+          <label className="inline-flex items-center text-gray-700 dark:text-gray-300">
+            <input
+              type="checkbox"
+              checked={onlyAssignee}
+              onChange={(e) => setOnlyAssignee(e.target.checked)}
+              className="form-checkbox text-blue-600"
+            />
+            <span className="ml-2">
+              Only notify if I am the assignee of the task
+            </span>
+          </label>
+        </div>
+
         <button
           type="submit"
           disabled={isPending}
-          className={`w-full px-4 py-2 text-white rounded-md transition-colors ${
+          className={`w-full px-4 py-2 text-white rounded-md transition-colours ${
             isPending
               ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
               : "bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800"
