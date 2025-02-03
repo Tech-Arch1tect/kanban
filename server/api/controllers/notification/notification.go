@@ -19,12 +19,13 @@ func NewNotificationController(notificationService *notification.NotificationSer
 }
 
 type CreateNotificationRequest struct {
-	Name       string   `json:"name" binding:"required"`
-	Method     string   `json:"method" binding:"required,oneof=webhook email"`
-	WebhookURL string   `json:"webhook_url"`
-	Email      string   `json:"email"`
-	Events     []string `json:"events" binding:"required"`
-	Boards     []uint   `json:"boards" binding:"required"`
+	Name         string   `json:"name" binding:"required"`
+	Method       string   `json:"method" binding:"required,oneof=webhook email"`
+	WebhookURL   string   `json:"webhook_url"`
+	Email        string   `json:"email"`
+	Events       []string `json:"events" binding:"required"`
+	Boards       []uint   `json:"boards" binding:"required"`
+	OnlyAssignee bool     `json:"only_assignee"`
 }
 
 type CreateNotificationResponse struct {
@@ -58,7 +59,7 @@ func (nc *NotificationController) CreateNotification(c *gin.Context) {
 		return
 	}
 
-	notification, err := nc.notificationService.CreateNotification(&user, request.Name, request.Method, request.WebhookURL, request.Email, request.Events, request.Boards)
+	notification, err := nc.notificationService.CreateNotification(&user, request.Name, request.Method, request.WebhookURL, request.Email, request.Events, request.Boards, request.OnlyAssignee)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

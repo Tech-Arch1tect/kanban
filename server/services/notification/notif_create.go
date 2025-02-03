@@ -7,7 +7,7 @@ import (
 	"server/services/role"
 )
 
-func (ns *NotificationService) CreateNotification(user *models.User, name, method, webhookURL, email string, events []string, boardIDs []uint) (*models.NotificationConfiguration, error) {
+func (ns *NotificationService) CreateNotification(user *models.User, name, method, webhookURL, email string, events []string, boardIDs []uint, onlyAssignee bool) (*models.NotificationConfiguration, error) {
 	if method == "webhook" && webhookURL == "" {
 		return nil, errors.New("webhook URL is required for webhook method")
 	}
@@ -34,13 +34,14 @@ func (ns *NotificationService) CreateNotification(user *models.User, name, metho
 	}
 
 	config := &models.NotificationConfiguration{
-		UserID:     user.ID,
-		Name:       name,
-		Method:     method,
-		WebhookURL: webhookURL,
-		Email:      email,
-		Events:     configEvents,
-		Boards:     boards,
+		UserID:       user.ID,
+		Name:         name,
+		Method:       method,
+		WebhookURL:   webhookURL,
+		Email:        email,
+		Events:       configEvents,
+		Boards:       boards,
+		OnlyAssignee: onlyAssignee,
 	}
 
 	if err := ns.db.NotificationConfigurationRepository.Create(config); err != nil {
