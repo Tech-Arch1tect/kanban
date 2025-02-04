@@ -117,3 +117,47 @@ func (nc *NotificationController) GetNotifications(c *gin.Context) {
 
 	c.JSON(http.StatusOK, GetNotificationsResponse{Notifications: notifications})
 }
+
+type DeleteNotificationRequest struct {
+	ID uint `json:"id" binding:"required"`
+}
+
+type DeleteNotificationResponse struct {
+	ID uint `json:"id"`
+}
+
+// @Summary Delete a notification configuration
+// @Description Delete a notification configuration
+// @Tags notifications
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body DeleteNotificationRequest true "Notification ID"
+// @Success 200 {object} DeleteNotificationResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/notifications/delete [post]
+func (nc *NotificationController) DeleteNotification(c *gin.Context) {
+	var request DeleteNotificationRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := nc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = nc.notificationService.DeleteNotification(&user, request.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, DeleteNotificationResponse(request))
+}

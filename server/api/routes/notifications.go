@@ -11,5 +11,6 @@ func (r *router) RegisterNotificationRoutes(router *gin.RouterGroup) {
 		notification.POST("/create", r.mw.CSRFTokenRequired(), r.cr.NotificationController.CreateNotification)
 		notification.GET("/events", r.cr.NotificationController.GetEvents)
 		notification.GET("/list", r.cr.NotificationController.GetNotifications)
+		notification.POST("/delete", r.mw.CSRFTokenRequired(), r.cr.NotificationController.DeleteNotification)
 	}
 }
