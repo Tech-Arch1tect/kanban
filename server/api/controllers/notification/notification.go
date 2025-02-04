@@ -59,6 +59,11 @@ func (nc *NotificationController) CreateNotification(c *gin.Context) {
 		return
 	}
 
+	if len(request.Boards) == 0 || len(request.Events) == 0 || (request.WebhookURL == "" && request.Email == "") {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Boards, events and (webhook_url or email) are required"})
+		return
+	}
+
 	notification, err := nc.notificationService.CreateNotification(&user, request.Name, request.Method, request.WebhookURL, request.Email, request.Events, request.Boards, request.OnlyAssignee)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
