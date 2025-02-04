@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useEventData } from "../../../hooks/notifications/useEventData";
 import { useCreateNotificationConfiguration } from "../../../hooks/notifications/useCreateNotificationConfiguration";
+import { useBoards } from "../../../hooks/boards/useBoards";
 
 export const NotificationForm = () => {
   const [name, setName] = useState("");
   const [method, setMethod] = useState<"email" | "webhook">("email");
   const [email, setEmail] = useState("");
   const [webhookUrl, setWebhookUrl] = useState("");
-  const [boards, setBoards] = useState("");
+  const [selectedBoards, setSelectedBoards] = useState<number[]>([]);
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [onlyAssignee, setOnlyAssignee] = useState(false);
 
@@ -16,6 +17,9 @@ export const NotificationForm = () => {
     isLoading: eventsLoading,
     error: eventsError,
   } = useEventData();
+
+  const { boards, isLoading: boardsLoading, error: boardsError } = useBoards();
+
   const { mutate: createNotification, isPending } =
     useCreateNotificationConfiguration();
 
@@ -28,16 +32,21 @@ export const NotificationForm = () => {
     }
   };
 
+  const handleBoardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const boardId = parseInt(e.target.value, 10);
+    if (e.target.checked) {
+      setSelectedBoards((prev) => [...prev, boardId]);
+    } else {
+      setSelectedBoards((prev) => prev.filter((id) => id !== boardId));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const boardsArray = boards
-      .split(",")
-      .map((b) => parseInt(b.trim(), 10))
-      .filter((n) => !isNaN(n));
 
     const payload = {
       name,
-      boards: boardsArray,
+      boards: selectedBoards,
       email: method === "email" ? email : undefined,
       events: selectedEvents,
       method,
@@ -65,16 +74,33 @@ export const NotificationForm = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Boards (comma separated IDs):
-          </label>
-          <input
-            type="text"
-            value={boards}
-            onChange={(e) => setBoards(e.target.value)}
-            required
-            className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
-          />
+          <span className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Boards:
+          </span>
+          {boardsLoading && (
+            <p className="text-gray-600 dark:text-gray-400">Loading boards…</p>
+          )}
+          {boardsError && (
+            <p className="text-red-600 dark:text-red-400">
+              Error loading boards.
+            </p>
+          )}
+          {boards &&
+            boards.boards?.map((board) => (
+              <label
+                key={board.id}
+                className="inline-flex items-center mr-4 text-gray-700 dark:text-gray-300"
+              >
+                <input
+                  type="checkbox"
+                  value={board.id}
+                  checked={selectedBoards.includes(board.id as number)}
+                  onChange={handleBoardChange}
+                  className="form-checkbox text-blue-600"
+                />
+                <span className="ml-2">{board.name}</span>
+              </label>
+            ))}
         </div>
 
         <div>
@@ -154,7 +180,7 @@ export const NotificationForm = () => {
             )}
             {eventsData &&
               eventsData.events &&
-              eventsData.events.map((eventType) => (
+              eventsData.events.map((eventType: string) => (
                 <label
                   key={eventType}
                   className="inline-flex items-center mr-4 text-gray-700 dark:text-gray-300"
