@@ -1,5 +1,6 @@
 import React from "react";
 import { useNotificationConfigurationData } from "../../../hooks/notifications/useNotificationConfigurationData";
+import { useDeleteNotificationConfiguration } from "../../../hooks/notifications/useDeleteNotificationConfiguration";
 
 export const NotificationTable = () => {
   const {
@@ -7,6 +8,9 @@ export const NotificationTable = () => {
     isLoading: notificationsLoading,
     error: notificationsError,
   } = useNotificationConfigurationData();
+
+  const { mutate: deleteNotification, isPending: deleting } =
+    useDeleteNotificationConfiguration();
 
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm dark:shadow-md">
@@ -54,6 +58,9 @@ export const NotificationTable = () => {
                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
                   Created At
                 </th>
+                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -100,6 +107,17 @@ export const NotificationTable = () => {
                   </td>
                   <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
                     {notification.createdAt}
+                  </td>
+                  <td className="px-4 py-2 text-sm">
+                    <button
+                      className="text-red-600 dark:text-red-400 hover:underline disabled:opacity-50"
+                      onClick={() =>
+                        deleteNotification(notification.id as number)
+                      }
+                      disabled={deleting}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
