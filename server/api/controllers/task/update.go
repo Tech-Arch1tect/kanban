@@ -49,6 +49,8 @@ func (tc *TaskController) UpdateTaskTitle(c *gin.Context) {
 		return
 	}
 
+	tc.te.Publish("task.updated.title", task)
+
 	c.JSON(http.StatusOK, UpdateTaskTitleResponse{Task: task})
 }
 
@@ -93,6 +95,8 @@ func (tc *TaskController) UpdateTaskDescription(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	tc.te.Publish("task.updated.description", task)
 
 	c.JSON(http.StatusOK, UpdateTaskDescriptionResponse{Task: task})
 }
@@ -139,6 +143,8 @@ func (tc *TaskController) UpdateTaskStatus(c *gin.Context) {
 		return
 	}
 
+	tc.te.Publish("task.updated.status", task)
+
 	c.JSON(http.StatusOK, UpdateTaskStatusResponse{Task: task})
 }
 
@@ -183,6 +189,8 @@ func (tc *TaskController) UpdateTaskAssignee(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	tc.te.Publish("task.updated.assignee", task)
 
 	c.JSON(http.StatusOK, UpdateTaskAssigneeResponse{Task: task})
 }

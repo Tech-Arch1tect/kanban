@@ -10,7 +10,10 @@ import (
 
 var taskEvents = []string{
 	"task.created",
-	"task.updated",
+	"task.updated.title",
+	"task.updated.description",
+	"task.updated.status",
+	"task.updated.assignee",
 	"task.deleted",
 	"task.moved",
 }
