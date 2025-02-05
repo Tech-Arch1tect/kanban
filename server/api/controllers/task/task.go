@@ -7,6 +7,7 @@ import (
 	"server/internal/helpers"
 	"server/models"
 	"server/services/board"
+	"server/services/eventBus"
 	"server/services/role"
 	"server/services/task"
 	"strings"
@@ -20,10 +21,11 @@ type TaskController struct {
 	rs *role.RoleService
 	bs *board.BoardService
 	hs *helpers.HelperService
+	te *eventBus.EventBus[models.Task]
 }
 
-func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService) *TaskController {
-	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs}
+func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService, te *eventBus.EventBus[models.Task]) *TaskController {
+	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs, te: te}
 }
 
 // @Summary Create a task
@@ -72,6 +74,8 @@ func (tc *TaskController) CreateTask(c *gin.Context) {
 		return
 	}
 
+	tc.te.Publish("task.created", task)
+
 	c.JSON(http.StatusOK, CreateTaskResponse{Task: task})
 }
 
@@ -113,6 +117,8 @@ func (tc *TaskController) DeleteTask(c *gin.Context) {
 		}
 		return
 	}
+
+	tc.te.Publish("task.deleted", task)
 
 	c.JSON(http.StatusOK, DeleteTaskResponse{Task: task})
 }
@@ -201,6 +207,8 @@ func (tc *TaskController) MoveTask(c *gin.Context) {
 		}
 		return
 	}
+
+	tc.te.Publish("task.moved", task)
 
 	c.JSON(http.StatusOK, MoveTaskResponse{Task: task})
 }

@@ -18,11 +18,13 @@ import (
 	"server/database/repository"
 	"server/internal/email"
 	"server/internal/helpers"
+	"server/models"
 	"server/services/admin"
 	"server/services/auth"
 	"server/services/board"
 	"server/services/column"
 	"server/services/comment"
+	"server/services/eventBus"
 	"server/services/notification"
 	"server/services/role"
 	"server/services/settings"
@@ -39,21 +41,22 @@ import (
 
 type Params struct {
 	fx.In
-	Config    *config.Config
-	DB        *repository.Database
-	AuthS     *auth.AuthService
-	AdminS    *admin.AdminService
-	RoleS     *role.RoleService
-	BoardS    *board.BoardService
-	ColumnS   *column.ColumnService
-	SwimlaneS *swimlane.SwimlaneService
-	TaskS     *task.TaskService
-	CommentS  *comment.CommentService
-	SettingsS *settings.SettingsService
-	EmailS    *email.EmailService
-	Helpers   *helpers.HelperService
-	MW        *middleware.Middleware
-	NotifS    *notification.NotificationService
+	Config       *config.Config
+	DB           *repository.Database
+	AuthS        *auth.AuthService
+	AdminS       *admin.AdminService
+	RoleS        *role.RoleService
+	BoardS       *board.BoardService
+	ColumnS      *column.ColumnService
+	SwimlaneS    *swimlane.SwimlaneService
+	TaskS        *task.TaskService
+	CommentS     *comment.CommentService
+	SettingsS    *settings.SettingsService
+	EmailS       *email.EmailService
+	Helpers      *helpers.HelperService
+	MW           *middleware.Middleware
+	NotifS       *notification.NotificationService
+	TaskEventBus *eventBus.EventBus[models.Task]
 }
 
 func NewRouter(p Params) (*gin.Engine, error) {
@@ -79,7 +82,7 @@ func NewRouter(p Params) (*gin.Engine, error) {
 	router.Use(sessionMiddleware)
 	router.Use(p.MW.EnsureCSRFTokenExistsInSession())
 
-	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS, p.SettingsS, p.NotifS)
+	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS, p.SettingsS, p.NotifS, p.TaskEventBus)
 	appRouter := routes.NewRouter(controllers, p.Config, p.DB, p.MW)
 
 	appRouter.RegisterRoutes(router)
@@ -113,24 +116,26 @@ func main() {
 			comment.NewCommentService,
 			settings.NewSettingsService,
 			notification.NewNotificationService,
+			eventBus.NewTaskEventBus,
 		),
-		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService) {
+		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService, taskEventBus *eventBus.EventBus[models.Task]) {
 			params := Params{
-				Config:    config,
-				DB:        db,
-				AuthS:     authS,
-				AdminS:    adminS,
-				RoleS:     roleS,
-				BoardS:    boardS,
-				ColumnS:   columnS,
-				SwimlaneS: swimlaneS,
-				TaskS:     taskS,
-				CommentS:  commentS,
-				SettingsS: settingsS,
-				EmailS:    emailS,
-				Helpers:   helpers,
-				MW:        mw,
-				NotifS:    notificationS,
+				Config:       config,
+				DB:           db,
+				AuthS:        authS,
+				AdminS:       adminS,
+				RoleS:        roleS,
+				BoardS:       boardS,
+				ColumnS:      columnS,
+				SwimlaneS:    swimlaneS,
+				TaskS:        taskS,
+				CommentS:     commentS,
+				SettingsS:    settingsS,
+				EmailS:       emailS,
+				Helpers:      helpers,
+				MW:           mw,
+				NotifS:       notificationS,
+				TaskEventBus: taskEventBus,
 			}
 
 			router, err := NewRouter(params)
