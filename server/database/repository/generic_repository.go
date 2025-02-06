@@ -103,3 +103,9 @@ func WithCustom(f func(*gorm.DB) *gorm.DB) QueryOption {
 		return f(db)
 	}
 }
+
+func WithJoin(join string) QueryOption {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Joins(join)
+	}
+}
