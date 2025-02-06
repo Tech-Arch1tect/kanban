@@ -1,7 +1,9 @@
 package eventBus
 
-type Handler[T any] func(data T)
-type GlobalHandler[T any] func(event string, data T)
+import "server/models"
+
+type Handler[T any] func(data T, user models.User)
+type GlobalHandler[T any] func(event string, data T, user models.User)
 
 type EventBus[T any] struct {
 	handlers       map[string][]Handler[T]
@@ -23,13 +25,13 @@ func (eb *EventBus[T]) SubscribeGlobal(handler GlobalHandler[T]) {
 	eb.globalHandlers = append(eb.globalHandlers, handler)
 }
 
-func (eb *EventBus[T]) Publish(event string, data T) {
+func (eb *EventBus[T]) Publish(event string, data T, user models.User) {
 	if handlers, found := eb.handlers[event]; found {
 		for _, handler := range handlers {
-			handler(data)
+			handler(data, user)
 		}
 	}
 	for _, handler := range eb.globalHandlers {
-		handler(event, data)
+		handler(event, data, user)
 	}
 }
