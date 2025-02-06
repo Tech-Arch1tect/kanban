@@ -8,54 +8,55 @@ import (
 	"server/models"
 )
 
-func (ns *NotificationSubscriber) HandleTaskEvent(event string, task models.Task) {
-	sendErr := ns.SendTaskNotifications(task, event)
+func (ns *NotificationSubscriber) HandleTaskEvent(event string, task models.Task, user models.User) {
+	sendErr := ns.SendTaskNotifications(task, event, user)
 	if sendErr != nil {
 		log.Println("Error sending task notifications:", sendErr)
 	}
 }
 
-func (ns *NotificationSubscriber) GetTaskGenericTemplate(event string, task models.Task) (string, string) {
+func (ns *NotificationSubscriber) GetTaskGenericTemplate(event string, task models.Task, user models.User) (string, string) {
+	body := "@" + user.Username + " has "
 	switch event {
 	case "task.created":
 		subject := fmt.Sprintf("New Task Created: %s", task.Title)
-		body := fmt.Sprintf("A new task has been created.\n\nTitle: %s\nDescription: %s\nStatus: %s", task.Title, task.Description, task.Status)
+		body = body + fmt.Sprintf("created a new task.\n\nTitle: %s\nDescription: %s\nStatus: %s", task.Title, task.Description, task.Status)
 		return subject, body
 
 	case "task.updated.title":
 		subject := "Task Updated: Title Changed"
-		body := fmt.Sprintf("The title for task (ID: %d) has been updated.\n\nNew Title: %s", task.ID, task.Title)
+		body = body + fmt.Sprintf("updated the title for task (ID: %d) has been updated.\n\nNew Title: %s", task.ID, task.Title)
 		return subject, body
 
 	case "task.updated.description":
 		subject := "Task Updated: Description Changed"
-		body := fmt.Sprintf("The description for task (ID: %d) has been updated.\n\nTitle: %s\nNew Description: %s", task.ID, task.Title, task.Description)
+		body = body + fmt.Sprintf("updated the description for task (ID: %d) has been updated.\n\nTitle: %s\nNew Description: %s", task.ID, task.Title, task.Description)
 		return subject, body
 
 	case "task.updated.status":
 		subject := "Task Updated: Status Changed"
-		body := fmt.Sprintf("The status for task (ID: %d) has been updated.\n\nTitle: %s\nNew Status: %s", task.ID, task.Title, task.Status)
+		body = body + fmt.Sprintf("updated the status for task (ID: %d) has been updated.\n\nTitle: %s\nNew Status: %s", task.ID, task.Title, task.Status)
 		return subject, body
 
 	case "task.updated.assignee":
 		subject := "Task Updated: Assignee Changed"
-		body := fmt.Sprintf("The assignee for task (ID: %d) has been updated.\n\nTitle: %s\nNew Assignee: %s", task.ID, task.Title, task.Assignee.Username)
+		body = body + fmt.Sprintf("updated the assignee for task (ID: %d) has been updated.\n\nTitle: %s\nNew Assignee: %s", task.ID, task.Title, task.Assignee.Username)
 		return subject, body
 
 	case "task.deleted":
 		subject := fmt.Sprintf("Task Deleted: %s", task.Title)
-		body := fmt.Sprintf("The following task has been deleted:\n\nTitle: %s\nDescription: %s", task.Title, task.Description)
+		body = body + fmt.Sprintf("deleted the following task:\n\nTitle: %s\nDescription: %s", task.Title, task.Description)
 		return subject, body
 
 	case "task.moved":
 		subject := fmt.Sprintf("Task Moved: %s", task.Title)
-		body := fmt.Sprintf("The task has been moved to a new location.\n\nTitle: %s\nNew Board: %s\nNew Column: %s\nNew Swimlane: %s", task.Title, task.Board.Name, task.Column.Name, task.Swimlane.Name)
+		body = body + fmt.Sprintf("moved task (ID: %d) to a new location.\n\nTitle: %s\nNew Board: %s\nNew Column: %s\nNew Swimlane: %s", task.ID, task.Title, task.Board.Name, task.Column.Name, task.Swimlane.Name)
 		return subject, body
 
 	default:
 		// Fallback for unknown events
 		subject := "Task Notification"
-		body := fmt.Sprintf("An event (%s) occurred for task (ID: %d).", event, task.ID)
+		body = body + fmt.Sprintf(" Has triggered an unknown task notification event (%s) occurred for task (ID: %d).", event, task.ID)
 		return subject, body
 	}
 }
@@ -69,7 +70,7 @@ func (ns *NotificationSubscriber) GatherTaskNotificationConfigurations(task mode
 	)
 }
 
-func (ns *NotificationSubscriber) SendTaskNotifications(task models.Task, event string) error {
+func (ns *NotificationSubscriber) SendTaskNotifications(task models.Task, event string, user models.User) error {
 	errRes := make([]error, 0)
 	configs, err := ns.GatherTaskNotificationConfigurations(task, event)
 	if err != nil {
@@ -87,7 +88,7 @@ func (ns *NotificationSubscriber) SendTaskNotifications(task models.Task, event 
 			}
 		}
 
-		subject, body := ns.GetTaskGenericTemplate(event, task)
+		subject, body := ns.GetTaskGenericTemplate(event, task, user)
 		err := ns.SendNotification(event, subject, body, config)
 		if err != nil {
 			// dont stop sending notifications just because of one failed one

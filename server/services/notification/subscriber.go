@@ -22,7 +22,7 @@ func NewNotificationSubscriber(te *eventBus.EventBus[models.Task], db *repositor
 }
 
 func (ns *NotificationSubscriber) Subscribe() {
-	ns.te.SubscribeGlobal(func(event string, task models.Task) {
-		ns.HandleTaskEvent(event, task)
+	ns.te.SubscribeGlobal(func(event string, task models.Task, user models.User) {
+		ns.HandleTaskEvent(event, task, user)
 	})
 }

@@ -74,7 +74,7 @@ func (tc *TaskController) CreateTask(c *gin.Context) {
 		return
 	}
 
-	tc.te.Publish("task.created", task)
+	tc.te.Publish("task.created", task, user)
 
 	c.JSON(http.StatusOK, CreateTaskResponse{Task: task})
 }
@@ -118,7 +118,7 @@ func (tc *TaskController) DeleteTask(c *gin.Context) {
 		return
 	}
 
-	tc.te.Publish("task.deleted", task)
+	tc.te.Publish("task.deleted", task, user)
 
 	c.JSON(http.StatusOK, DeleteTaskResponse{Task: task})
 }
@@ -208,7 +208,7 @@ func (tc *TaskController) MoveTask(c *gin.Context) {
 		return
 	}
 
-	tc.te.Publish("task.moved", task)
+	tc.te.Publish("task.moved", task, user)
 
 	c.JSON(http.StatusOK, MoveTaskResponse{Task: task})
 }
