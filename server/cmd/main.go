@@ -41,22 +41,23 @@ import (
 
 type Params struct {
 	fx.In
-	Config       *config.Config
-	DB           *repository.Database
-	AuthS        *auth.AuthService
-	AdminS       *admin.AdminService
-	RoleS        *role.RoleService
-	BoardS       *board.BoardService
-	ColumnS      *column.ColumnService
-	SwimlaneS    *swimlane.SwimlaneService
-	TaskS        *task.TaskService
-	CommentS     *comment.CommentService
-	SettingsS    *settings.SettingsService
-	EmailS       *email.EmailService
-	Helpers      *helpers.HelperService
-	MW           *middleware.Middleware
-	NotifS       *notification.NotificationService
-	TaskEventBus *eventBus.EventBus[models.Task]
+	Config          *config.Config
+	DB              *repository.Database
+	AuthS           *auth.AuthService
+	AdminS          *admin.AdminService
+	RoleS           *role.RoleService
+	BoardS          *board.BoardService
+	ColumnS         *column.ColumnService
+	SwimlaneS       *swimlane.SwimlaneService
+	TaskS           *task.TaskService
+	CommentS        *comment.CommentService
+	SettingsS       *settings.SettingsService
+	EmailS          *email.EmailService
+	Helpers         *helpers.HelperService
+	MW              *middleware.Middleware
+	NotifS          *notification.NotificationService
+	TaskEventBus    *eventBus.EventBus[models.Task]
+	NotifSubscriber *notification.NotificationSubscriber
 }
 
 func NewRouter(p Params) (*gin.Engine, error) {
@@ -117,25 +118,27 @@ func main() {
 			settings.NewSettingsService,
 			notification.NewNotificationService,
 			eventBus.NewTaskEventBus,
+			notification.NewNotificationSubscriber,
 		),
-		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService, taskEventBus *eventBus.EventBus[models.Task]) {
+		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService, taskEventBus *eventBus.EventBus[models.Task], notificationSubscriber *notification.NotificationSubscriber) {
 			params := Params{
-				Config:       config,
-				DB:           db,
-				AuthS:        authS,
-				AdminS:       adminS,
-				RoleS:        roleS,
-				BoardS:       boardS,
-				ColumnS:      columnS,
-				SwimlaneS:    swimlaneS,
-				TaskS:        taskS,
-				CommentS:     commentS,
-				SettingsS:    settingsS,
-				EmailS:       emailS,
-				Helpers:      helpers,
-				MW:           mw,
-				NotifS:       notificationS,
-				TaskEventBus: taskEventBus,
+				Config:          config,
+				DB:              db,
+				AuthS:           authS,
+				AdminS:          adminS,
+				RoleS:           roleS,
+				BoardS:          boardS,
+				ColumnS:         columnS,
+				SwimlaneS:       swimlaneS,
+				TaskS:           taskS,
+				CommentS:        commentS,
+				SettingsS:       settingsS,
+				EmailS:          emailS,
+				Helpers:         helpers,
+				MW:              mw,
+				NotifS:          notificationS,
+				TaskEventBus:    taskEventBus,
+				NotifSubscriber: notificationSubscriber,
 			}
 
 			router, err := NewRouter(params)
@@ -146,6 +149,7 @@ func main() {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					go func() {
+						notificationSubscriber.Subscribe()
 						if err := router.Run(":8090"); err != nil {
 							log.Fatalf("Server failed to start: %v", err)
 						}
