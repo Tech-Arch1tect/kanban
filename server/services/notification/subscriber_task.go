@@ -88,7 +88,7 @@ func (ns *NotificationSubscriber) SendTaskNotifications(task models.Task, event 
 		}
 
 		subject, body := ns.GetTaskGenericTemplate(event, task)
-		err := ns.SendNotification(subject, body, config)
+		err := ns.SendNotification(event, subject, body, config)
 		if err != nil {
 			// dont stop sending notifications just because of one failed one
 			log.Println("Error sending notification:", err)
