@@ -22,10 +22,11 @@ type TaskController struct {
 	bs *board.BoardService
 	hs *helpers.HelperService
 	te *eventBus.EventBus[models.Task]
+	fe *eventBus.EventBus[models.File]
 }
 
-func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService, te *eventBus.EventBus[models.Task]) *TaskController {
-	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs, te: te}
+func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService, te *eventBus.EventBus[models.Task], fe *eventBus.EventBus[models.File]) *TaskController {
+	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs, te: te, fe: fe}
 }
 
 // @Summary Create a task
@@ -292,6 +293,8 @@ func (tc *TaskController) UploadFile(c *gin.Context) {
 		return
 	}
 
+	tc.fe.Publish("file.created", file, user)
+
 	c.JSON(http.StatusOK, UploadFileResponse{File: file})
 }
 
@@ -448,6 +451,8 @@ func (tc *TaskController) DeleteFile(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	tc.fe.Publish("file.deleted", file, user)
 
 	c.JSON(http.StatusOK, DeleteFileResponse{File: file})
 }
