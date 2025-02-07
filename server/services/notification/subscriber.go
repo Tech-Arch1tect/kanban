@@ -1,6 +1,7 @@
 package notification
 
 import (
+	"server/config"
 	"server/database/repository"
 	"server/internal/email"
 	"server/models"
@@ -11,13 +12,15 @@ type NotificationSubscriber struct {
 	te    *eventBus.EventBus[models.Task]
 	email *email.EmailService
 	db    *repository.Database
+	cfg   *config.Config
 }
 
-func NewNotificationSubscriber(te *eventBus.EventBus[models.Task], db *repository.Database, email *email.EmailService) *NotificationSubscriber {
+func NewNotificationSubscriber(te *eventBus.EventBus[models.Task], db *repository.Database, email *email.EmailService, cfg *config.Config) *NotificationSubscriber {
 	return &NotificationSubscriber{
 		te:    te,
 		email: email,
 		db:    db,
+		cfg:   cfg,
 	}
 }
 

@@ -8,9 +8,9 @@ import (
 	"server/models"
 )
 
-func (ns *NotificationSubscriber) SendNotification(event, subject, body string, notif models.NotificationConfiguration) error {
+func (ns *NotificationSubscriber) SendNotification(event, subject string, data interface{}, notif models.NotificationConfiguration) error {
 	if notif.Method == "email" {
-		err := ns.email.SendPlainText(notif.Email, subject, body)
+		err := ns.email.SendHTMLTemplate(notif.Email, subject, "notification.tmpl", data)
 		if err != nil {
 			return err
 		}
