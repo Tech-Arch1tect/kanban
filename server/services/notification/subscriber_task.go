@@ -21,47 +21,48 @@ func (ns *NotificationSubscriber) GetTaskGenericTemplate(event string, task mode
 	if task.Board.Name != "" {
 		body += "Board: " + task.Board.Name + "<br>"
 	}
-	body += "@" + user.Username + " has "
+	body += "@" + user.Username + " "
 	switch event {
 	case "task.created":
 		subject := fmt.Sprintf("New Task Created: %s", task.Title)
-		body = body + fmt.Sprintf("created a new task.<br>Title: %s<br>Description: %s<br>Status: %s", task.Title, task.Description, task.Status)
+		body += "has created a new task with the following details:<br>"
+		body += fmt.Sprintf("<strong>Title:</strong> %s<br><strong>Description:</strong> %s<br><strong>Status:</strong> %s", task.Title, task.Description, task.Status)
 		return subject, template.HTML(body)
 
 	case "task.updated.title":
-		subject := "Task Updated: Title Changed"
-		body = body + fmt.Sprintf("updated the title for task (ID: %d) has been updated.<br>New Title: %s", task.ID, task.Title)
+		subject := "Task Updated: Title Modified"
+		body += fmt.Sprintf("has updated the title of task (ID: %d).<br><strong>New Title:</strong> %s", task.ID, task.Title)
 		return subject, template.HTML(body)
 
 	case "task.updated.description":
-		subject := "Task Updated: Description Changed"
-		body = body + fmt.Sprintf("updated the description for task (ID: %d) has been updated.<br>Title: %s<br>New Description: %s", task.ID, task.Title, task.Description)
+		subject := "Task Updated: Description Modified"
+		body += fmt.Sprintf("has updated the description of task (ID: %d).<br><strong>Title:</strong> %s<br><strong>New Description:</strong> %s", task.ID, task.Title, task.Description)
 		return subject, template.HTML(body)
 
 	case "task.updated.status":
-		subject := "Task Updated: Status Changed"
-		body = body + fmt.Sprintf("updated the status for task (ID: %d) has been updated.<br>Title: %s<br>New Status: %s", task.ID, task.Title, task.Status)
+		subject := "Task Updated: Status Modified"
+		body += fmt.Sprintf("has updated the status of task (ID: %d).<br><strong>Title:</strong> %s<br><strong>New Status:</strong> %s", task.ID, task.Title, task.Status)
 		return subject, template.HTML(body)
 
 	case "task.updated.assignee":
-		subject := "Task Updated: Assignee Changed"
-		body = body + fmt.Sprintf("updated the assignee for task (ID: %d) has been updated.<br>Title: %s<br>New Assignee: %s", task.ID, task.Title, task.Assignee.Username)
+		subject := "Task Updated: Assignee Modified"
+		body += fmt.Sprintf("has updated the assignee of task (ID: %d).<br><strong>Title:</strong> %s<br><strong>New Assignee:</strong> %s", task.ID, task.Title, task.Assignee.Username)
 		return subject, template.HTML(body)
 
 	case "task.deleted":
 		subject := fmt.Sprintf("Task Deleted: %s", task.Title)
-		body = body + fmt.Sprintf("deleted the following task:<br><br>Title: %s<br>Description: %s", task.Title, task.Description)
+		body += "has deleted the following task:<br><br>"
+		body += fmt.Sprintf("<strong>Title:</strong> %s<br><strong>Description:</strong> %s", task.Title, task.Description)
 		return subject, template.HTML(body)
 
 	case "task.moved":
 		subject := fmt.Sprintf("Task Moved: %s", task.Title)
-		body = body + fmt.Sprintf("moved task (ID: %d) to a new location.<br><br>Title: %s<br>New Board: %s<br>New Column: %s<br>New Swimlane: %s", task.ID, task.Title, task.Board.Name, task.Column.Name, task.Swimlane.Name)
+		body += fmt.Sprintf("has moved task (ID: %d) to a new location.<br><br><strong>Title:</strong> %s<br><strong>New Board:</strong> %s<br><strong>New Column:</strong> %s<br><strong>New Swimlane:</strong> %s", task.ID, task.Title, task.Board.Name, task.Column.Name, task.Swimlane.Name)
 		return subject, template.HTML(body)
 
 	default:
-		// Fallback for unknown events
 		subject := "Task Notification"
-		body = body + fmt.Sprintf(" Has triggered an unknown task notification event (%s) occurred for task (ID: %d).", event, task.ID)
+		body += fmt.Sprintf("has triggered an unrecognised event (%s) for task (ID: %d).", event, task.ID)
 		return subject, template.HTML(body)
 	}
 }
