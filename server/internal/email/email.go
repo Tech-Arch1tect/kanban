@@ -1,6 +1,7 @@
 package email
 
 import (
+	"bytes"
 	"embed"
 	"html/template"
 	"log"
@@ -95,14 +96,17 @@ func (s *EmailService) SendHTMLTemplate(to, subject, tplName string, data interf
 		return err
 	}
 
-	tpl, err := template.ParseFS(tplFS, "templates/"+tplName)
+	tpl, err := template.ParseFS(tplFS, "templates/"+tplName, "templates/emailStyles.tmpl")
 	if err != nil {
 		return err
 	}
 
-	if err := msg.SetBodyHTMLTemplate(tpl, data); err != nil {
+	var bodyBuffer bytes.Buffer
+	if err := tpl.ExecuteTemplate(&bodyBuffer, "main", data); err != nil {
 		return err
 	}
+
+	msg.SetBodyString(mail.TypeTextHTML, bodyBuffer.String())
 
 	log.Println("Sending HTML email to", to, "using template:", tplName)
 	return s.client.DialAndSend(msg)
