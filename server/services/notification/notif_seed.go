@@ -18,10 +18,16 @@ var taskEvents = []string{
 	"task.moved",
 }
 
-var AllEvents = taskEvents // TODO: add other events
+var commentEvents = []string{
+	"comment.created",
+	"comment.updated",
+	"comment.deleted",
+}
+
+var AllEvents = append(taskEvents, commentEvents...) // TODO: add other events
 
 func (ns *NotificationService) SeedNotificationEvents() error {
-	for _, event := range taskEvents {
+	for _, event := range AllEvents {
 		_, err := ns.db.NotificationEventRepository.GetFirst(repository.WithWhere("name = ?", event))
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {

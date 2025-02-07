@@ -44,7 +44,7 @@ type Controllers struct {
 	NotificationController *notification.NotificationController
 }
 
-func NewControllers(cfg *config.Config, auths *auths.AuthService, adminS *admins.AdminService, db *repository.Database, hs *helpers.HelperService, bs *boards.BoardService, rs *roles.RoleService, cols *columns.ColumnService, ss *swimlanes.SwimlaneService, ts *tasks.TaskService, coms *comments.CommentService, settingsS *settingss.SettingsService, notifS *notifs.NotificationService, te *eventBus.EventBus[models.Task]) *Controllers {
+func NewControllers(cfg *config.Config, auths *auths.AuthService, adminS *admins.AdminService, db *repository.Database, hs *helpers.HelperService, bs *boards.BoardService, rs *roles.RoleService, cols *columns.ColumnService, ss *swimlanes.SwimlaneService, ts *tasks.TaskService, coms *comments.CommentService, settingsS *settingss.SettingsService, notifS *notifs.NotificationService, te *eventBus.EventBus[models.Task], ce *eventBus.EventBus[models.Comment]) *Controllers {
 	return &Controllers{
 		AuthController:         auth.NewAuthController(auths, db, hs),
 		AdminController:        admin.NewAdminController(adminS),
@@ -53,7 +53,7 @@ func NewControllers(cfg *config.Config, auths *auths.AuthService, adminS *admins
 		ColumnController:       column.NewColumnController(db, cols, rs, hs),
 		SwimlaneController:     swimlane.NewSwimlaneController(db, ss, rs, hs),
 		TaskController:         task.NewTaskController(db, ts, rs, bs, hs, te),
-		CommentController:      comment.NewCommentController(coms, hs, rs, db),
+		CommentController:      comment.NewCommentController(coms, hs, rs, db, ce),
 		SampleDataController:   sampleData.NewSampleDataController(db, ts, hs),
 		SettingsController:     settings.NewSettingsController(settingsS, hs),
 		NotificationController: notification.NewNotificationController(notifS, hs),
