@@ -161,3 +161,59 @@ func (nc *NotificationController) DeleteNotification(c *gin.Context) {
 
 	c.JSON(http.StatusOK, DeleteNotificationResponse(request))
 }
+
+type UpdateNotificationRequest struct {
+	ID           uint     `json:"id" binding:"required"`
+	Name         string   `json:"name" binding:"required"`
+	Method       string   `json:"method" binding:"required,oneof=webhook email"`
+	WebhookURL   string   `json:"webhook_url"`
+	Email        string   `json:"email"`
+	Events       []string `json:"events" binding:"required"`
+	Boards       []uint   `json:"boards" binding:"required"`
+	OnlyAssignee bool     `json:"only_assignee"`
+}
+
+type UpdateNotificationResponse struct {
+	ID uint `json:"id"`
+}
+
+// @Summary Update a notification configuration
+// @Description Update a notification configuration
+// @Tags notifications
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body UpdateNotificationRequest true "Notification details"
+// @Success 200 {object} UpdateNotificationResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/notifications/update [post]
+func (nc *NotificationController) UpdateNotification(c *gin.Context) {
+	var request UpdateNotificationRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := nc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(request.Boards) == 0 || len(request.Events) == 0 || (request.WebhookURL == "" && request.Email == "") {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Boards, events and (webhook_url or email) are required"})
+		return
+	}
+
+	notif, err := nc.notificationService.UpdateNotification(&user, request.ID, request.Name, request.Method, request.WebhookURL, request.Email, request.Events, request.Boards, request.OnlyAssignee)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, UpdateNotificationResponse{ID: notif.ID})
+}
