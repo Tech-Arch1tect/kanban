@@ -1,8 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { notificationsApi } from "../../lib/api";
 import { toast } from "react-toastify";
 
 export const useDeleteNotificationConfiguration = () => {
+  const queryClient = useQueryClient();
+
   const { mutate, error, isError, isSuccess, data, isPending } = useMutation({
     mutationFn: async (id: number) => {
       return await notificationsApi.apiV1NotificationsDeletePost({
@@ -12,6 +14,7 @@ export const useDeleteNotificationConfiguration = () => {
       });
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
       toast.success("Notification configuration deleted successfully!");
     },
     onError: (error: any) => {
