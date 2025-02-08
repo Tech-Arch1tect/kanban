@@ -30,7 +30,12 @@ var fileEvents = []string{
 	"file.deleted",
 }
 
-var AllEvents = append(append(taskEvents, commentEvents...), fileEvents...) // TODO: add other events
+var linkEvents = []string{
+	"link.created",
+	"link.deleted",
+}
+
+var AllEvents = append(append(append(taskEvents, commentEvents...), fileEvents...), linkEvents...) // TODO: add other events
 
 func (ns *NotificationService) SeedNotificationEvents() error {
 	for _, event := range AllEvents {

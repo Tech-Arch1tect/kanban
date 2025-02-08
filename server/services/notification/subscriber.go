@@ -14,6 +14,7 @@ type NotificationSubscriber struct {
 	te             *eventBus.EventBus[models.Task]
 	ce             *eventBus.EventBus[models.Comment]
 	fe             *eventBus.EventBus[models.File]
+	le             *eventBus.EventBus[models.TaskLinks]
 	email          *email.EmailService
 	db             *repository.Database
 	cfg            *config.Config
@@ -21,11 +22,12 @@ type NotificationSubscriber struct {
 	TaskService    *task.TaskService
 }
 
-func NewNotificationSubscriber(te *eventBus.EventBus[models.Task], ce *eventBus.EventBus[models.Comment], fe *eventBus.EventBus[models.File], db *repository.Database, email *email.EmailService, cfg *config.Config, commentService *comment.CommentService, taskService *task.TaskService) *NotificationSubscriber {
+func NewNotificationSubscriber(te *eventBus.EventBus[models.Task], ce *eventBus.EventBus[models.Comment], fe *eventBus.EventBus[models.File], le *eventBus.EventBus[models.TaskLinks], db *repository.Database, email *email.EmailService, cfg *config.Config, commentService *comment.CommentService, taskService *task.TaskService) *NotificationSubscriber {
 	return &NotificationSubscriber{
 		te:             te,
 		ce:             ce,
 		fe:             fe,
+		le:             le,
 		email:          email,
 		db:             db,
 		cfg:            cfg,
@@ -43,5 +45,8 @@ func (ns *NotificationSubscriber) Subscribe() {
 	})
 	ns.fe.SubscribeGlobal(func(event string, file models.File, user models.User) {
 		ns.HandleFileEvent(event, file, user)
+	})
+	ns.le.SubscribeGlobal(func(event string, link models.TaskLinks, user models.User) {
+		ns.HandleLinkEvent(event, link, user)
 	})
 }

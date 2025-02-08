@@ -23,10 +23,11 @@ type TaskController struct {
 	hs *helpers.HelperService
 	te *eventBus.EventBus[models.Task]
 	fe *eventBus.EventBus[models.File]
+	le *eventBus.EventBus[models.TaskLinks]
 }
 
-func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService, te *eventBus.EventBus[models.Task], fe *eventBus.EventBus[models.File]) *TaskController {
-	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs, te: te, fe: fe}
+func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService, te *eventBus.EventBus[models.Task], fe *eventBus.EventBus[models.File], le *eventBus.EventBus[models.TaskLinks]) *TaskController {
+	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs, te: te, fe: fe, le: le}
 }
 
 // @Summary Create a task
@@ -500,6 +501,8 @@ func (tc *TaskController) CreateTaskLink(c *gin.Context) {
 		return
 	}
 
+	tc.le.Publish("link.created", link, user)
+
 	c.JSON(http.StatusOK, CreateTaskLinkResponse{Link: link})
 }
 
@@ -543,6 +546,8 @@ func (tc *TaskController) DeleteTaskLink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	tc.le.Publish("link.deleted", link, user)
 
 	c.JSON(http.StatusOK, DeleteTaskLinkResponse{Link: link})
 }

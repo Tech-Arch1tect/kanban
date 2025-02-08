@@ -59,6 +59,7 @@ type Params struct {
 	TaskEventBus    *eventBus.EventBus[models.Task]
 	CommentEventBus *eventBus.EventBus[models.Comment]
 	FileEventBus    *eventBus.EventBus[models.File]
+	LinkEventBus    *eventBus.EventBus[models.TaskLinks]
 	NotifSubscriber *notification.NotificationSubscriber
 }
 
@@ -85,7 +86,7 @@ func NewRouter(p Params) (*gin.Engine, error) {
 	router.Use(sessionMiddleware)
 	router.Use(p.MW.EnsureCSRFTokenExistsInSession())
 
-	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS, p.SettingsS, p.NotifS, p.TaskEventBus, p.CommentEventBus, p.FileEventBus)
+	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS, p.SettingsS, p.NotifS, p.TaskEventBus, p.CommentEventBus, p.FileEventBus, p.LinkEventBus)
 	appRouter := routes.NewRouter(controllers, p.Config, p.DB, p.MW)
 
 	appRouter.RegisterRoutes(router)
@@ -122,9 +123,10 @@ func main() {
 			eventBus.NewTaskEventBus,
 			eventBus.NewCommentEventBus,
 			eventBus.NewFileEventBus,
+			eventBus.NewTaskLinkEventBus,
 			notification.NewNotificationSubscriber,
 		),
-		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService, taskEventBus *eventBus.EventBus[models.Task], commentEventBus *eventBus.EventBus[models.Comment], fileEventBus *eventBus.EventBus[models.File], notificationSubscriber *notification.NotificationSubscriber) {
+		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService, taskEventBus *eventBus.EventBus[models.Task], commentEventBus *eventBus.EventBus[models.Comment], fileEventBus *eventBus.EventBus[models.File], linkEventBus *eventBus.EventBus[models.TaskLinks], notificationSubscriber *notification.NotificationSubscriber) {
 			params := Params{
 				Config:          config,
 				DB:              db,
@@ -144,6 +146,7 @@ func main() {
 				TaskEventBus:    taskEventBus,
 				CommentEventBus: commentEventBus,
 				FileEventBus:    fileEventBus,
+				LinkEventBus:    linkEventBus,
 				NotifSubscriber: notificationSubscriber,
 			}
 
