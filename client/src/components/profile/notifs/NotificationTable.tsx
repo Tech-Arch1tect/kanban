@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNotificationConfigurationData } from "../../../hooks/notifications/useNotificationConfigurationData";
 import { useDeleteNotificationConfiguration } from "../../../hooks/notifications/useDeleteNotificationConfiguration";
+import { NotificationEditForm } from "./NotificationEditForm";
+import { friendlyEventNames } from "./friendlyEventNames";
 
 export const NotificationTable = () => {
   const {
@@ -11,22 +13,38 @@ export const NotificationTable = () => {
 
   const { mutate: deleteNotification, isPending: deleting } =
     useDeleteNotificationConfiguration();
+  const [editingNotification, setEditingNotification] = useState<any>(null);
+
+  const handleEdit = (notification: any) => {
+    setEditingNotification(notification);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingNotification(null);
+  };
+
+  const handleUpdated = () => {
+    setEditingNotification(null);
+  };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm dark:shadow-md">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
         Existing Notification Configurations
       </h2>
-      {notificationsLoading && (
-        <p className="text-gray-600 dark:text-gray-400">
-          Loading notifications…
-        </p>
-      )}
+      {notificationsLoading && <p>Loading notifications…</p>}
       {notificationsError && (
-        <p className="text-red-600 dark:text-red-400">
-          Error loading notifications.
-        </p>
+        <p className="text-red-600">Error loading notifications.</p>
       )}
+
+      {editingNotification && (
+        <NotificationEditForm
+          notification={editingNotification}
+          onCancel={handleCancelEdit}
+          onUpdated={handleUpdated}
+        />
+      )}
+
       {notificationsData &&
       notificationsData.notifications &&
       notificationsData.notifications.length > 0 ? (
@@ -64,7 +82,7 @@ export const NotificationTable = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {notificationsData.notifications.map((notification) => (
+              {notificationsData.notifications.map((notification: any) => (
                 <tr key={notification.id}>
                   <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
                     {notification.id}
@@ -82,23 +100,19 @@ export const NotificationTable = () => {
                   </td>
                   <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
                     {notification.events &&
-                      notification.events.map((e, idx) => (
+                      notification.events.map((e: any, idx: number) => (
                         <span key={idx}>
-                          {e.name}
-                          {idx < (notification.events?.length as number) - 1
-                            ? ", "
-                            : ""}
+                          {friendlyEventNames[e.name] || e.name}
+                          {idx < notification.events.length - 1 ? ", " : ""}
                         </span>
                       ))}
                   </td>
                   <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
                     {notification.boards &&
-                      notification.boards.map((board, idx) => (
+                      notification.boards.map((board: any, idx: number) => (
                         <span key={idx}>
                           {board.name}
-                          {idx < (notification.boards?.length as number) - 1
-                            ? ", "
-                            : ""}
+                          {idx < notification.boards.length - 1 ? ", " : ""}
                         </span>
                       ))}
                   </td>
@@ -110,10 +124,14 @@ export const NotificationTable = () => {
                   </td>
                   <td className="px-4 py-2 text-sm">
                     <button
+                      className="mr-2 text-yellow-600 dark:text-yellow-400 hover:underline disabled:opacity-50"
+                      onClick={() => handleEdit(notification)}
+                    >
+                      Edit
+                    </button>
+                    <button
                       className="text-red-600 dark:text-red-400 hover:underline disabled:opacity-50"
-                      onClick={() =>
-                        deleteNotification(notification.id as number)
-                      }
+                      onClick={() => deleteNotification(notification.id)}
                       disabled={deleting}
                     >
                       Delete
