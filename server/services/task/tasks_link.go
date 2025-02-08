@@ -7,6 +7,14 @@ import (
 	"server/services/role"
 )
 
+func (ts *TaskService) GetTaskLink(linkID uint) (models.TaskLinks, error) {
+	link, err := ts.db.TaskLinkRepository.GetByID(linkID, repository.WithPreload("SrcTask"), repository.WithPreload("DstTask"), repository.WithPreload("SrcTask.Board"), repository.WithPreload("DstTask.Board"))
+	if err != nil {
+		return models.TaskLinks{}, err
+	}
+	return link, nil
+}
+
 func (ts *TaskService) CreateTaskLink(userID uint, srcTaskID uint, dstTaskID uint, linkType string) (models.TaskLinks, error) {
 	srcTask, err := ts.db.TaskRepository.GetByID(srcTaskID)
 	if err != nil {
@@ -51,7 +59,7 @@ func (ts *TaskService) CreateTaskLink(userID uint, srcTaskID uint, dstTaskID uin
 }
 
 func (ts *TaskService) DeleteTaskLink(userID uint, linkID uint) (models.TaskLinks, error) {
-	link, err := ts.db.TaskLinkRepository.GetByID(linkID)
+	link, err := ts.db.TaskLinkRepository.GetByID(linkID, repository.WithPreload("SrcTask"), repository.WithPreload("DstTask"), repository.WithPreload("SrcTask.Board"), repository.WithPreload("DstTask.Board"))
 	if err != nil {
 		return models.TaskLinks{}, err
 	}

@@ -18,11 +18,14 @@ import (
 	"server/database/repository"
 	"server/internal/email"
 	"server/internal/helpers"
+	"server/models"
 	"server/services/admin"
 	"server/services/auth"
 	"server/services/board"
 	"server/services/column"
 	"server/services/comment"
+	"server/services/eventBus"
+	"server/services/notification"
 	"server/services/role"
 	"server/services/settings"
 	"server/services/swimlane"
@@ -38,20 +41,27 @@ import (
 
 type Params struct {
 	fx.In
-	Config    *config.Config
-	DB        *repository.Database
-	AuthS     *auth.AuthService
-	AdminS    *admin.AdminService
-	RoleS     *role.RoleService
-	BoardS    *board.BoardService
-	ColumnS   *column.ColumnService
-	SwimlaneS *swimlane.SwimlaneService
-	TaskS     *task.TaskService
-	CommentS  *comment.CommentService
-	SettingsS *settings.SettingsService
-	EmailS    *email.EmailService
-	Helpers   *helpers.HelperService
-	MW        *middleware.Middleware
+	Config               *config.Config
+	DB                   *repository.Database
+	AuthS                *auth.AuthService
+	AdminS               *admin.AdminService
+	RoleS                *role.RoleService
+	BoardS               *board.BoardService
+	ColumnS              *column.ColumnService
+	SwimlaneS            *swimlane.SwimlaneService
+	TaskS                *task.TaskService
+	CommentS             *comment.CommentService
+	SettingsS            *settings.SettingsService
+	EmailS               *email.EmailService
+	Helpers              *helpers.HelperService
+	MW                   *middleware.Middleware
+	NotifS               *notification.NotificationService
+	TaskEventBus         *eventBus.EventBus[models.Task]
+	CommentEventBus      *eventBus.EventBus[models.Comment]
+	FileEventBus         *eventBus.EventBus[models.File]
+	LinkEventBus         *eventBus.EventBus[models.TaskLinks]
+	ExternalLinkEventBus *eventBus.EventBus[models.TaskExternalLink]
+	NotifSubscriber      *notification.NotificationSubscriber
 }
 
 func NewRouter(p Params) (*gin.Engine, error) {
@@ -77,13 +87,17 @@ func NewRouter(p Params) (*gin.Engine, error) {
 	router.Use(sessionMiddleware)
 	router.Use(p.MW.EnsureCSRFTokenExistsInSession())
 
-	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS, p.SettingsS)
+	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS, p.SettingsS, p.NotifS, p.TaskEventBus, p.CommentEventBus, p.FileEventBus, p.LinkEventBus, p.ExternalLinkEventBus)
 	appRouter := routes.NewRouter(controllers, p.Config, p.DB, p.MW)
 
 	appRouter.RegisterRoutes(router)
 
 	if err := p.RoleS.SeedRoles(); err != nil {
 		return nil, fmt.Errorf("failed to seed roles: %w", err)
+	}
+
+	if err := p.NotifS.SeedNotificationEvents(); err != nil {
+		return nil, fmt.Errorf("failed to seed notification events: %w", err)
 	}
 
 	return router, nil
@@ -106,23 +120,37 @@ func main() {
 			task.NewTaskService,
 			comment.NewCommentService,
 			settings.NewSettingsService,
+			notification.NewNotificationService,
+			eventBus.NewTaskEventBus,
+			eventBus.NewCommentEventBus,
+			eventBus.NewFileEventBus,
+			eventBus.NewTaskLinkEventBus,
+			eventBus.NewTaskExternalLinkEventBus,
+			notification.NewNotificationSubscriber,
 		),
-		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware) {
+		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService, taskEventBus *eventBus.EventBus[models.Task], commentEventBus *eventBus.EventBus[models.Comment], fileEventBus *eventBus.EventBus[models.File], linkEventBus *eventBus.EventBus[models.TaskLinks], externalLinkEventBus *eventBus.EventBus[models.TaskExternalLink], notificationSubscriber *notification.NotificationSubscriber) {
 			params := Params{
-				Config:    config,
-				DB:        db,
-				AuthS:     authS,
-				AdminS:    adminS,
-				RoleS:     roleS,
-				BoardS:    boardS,
-				ColumnS:   columnS,
-				SwimlaneS: swimlaneS,
-				TaskS:     taskS,
-				CommentS:  commentS,
-				SettingsS: settingsS,
-				EmailS:    emailS,
-				Helpers:   helpers,
-				MW:        mw,
+				Config:               config,
+				DB:                   db,
+				AuthS:                authS,
+				AdminS:               adminS,
+				RoleS:                roleS,
+				BoardS:               boardS,
+				ColumnS:              columnS,
+				SwimlaneS:            swimlaneS,
+				TaskS:                taskS,
+				CommentS:             commentS,
+				SettingsS:            settingsS,
+				EmailS:               emailS,
+				Helpers:              helpers,
+				MW:                   mw,
+				NotifS:               notificationS,
+				TaskEventBus:         taskEventBus,
+				CommentEventBus:      commentEventBus,
+				FileEventBus:         fileEventBus,
+				LinkEventBus:         linkEventBus,
+				ExternalLinkEventBus: externalLinkEventBus,
+				NotifSubscriber:      notificationSubscriber,
 			}
 
 			router, err := NewRouter(params)
@@ -133,6 +161,7 @@ func main() {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					go func() {
+						notificationSubscriber.Subscribe()
 						if err := router.Run(":8090"); err != nil {
 							log.Fatalf("Server failed to start: %v", err)
 						}

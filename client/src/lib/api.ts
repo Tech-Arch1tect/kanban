@@ -12,6 +12,7 @@ import {
   TasksApi,
   SampleDataApi,
   SettingsApi,
+  NotificationsApi,
 } from "../typescript-fetch-client";
 
 const basePath = import.meta.env.VITE_API_BASE_PATH;
@@ -33,6 +34,7 @@ export const tasksApi = new TasksApi(configuration);
 export const commentsApi = new CommentsApi(configuration);
 export const sampleDataApi = new SampleDataApi(configuration);
 export const settingsApi = new SettingsApi(configuration);
+export const notificationsApi = new NotificationsApi(configuration);
 
 async function GetCSRFToken(): Promise<string | undefined> {
   const response: AuthAuthGetCSRFTokenResponse =

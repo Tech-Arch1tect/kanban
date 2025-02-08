@@ -62,7 +62,7 @@ func saveFileToStorage(path string, data []byte) error {
 }
 
 func (ts *TaskService) GetFile(userID uint, fileID uint) (models.File, []byte, error) {
-	file, err := ts.db.FileRepository.GetByID(fileID, repository.WithPreload("Task"))
+	file, err := ts.db.FileRepository.GetByID(fileID, repository.WithPreload("Task"), repository.WithPreload("UploadedByUser"), repository.WithPreload("Task.Board"))
 	if err != nil {
 		return models.File{}, nil, err
 	}

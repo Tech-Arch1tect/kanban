@@ -7,6 +7,7 @@ import (
 	"server/internal/helpers"
 	"server/models"
 	"server/services/board"
+	"server/services/eventBus"
 	"server/services/role"
 	"server/services/task"
 	"strings"
@@ -15,15 +16,19 @@ import (
 )
 
 type TaskController struct {
-	db *repository.Database
-	ts *task.TaskService
-	rs *role.RoleService
-	bs *board.BoardService
-	hs *helpers.HelperService
+	db  *repository.Database
+	ts  *task.TaskService
+	rs  *role.RoleService
+	bs  *board.BoardService
+	hs  *helpers.HelperService
+	te  *eventBus.EventBus[models.Task]
+	fe  *eventBus.EventBus[models.File]
+	le  *eventBus.EventBus[models.TaskLinks]
+	lee *eventBus.EventBus[models.TaskExternalLink]
 }
 
-func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService) *TaskController {
-	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs}
+func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService, te *eventBus.EventBus[models.Task], fe *eventBus.EventBus[models.File], le *eventBus.EventBus[models.TaskLinks], lee *eventBus.EventBus[models.TaskExternalLink]) *TaskController {
+	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs, te: te, fe: fe, le: le, lee: lee}
 }
 
 // @Summary Create a task
@@ -72,6 +77,8 @@ func (tc *TaskController) CreateTask(c *gin.Context) {
 		return
 	}
 
+	tc.te.Publish("task.created", task, user)
+
 	c.JSON(http.StatusOK, CreateTaskResponse{Task: task})
 }
 
@@ -113,6 +120,8 @@ func (tc *TaskController) DeleteTask(c *gin.Context) {
 		}
 		return
 	}
+
+	tc.te.Publish("task.deleted", task, user)
 
 	c.JSON(http.StatusOK, DeleteTaskResponse{Task: task})
 }
@@ -202,6 +211,8 @@ func (tc *TaskController) MoveTask(c *gin.Context) {
 		return
 	}
 
+	tc.te.Publish("task.moved", task, user)
+
 	c.JSON(http.StatusOK, MoveTaskResponse{Task: task})
 }
 
@@ -283,6 +294,8 @@ func (tc *TaskController) UploadFile(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	tc.fe.Publish("file.created", file, user)
 
 	c.JSON(http.StatusOK, UploadFileResponse{File: file})
 }
@@ -441,6 +454,8 @@ func (tc *TaskController) DeleteFile(c *gin.Context) {
 		return
 	}
 
+	tc.fe.Publish("file.deleted", file, user)
+
 	c.JSON(http.StatusOK, DeleteFileResponse{File: file})
 }
 
@@ -487,6 +502,8 @@ func (tc *TaskController) CreateTaskLink(c *gin.Context) {
 		return
 	}
 
+	tc.le.Publish("link.created", link, user)
+
 	c.JSON(http.StatusOK, CreateTaskLinkResponse{Link: link})
 }
 
@@ -530,6 +547,8 @@ func (tc *TaskController) DeleteTaskLink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	tc.le.Publish("link.deleted", link, user)
 
 	c.JSON(http.StatusOK, DeleteTaskLinkResponse{Link: link})
 }
@@ -630,6 +649,8 @@ func (tc *TaskController) CreateTaskExternalLink(c *gin.Context) {
 		return
 	}
 
+	tc.lee.Publish("externallink.created", link, user)
+
 	c.JSON(http.StatusOK, CreateTaskExternalLinkResponse{Link: link})
 }
 
@@ -676,6 +697,8 @@ func (tc *TaskController) UpdateTaskExternalLink(c *gin.Context) {
 		return
 	}
 
+	tc.lee.Publish("externallink.updated", link, user)
+
 	c.JSON(http.StatusOK, UpdateTaskExternalLinkResponse{Link: link})
 }
 
@@ -715,11 +738,13 @@ func (tc *TaskController) DeleteTaskExternalLink(c *gin.Context) {
 		return
 	}
 
-	taskID, err := tc.ts.DeleteTaskExternalLink(user.ID, request.ID)
+	link, err := tc.ts.DeleteTaskExternalLink(user.ID, request.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, DeleteTaskExternalLinkResponse{TaskID: taskID, Message: "deleted"})
+	tc.lee.Publish("externallink.deleted", link, user)
+
+	c.JSON(http.StatusOK, DeleteTaskExternalLinkResponse{TaskID: link.TaskID, Message: "deleted"})
 }

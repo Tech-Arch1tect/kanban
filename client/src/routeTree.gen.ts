@@ -18,6 +18,7 @@ import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
 import { Route as TaskIdImport } from './routes/task/$id'
 import { Route as ProfileProfileImport } from './routes/profile/profile'
+import { Route as ProfileNotificationsImport } from './routes/profile/notifications'
 import { Route as Profile2faImport } from './routes/profile/2fa'
 import { Route as BoardsSlugImport } from './routes/boards/$slug'
 import { Route as AdminUsersImport } from './routes/admin/users'
@@ -65,6 +66,12 @@ const TaskIdRoute = TaskIdImport.update({
 const ProfileProfileRoute = ProfileProfileImport.update({
   id: '/profile/profile',
   path: '/profile/profile',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ProfileNotificationsRoute = ProfileNotificationsImport.update({
+  id: '/profile/notifications',
+  path: '/profile/notifications',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -165,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Profile2faImport
       parentRoute: typeof rootRoute
     }
+    '/profile/notifications': {
+      id: '/profile/notifications'
+      path: '/profile/notifications'
+      fullPath: '/profile/notifications'
+      preLoaderRoute: typeof ProfileNotificationsImport
+      parentRoute: typeof rootRoute
+    }
     '/profile/profile': {
       id: '/profile/profile'
       path: '/profile/profile'
@@ -201,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AdminUsersRoute
   '/boards/$slug': typeof BoardsSlugRoute
   '/profile/2fa': typeof Profile2faRoute
+  '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/profile': typeof ProfileProfileRoute
   '/task/$id': typeof TaskIdRoute
   '/boards/administrate/$boardId': typeof BoardsAdministrateBoardIdRoute
@@ -216,6 +231,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AdminUsersRoute
   '/boards/$slug': typeof BoardsSlugRoute
   '/profile/2fa': typeof Profile2faRoute
+  '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/profile': typeof ProfileProfileRoute
   '/task/$id': typeof TaskIdRoute
   '/boards/administrate/$boardId': typeof BoardsAdministrateBoardIdRoute
@@ -232,6 +248,7 @@ export interface FileRoutesById {
   '/admin/users': typeof AdminUsersRoute
   '/boards/$slug': typeof BoardsSlugRoute
   '/profile/2fa': typeof Profile2faRoute
+  '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/profile': typeof ProfileProfileRoute
   '/task/$id': typeof TaskIdRoute
   '/boards/administrate/$boardId': typeof BoardsAdministrateBoardIdRoute
@@ -249,6 +266,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/boards/$slug'
     | '/profile/2fa'
+    | '/profile/notifications'
     | '/profile/profile'
     | '/task/$id'
     | '/boards/administrate/$boardId'
@@ -263,6 +281,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/boards/$slug'
     | '/profile/2fa'
+    | '/profile/notifications'
     | '/profile/profile'
     | '/task/$id'
     | '/boards/administrate/$boardId'
@@ -277,6 +296,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/boards/$slug'
     | '/profile/2fa'
+    | '/profile/notifications'
     | '/profile/profile'
     | '/task/$id'
     | '/boards/administrate/$boardId'
@@ -293,6 +313,7 @@ export interface RootRouteChildren {
   AdminUsersRoute: typeof AdminUsersRoute
   BoardsSlugRoute: typeof BoardsSlugRoute
   Profile2faRoute: typeof Profile2faRoute
+  ProfileNotificationsRoute: typeof ProfileNotificationsRoute
   ProfileProfileRoute: typeof ProfileProfileRoute
   TaskIdRoute: typeof TaskIdRoute
   BoardsAdministrateBoardIdRoute: typeof BoardsAdministrateBoardIdRoute
@@ -308,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminUsersRoute: AdminUsersRoute,
   BoardsSlugRoute: BoardsSlugRoute,
   Profile2faRoute: Profile2faRoute,
+  ProfileNotificationsRoute: ProfileNotificationsRoute,
   ProfileProfileRoute: ProfileProfileRoute,
   TaskIdRoute: TaskIdRoute,
   BoardsAdministrateBoardIdRoute: BoardsAdministrateBoardIdRoute,
@@ -332,6 +354,7 @@ export const routeTree = rootRoute
         "/admin/users",
         "/boards/$slug",
         "/profile/2fa",
+        "/profile/notifications",
         "/profile/profile",
         "/task/$id",
         "/boards/administrate/$boardId"
@@ -363,6 +386,9 @@ export const routeTree = rootRoute
     },
     "/profile/2fa": {
       "filePath": "profile/2fa.tsx"
+    },
+    "/profile/notifications": {
+      "filePath": "profile/notifications.tsx"
     },
     "/profile/profile": {
       "filePath": "profile/profile.tsx"

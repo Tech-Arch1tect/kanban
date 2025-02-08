@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"server/database/repository"
 	"server/internal/helpers"
+	"server/models"
 	"server/services/comment"
+	"server/services/eventBus"
 	"server/services/role"
 
 	"github.com/gin-gonic/gin"
@@ -15,10 +17,11 @@ type CommentController struct {
 	hs *helpers.HelperService
 	rs *role.RoleService
 	db *repository.Database
+	ce *eventBus.EventBus[models.Comment]
 }
 
-func NewCommentController(cs *comment.CommentService, hs *helpers.HelperService, rs *role.RoleService, db *repository.Database) *CommentController {
-	return &CommentController{cs: cs, hs: hs, rs: rs, db: db}
+func NewCommentController(cs *comment.CommentService, hs *helpers.HelperService, rs *role.RoleService, db *repository.Database, ce *eventBus.EventBus[models.Comment]) *CommentController {
+	return &CommentController{cs: cs, hs: hs, rs: rs, db: db, ce: ce}
 }
 
 // @Summary Create a comment
@@ -57,6 +60,8 @@ func (cc *CommentController) CreateComment(c *gin.Context) {
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
+
+	cc.ce.Publish("comment.created", comment, user)
 
 	c.JSON(http.StatusOK, CreateCommentResponse{Comment: comment})
 }
@@ -100,6 +105,8 @@ func (cc *CommentController) DeleteComment(c *gin.Context) {
 		return
 	}
 
+	cc.ce.Publish("comment.deleted", comment, user)
+
 	c.JSON(http.StatusOK, DeleteCommentResponse{Comment: comment})
 }
 
@@ -141,6 +148,8 @@ func (cc *CommentController) EditComment(c *gin.Context) {
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
+
+	cc.ce.Publish("comment.updated", comment, user)
 
 	c.JSON(http.StatusOK, EditCommentResponse{Comment: comment})
 }

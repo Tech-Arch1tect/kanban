@@ -1,0 +1,21 @@
+{{define "main"}}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ .subject }}</title>
+    {{ template "emailStyles" . }}
+  </head>
+  <body>
+    <div class="container">
+      <h1>{{ .subject }}</h1>
+      <p>{{ .body }}</p>
+      {{ if .taskId }}
+      <a href="{{ .appUrl }}/task/{{ .taskId }}" class="btn">
+        View Task {{ if .taskTitle }}({{ .taskTitle }}){{ end }}
+      </a>
+      {{ end }}
+    </div>
+  </body>
+</html>
+{{end}}
