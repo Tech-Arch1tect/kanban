@@ -41,26 +41,27 @@ import (
 
 type Params struct {
 	fx.In
-	Config          *config.Config
-	DB              *repository.Database
-	AuthS           *auth.AuthService
-	AdminS          *admin.AdminService
-	RoleS           *role.RoleService
-	BoardS          *board.BoardService
-	ColumnS         *column.ColumnService
-	SwimlaneS       *swimlane.SwimlaneService
-	TaskS           *task.TaskService
-	CommentS        *comment.CommentService
-	SettingsS       *settings.SettingsService
-	EmailS          *email.EmailService
-	Helpers         *helpers.HelperService
-	MW              *middleware.Middleware
-	NotifS          *notification.NotificationService
-	TaskEventBus    *eventBus.EventBus[models.Task]
-	CommentEventBus *eventBus.EventBus[models.Comment]
-	FileEventBus    *eventBus.EventBus[models.File]
-	LinkEventBus    *eventBus.EventBus[models.TaskLinks]
-	NotifSubscriber *notification.NotificationSubscriber
+	Config               *config.Config
+	DB                   *repository.Database
+	AuthS                *auth.AuthService
+	AdminS               *admin.AdminService
+	RoleS                *role.RoleService
+	BoardS               *board.BoardService
+	ColumnS              *column.ColumnService
+	SwimlaneS            *swimlane.SwimlaneService
+	TaskS                *task.TaskService
+	CommentS             *comment.CommentService
+	SettingsS            *settings.SettingsService
+	EmailS               *email.EmailService
+	Helpers              *helpers.HelperService
+	MW                   *middleware.Middleware
+	NotifS               *notification.NotificationService
+	TaskEventBus         *eventBus.EventBus[models.Task]
+	CommentEventBus      *eventBus.EventBus[models.Comment]
+	FileEventBus         *eventBus.EventBus[models.File]
+	LinkEventBus         *eventBus.EventBus[models.TaskLinks]
+	ExternalLinkEventBus *eventBus.EventBus[models.TaskExternalLink]
+	NotifSubscriber      *notification.NotificationSubscriber
 }
 
 func NewRouter(p Params) (*gin.Engine, error) {
@@ -86,7 +87,7 @@ func NewRouter(p Params) (*gin.Engine, error) {
 	router.Use(sessionMiddleware)
 	router.Use(p.MW.EnsureCSRFTokenExistsInSession())
 
-	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS, p.SettingsS, p.NotifS, p.TaskEventBus, p.CommentEventBus, p.FileEventBus, p.LinkEventBus)
+	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS, p.SettingsS, p.NotifS, p.TaskEventBus, p.CommentEventBus, p.FileEventBus, p.LinkEventBus, p.ExternalLinkEventBus)
 	appRouter := routes.NewRouter(controllers, p.Config, p.DB, p.MW)
 
 	appRouter.RegisterRoutes(router)
@@ -124,30 +125,32 @@ func main() {
 			eventBus.NewCommentEventBus,
 			eventBus.NewFileEventBus,
 			eventBus.NewTaskLinkEventBus,
+			eventBus.NewTaskExternalLinkEventBus,
 			notification.NewNotificationSubscriber,
 		),
-		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService, taskEventBus *eventBus.EventBus[models.Task], commentEventBus *eventBus.EventBus[models.Comment], fileEventBus *eventBus.EventBus[models.File], linkEventBus *eventBus.EventBus[models.TaskLinks], notificationSubscriber *notification.NotificationSubscriber) {
+		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService, taskEventBus *eventBus.EventBus[models.Task], commentEventBus *eventBus.EventBus[models.Comment], fileEventBus *eventBus.EventBus[models.File], linkEventBus *eventBus.EventBus[models.TaskLinks], externalLinkEventBus *eventBus.EventBus[models.TaskExternalLink], notificationSubscriber *notification.NotificationSubscriber) {
 			params := Params{
-				Config:          config,
-				DB:              db,
-				AuthS:           authS,
-				AdminS:          adminS,
-				RoleS:           roleS,
-				BoardS:          boardS,
-				ColumnS:         columnS,
-				SwimlaneS:       swimlaneS,
-				TaskS:           taskS,
-				CommentS:        commentS,
-				SettingsS:       settingsS,
-				EmailS:          emailS,
-				Helpers:         helpers,
-				MW:              mw,
-				NotifS:          notificationS,
-				TaskEventBus:    taskEventBus,
-				CommentEventBus: commentEventBus,
-				FileEventBus:    fileEventBus,
-				LinkEventBus:    linkEventBus,
-				NotifSubscriber: notificationSubscriber,
+				Config:               config,
+				DB:                   db,
+				AuthS:                authS,
+				AdminS:               adminS,
+				RoleS:                roleS,
+				BoardS:               boardS,
+				ColumnS:              columnS,
+				SwimlaneS:            swimlaneS,
+				TaskS:                taskS,
+				CommentS:             commentS,
+				SettingsS:            settingsS,
+				EmailS:               emailS,
+				Helpers:              helpers,
+				MW:                   mw,
+				NotifS:               notificationS,
+				TaskEventBus:         taskEventBus,
+				CommentEventBus:      commentEventBus,
+				FileEventBus:         fileEventBus,
+				LinkEventBus:         linkEventBus,
+				ExternalLinkEventBus: externalLinkEventBus,
+				NotifSubscriber:      notificationSubscriber,
 			}
 
 			router, err := NewRouter(params)

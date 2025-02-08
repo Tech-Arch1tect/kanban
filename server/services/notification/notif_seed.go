@@ -35,7 +35,13 @@ var linkEvents = []string{
 	"link.deleted",
 }
 
-var AllEvents = append(append(append(taskEvents, commentEvents...), fileEvents...), linkEvents...) // TODO: add other events
+var externalLinkEvents = []string{
+	"externallink.created",
+	"externallink.updated",
+	"externallink.deleted",
+}
+
+var AllEvents = append(append(append(append(taskEvents, commentEvents...), fileEvents...), linkEvents...), externalLinkEvents...)
 
 func (ns *NotificationService) SeedNotificationEvents() error {
 	for _, event := range AllEvents {

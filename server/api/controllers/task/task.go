@@ -16,18 +16,19 @@ import (
 )
 
 type TaskController struct {
-	db *repository.Database
-	ts *task.TaskService
-	rs *role.RoleService
-	bs *board.BoardService
-	hs *helpers.HelperService
-	te *eventBus.EventBus[models.Task]
-	fe *eventBus.EventBus[models.File]
-	le *eventBus.EventBus[models.TaskLinks]
+	db  *repository.Database
+	ts  *task.TaskService
+	rs  *role.RoleService
+	bs  *board.BoardService
+	hs  *helpers.HelperService
+	te  *eventBus.EventBus[models.Task]
+	fe  *eventBus.EventBus[models.File]
+	le  *eventBus.EventBus[models.TaskLinks]
+	lee *eventBus.EventBus[models.TaskExternalLink]
 }
 
-func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService, te *eventBus.EventBus[models.Task], fe *eventBus.EventBus[models.File], le *eventBus.EventBus[models.TaskLinks]) *TaskController {
-	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs, te: te, fe: fe, le: le}
+func NewTaskController(db *repository.Database, ts *task.TaskService, rs *role.RoleService, bs *board.BoardService, hs *helpers.HelperService, te *eventBus.EventBus[models.Task], fe *eventBus.EventBus[models.File], le *eventBus.EventBus[models.TaskLinks], lee *eventBus.EventBus[models.TaskExternalLink]) *TaskController {
+	return &TaskController{db: db, ts: ts, rs: rs, bs: bs, hs: hs, te: te, fe: fe, le: le, lee: lee}
 }
 
 // @Summary Create a task
@@ -648,6 +649,8 @@ func (tc *TaskController) CreateTaskExternalLink(c *gin.Context) {
 		return
 	}
 
+	tc.lee.Publish("externallink.created", link, user)
+
 	c.JSON(http.StatusOK, CreateTaskExternalLinkResponse{Link: link})
 }
 
@@ -694,6 +697,8 @@ func (tc *TaskController) UpdateTaskExternalLink(c *gin.Context) {
 		return
 	}
 
+	tc.lee.Publish("externallink.updated", link, user)
+
 	c.JSON(http.StatusOK, UpdateTaskExternalLinkResponse{Link: link})
 }
 
@@ -733,11 +738,13 @@ func (tc *TaskController) DeleteTaskExternalLink(c *gin.Context) {
 		return
 	}
 
-	taskID, err := tc.ts.DeleteTaskExternalLink(user.ID, request.ID)
+	link, err := tc.ts.DeleteTaskExternalLink(user.ID, request.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, DeleteTaskExternalLinkResponse{TaskID: taskID, Message: "deleted"})
+	tc.lee.Publish("externallink.deleted", link, user)
+
+	c.JSON(http.StatusOK, DeleteTaskExternalLinkResponse{TaskID: link.TaskID, Message: "deleted"})
 }
