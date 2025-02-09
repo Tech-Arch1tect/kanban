@@ -58,11 +58,14 @@ export default function TaskComments({ task }: { task: ModelsTask }) {
     );
 
   return (
-    <div className="mx-auto">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-200 pb-1">
-        Comments
+    <div className="mx-auto space-y-6">
+      <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 flex items-center space-x-2">
+        <span>Comments</span>
+        <span className="bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 px-2 py-1 rounded text-sm">
+          {task.comments?.length || 0}
+        </span>
       </h2>
-      <div className="space-y-4 mt-4">
+      <div className="space-y-4">
         {data?.task?.comments?.length ? (
           data.task.comments.map((comment) => (
             <CommentItem

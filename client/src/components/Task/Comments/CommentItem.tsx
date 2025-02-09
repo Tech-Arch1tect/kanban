@@ -26,11 +26,9 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editText.trim()) {
-      if (comment.id) {
-        onEdit(comment.id, editText);
-        setIsEditing(false);
-      }
+    if (editText.trim() && comment.id) {
+      onEdit(comment.id, editText);
+      setIsEditing(false);
     }
   };
 
@@ -39,7 +37,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
   };
 
   return (
-    <div className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 shadow-sm">
+    <div className="p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 shadow-sm">
       {isEditing ? (
         <form onSubmit={handleEditSubmit} className="space-y-3">
           {!isLoading && (
@@ -49,6 +47,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
               placeholder="Edit your comment..."
               suggestions={usernames}
               onSelectSuggestion={handleSelectSuggestion}
+              containerClassName="mb-4"
+              textareaClassName="shadow-sm"
             />
           )}
           <div className="flex space-x-2">
@@ -97,7 +97,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
             <div className="flex space-x-2 mt-3">
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500 text-sm"
+                className="text-blue-500 hover:text-blue-600 text-sm"
               >
                 Edit
               </button>

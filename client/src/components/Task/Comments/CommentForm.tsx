@@ -31,6 +31,8 @@ const CommentForm: React.FC<CommentFormProps> = ({
           placeholder={placeholder}
           suggestions={usernames}
           onSelectSuggestion={handleSelectSuggestion}
+          containerClassName="mb-4"
+          textareaClassName="shadow-sm"
         />
       )}
       <button
