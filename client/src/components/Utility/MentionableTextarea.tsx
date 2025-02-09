@@ -6,6 +6,8 @@ interface MentionableTextareaProps {
   placeholder: string;
   suggestions: string[];
   onSelectSuggestion: (username: string) => void;
+  containerClassName?: string;
+  textareaClassName?: string;
 }
 
 const MentionableTextarea: React.FC<MentionableTextareaProps> = ({
@@ -14,6 +16,8 @@ const MentionableTextarea: React.FC<MentionableTextareaProps> = ({
   placeholder,
   suggestions,
   onSelectSuggestion,
+  containerClassName = "",
+  textareaClassName = "",
 }) => {
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -89,10 +93,10 @@ const MentionableTextarea: React.FC<MentionableTextareaProps> = ({
   };
 
   return (
-    <div className="relative">
+    <div className={`relative ${containerClassName}`}>
       <textarea
         ref={textareaRef}
-        className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700"
+        className={`w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 ${textareaClassName}`}
         placeholder={placeholder}
         value={value}
         onChange={handleInputChange}
