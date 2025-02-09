@@ -18,11 +18,14 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
   const [assigneeId, setAssigneeId] = useState<number | null>(null);
   const [editingSubtask, setEditingSubtask] = useState<number | null>(null);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
+  const [showNewSubtaskForm, setShowNewSubtaskForm] = useState(false);
   const { mutate: createTask } = useCreateTask();
   const { mutate: updateTaskAssignee } = useUpdateTaskAssignee();
   const { mutate: updateTaskTitle } = useUpdateTaskTitle();
   const { data: users, isLoading: usersLoading } = useGetUsersWithAccessToBoard(
-    { id: task.boardId as number }
+    {
+      id: task.boardId as number,
+    }
   );
 
   const handleCreateSubtask = () => {
@@ -67,13 +70,28 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-4">
-        Task Subtasks
-      </h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 flex items-center space-x-2">
+          <span>Task Subtasks</span>
+          <span className="bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 px-2 py-1 rounded text-sm">
+            {task.subtasks?.length || 0}
+          </span>
+        </h2>
+        <button
+          onClick={() => setShowNewSubtaskForm((prev) => !prev)}
+          className="flex-shrink-0 text-blue-500 hover:text-blue-700"
+        >
+          {showNewSubtaskForm ? (
+            <XMarkIcon className="w-6 h-6" />
+          ) : (
+            <PlusIcon className="w-6 h-6" />
+          )}
+        </button>
+      </div>
 
-      {task.subtasks?.length ? (
+      {(task.subtasks?.length ?? 0) > 0 && (
         <ul className="space-y-4">
-          {task.subtasks.map((subtask) => (
+          {task.subtasks?.map((subtask) => (
             <li
               key={subtask.id}
               className="p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 flex items-center space-x-3"
@@ -105,7 +123,13 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
                   <>
                     {/* @ts-ignore */}
                     <Link to={`/task/${subtask.id as number}`}>
-                      <div className="font-semibold">{subtask.title}</div>
+                      <div
+                        className={`font-semibold ${
+                          subtask.status === "closed" ? "line-through" : ""
+                        }`}
+                      >
+                        {subtask.title}
+                      </div>
                     </Link>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       Assigned to {subtask.assignee?.username || "no one"}
@@ -143,48 +167,46 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
             </li>
           ))}
         </ul>
-      ) : (
-        <div className="text-gray-500 dark:text-gray-400 text-center">
-          No subtasks available.
-        </div>
       )}
 
-      <div className="space-y-2">
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            placeholder="New subtask title"
-            value={subtaskTitle}
-            onChange={(e) => setSubtaskTitle(e.target.value)}
-            className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
-          />
-          <select
-            value={assigneeId || ""}
-            onChange={(e) => setAssigneeId(Number(e.target.value) || null)}
-            className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
-            disabled={usersLoading}
-          >
-            <option value="">Select Assignee</option>
-            {users?.users?.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.username}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={handleCreateSubtask}
-            className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-md flex items-center"
-          >
-            <PlusIcon className="w-5 h-5 mr-1" />
-            Add Subtask
-          </button>
-        </div>
-        {usersLoading && (
-          <div className="text-gray-500 dark:text-gray-400 text-sm">
-            Loading users...
+      {showNewSubtaskForm && (
+        <div className="space-y-2">
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              placeholder="New subtask title"
+              value={subtaskTitle}
+              onChange={(e) => setSubtaskTitle(e.target.value)}
+              className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+            />
+            <select
+              value={assigneeId || ""}
+              onChange={(e) => setAssigneeId(Number(e.target.value) || null)}
+              className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+              disabled={usersLoading}
+            >
+              <option value="">Select Assignee</option>
+              {users?.users?.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.username}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={handleCreateSubtask}
+              className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-md flex items-center"
+            >
+              <PlusIcon className="w-5 h-5 mr-1" />
+              Add Subtask
+            </button>
           </div>
-        )}
-      </div>
+          {usersLoading && (
+            <div className="text-gray-500 dark:text-gray-400 text-sm">
+              Loading users...
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
