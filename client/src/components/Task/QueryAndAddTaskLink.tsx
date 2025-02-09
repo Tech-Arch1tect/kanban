@@ -7,6 +7,7 @@ import { useGetTaskQueryAllBoards } from "../../hooks/tasks/useTaskQueryAllBoard
 import { useCreateTaskLink } from "../../hooks/tasks/useCreateTaskLink";
 import useDebounce from "../../hooks/useDebounce";
 import { toast } from "react-toastify";
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 export const QueryAndAddTaskLink = ({ task }: { task: ModelsTask }) => {
   const [query, setQuery] = useState("");
@@ -35,10 +36,6 @@ export const QueryAndAddTaskLink = ({ task }: { task: ModelsTask }) => {
 
   return (
     <div className="mx-auto">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-200 pb-1">
-        Search for a task to link to
-      </h2>
-
       <form onSubmit={(e) => e.preventDefault()} className="mb-4">
         <input
           type="text"
@@ -64,22 +61,25 @@ export const QueryAndAddTaskLink = ({ task }: { task: ModelsTask }) => {
 
       {tasks && tasks.tasks && tasks.tasks.length > 0 && (
         <ul className="space-y-2">
-          {tasks.tasks.slice(0, 10).map((foundTask: ModelsTask) => (
-            <li key={foundTask.id} className="flex items-center space-x-2">
-              <input
-                type="radio"
-                name="selectedTask"
-                value={foundTask.id}
-                onChange={() =>
+          {tasks.tasks.slice(0, 10).map((foundTask: ModelsTask) => {
+            const isSelected = selectedTask === foundTask.id?.toString();
+            return (
+              <li
+                key={foundTask.id}
+                onClick={() =>
                   setSelectedTask(foundTask.id?.toString() ?? null)
                 }
-                className="form-radio h-4 w-4 text-blue-600 dark:text-blue-500"
-              />
-              <label className="text-gray-700 dark:text-gray-200">
-                {foundTask.title}
-              </label>
-            </li>
-          ))}
+                className={`cursor-pointer flex items-center justify-between p-2 border rounded-md transition-colors ${
+                  isSelected
+                    ? "bg-blue-500 text-white border-blue-500"
+                    : "bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+                }`}
+              >
+                <span>{foundTask.title}</span>
+                {isSelected && <CheckCircleIcon className="w-5 h-5" />}
+              </li>
+            );
+          })}
         </ul>
       )}
 

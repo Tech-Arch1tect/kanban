@@ -20,43 +20,32 @@ export const TaskLinkLoop = ({ links }: { links: ModelsTaskLinks[] }) => {
   };
 
   return (
-    <div className="mx-auto">
-      <div className="space-y-4 mt-4">
-        {links && links.length > 0 ? (
-          links.map((link) => (
-            <div
-              key={link.id}
-              className="flex items-start justify-between p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
-            >
-              <div>
-                <Link
-                  //@ts-ignore
-                  to={`/task/${link.dstTaskId}`}
-                  className="text-sm font-medium text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                >
-                  <strong className="block text-sm text-gray-700 dark:text-gray-200 inline-block">
-                    {linkTypeDisplay[link.linkType ?? ""] || link.linkType}:
-                  </strong>
-                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-200 inline-block">
-                    {link.dstTask?.title}
-                  </span>
-                </Link>
-              </div>
-              <button
-                onClick={() => handleDelete(link.id!)}
-                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm"
-                disabled={isDeleting}
-              >
-                <TrashIcon className="w-4 h-4" />
-              </button>
-            </div>
-          ))
-        ) : (
-          <div className="text-gray-500 dark:text-gray-400 text-center">
-            No task links available.
-          </div>
-        )}
-      </div>
-    </div>
+    <>
+      {links.map((link) => (
+        <li
+          key={link.id}
+          className="flex items-center justify-between p-2 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+        >
+          <Link
+            // @ts-ignore
+            to={`/task/${link.dstTaskId}`}
+            className="text-sm font-medium text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            <span>
+              {linkTypeDisplay[link.linkType ?? ""] || link.linkType}:{" "}
+              {link.dstTask?.title}
+            </span>
+          </Link>
+          <button
+            onClick={() => handleDelete(link.id!)}
+            className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+            disabled={isDeleting}
+            title="Delete link"
+          >
+            <TrashIcon className="w-4 h-4" />
+          </button>
+        </li>
+      ))}
+    </>
   );
 };
