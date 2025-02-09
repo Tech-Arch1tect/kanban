@@ -112,8 +112,8 @@ export const TaskExternalLinks = ({ task }: { task: ModelsTask }) => {
 
       {/* Existing External Links List */}
       <ul className="space-y-4">
-        {task.externalLinks?.length ? (
-          task.externalLinks.map((link) => (
+        {(task.externalLinks?.length ?? 0) > 0 &&
+          task.externalLinks?.map((link) => (
             <li
               key={link.id}
               className="flex justify-between items-center p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
@@ -191,12 +191,7 @@ export const TaskExternalLinks = ({ task }: { task: ModelsTask }) => {
                 )}
               </div>
             </li>
-          ))
-        ) : (
-          <div className="text-gray-500 dark:text-gray-400 text-center">
-            No external links available.
-          </div>
-        )}
+          ))}
       </ul>
     </div>
   );
