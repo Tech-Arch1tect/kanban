@@ -65,7 +65,7 @@ export const TaskExternalLinks = ({ task }: { task: ModelsTask }) => {
       {/* Header with toggle button */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 flex items-center space-x-2">
-          <span>Task External Links</span>
+          <span>External Links</span>
           <span className="bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 px-2 py-1 rounded text-sm">
             {task.externalLinks?.length || 0}
           </span>

@@ -14,7 +14,7 @@ export const TaskLinks = ({ task }: { task: ModelsTask }) => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 flex items-center space-x-2">
-          <span>Task Links</span>
+          <span>Links</span>
           <span className="bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 px-2 py-1 rounded text-sm">
             {totalLinks}
           </span>
