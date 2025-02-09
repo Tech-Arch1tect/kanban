@@ -7,11 +7,12 @@ import {
 } from "../../typescript-fetch-client";
 import { useState } from "react";
 import {
-  TrashIcon,
   PencilIcon,
   CheckIcon,
   XMarkIcon,
-} from "@heroicons/react/24/solid";
+  PlusIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 
 export const TaskExternalLinks = ({ task }: { task: ModelsTask }) => {
   const { mutate: createExternalLink } = useCreateTaskExternalLink();
@@ -24,8 +25,8 @@ export const TaskExternalLinks = ({ task }: { task: ModelsTask }) => {
   const [editedLink, setEditedLink] = useState<ModelsTaskExternalLink | null>(
     null
   );
-
   const [newLink, setNewLink] = useState({ title: "", url: "" });
+  const [showNewLinkForm, setShowNewLinkForm] = useState(false);
 
   const handleCreate = () => {
     if (newLink.title && newLink.url) {
@@ -61,33 +62,55 @@ export const TaskExternalLinks = ({ task }: { task: ModelsTask }) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-4">
-        Task External Links
-      </h2>
-
-      <div className="flex space-x-2">
-        <input
-          type="text"
-          placeholder="Title"
-          value={newLink.title}
-          onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
-          className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
-        />
-        <input
-          type="url"
-          placeholder="URL"
-          value={newLink.url}
-          onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
-          className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
-        />
+      {/* Header with toggle button */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 flex items-center space-x-2">
+          <span>Task External Links</span>
+          <span className="bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 px-2 py-1 rounded text-sm">
+            {task.externalLinks?.length || 0}
+          </span>
+        </h2>
         <button
-          onClick={handleCreate}
-          className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-md"
+          onClick={() => setShowNewLinkForm((prev) => !prev)}
+          className="flex-shrink-0 text-blue-500 hover:text-blue-700"
+          title={showNewLinkForm ? "Close" : "Add External Link"}
         >
-          Add Link
+          {showNewLinkForm ? (
+            <XMarkIcon className="w-6 h-6" />
+          ) : (
+            <PlusIcon className="w-6 h-6" />
+          )}
         </button>
       </div>
 
+      {/* New Link Creation Form */}
+      {showNewLinkForm && (
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            placeholder="Title"
+            value={newLink.title}
+            onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
+            className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+          />
+          <input
+            type="url"
+            placeholder="URL"
+            value={newLink.url}
+            onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
+            className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+          />
+          <button
+            onClick={handleCreate}
+            className="bg-blue-500 hover:bg-blue-700 text-white p-2 rounded-md flex items-center"
+          >
+            <PlusIcon className="w-5 h-5 mr-1" />
+            Add Link
+          </button>
+        </div>
+      )}
+
+      {/* Existing External Links List */}
       <ul className="space-y-4">
         {task.externalLinks?.length ? (
           task.externalLinks.map((link) => (
@@ -132,6 +155,7 @@ export const TaskExternalLinks = ({ task }: { task: ModelsTask }) => {
                       onClick={handleUpdate}
                       disabled={isUpdating}
                       className="text-green-500 hover:text-green-700"
+                      title="Save"
                     >
                       <CheckIcon className="w-5 h-5" />
                     </button>
@@ -141,6 +165,7 @@ export const TaskExternalLinks = ({ task }: { task: ModelsTask }) => {
                         setEditedLink(null);
                       }}
                       className="text-gray-500 hover:text-gray-700"
+                      title="Cancel"
                     >
                       <XMarkIcon className="w-5 h-5" />
                     </button>
@@ -149,7 +174,8 @@ export const TaskExternalLinks = ({ task }: { task: ModelsTask }) => {
                   <>
                     <button
                       onClick={() => handleEdit(link)}
-                      className="text-yellow-500 hover:text-yellow-700"
+                      className="text-blue-500 hover:text-blue-700"
+                      title="Edit"
                     >
                       <PencilIcon className="w-5 h-5" />
                     </button>
@@ -157,6 +183,7 @@ export const TaskExternalLinks = ({ task }: { task: ModelsTask }) => {
                       onClick={() => handleDelete(link.id!)}
                       disabled={isDeleting}
                       className="text-red-500 hover:text-red-700"
+                      title="Delete"
                     >
                       <TrashIcon className="w-5 h-5" />
                     </button>
