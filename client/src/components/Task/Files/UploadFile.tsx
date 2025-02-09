@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useUploadFile } from "../../../hooks/tasks/Files/useUploadFile";
+import { CloudArrowUpIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 
 export const UploadFile = ({ taskId }: { taskId: number }) => {
   const [file, setFile] = useState<File | null>(null);
@@ -21,7 +22,6 @@ export const UploadFile = ({ taskId }: { taskId: number }) => {
     }
 
     const reader = new FileReader();
-
     reader.onload = (event) => {
       const fileContent = new Uint8Array(event.target?.result as ArrayBuffer);
       const fileContentArray = Array.from(fileContent);
@@ -37,38 +37,57 @@ export const UploadFile = ({ taskId }: { taskId: number }) => {
   };
 
   return (
-    <div className="upload-file-container p-4 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm">
-      <h3 className="text-md font-medium text-gray-700 dark:text-gray-200 mb-3">
-        Upload a File
-      </h3>
-      <div className="upload-file-input-group flex flex-col gap-3">
+    <div className="mt-4">
+      {/* Header with upload icon inline */}
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200">
+          Upload a File
+        </h2>
+        <label
+          htmlFor={`file-upload-${taskId}`}
+          className="cursor-pointer p-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white"
+          title="Select file"
+        >
+          <CloudArrowUpIcon className="w-5 h-5" />
+        </label>
         <input
+          id={`file-upload-${taskId}`}
           type="file"
           onChange={handleFileChange}
-          className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-300 dark:file:border-gray-600 file:bg-gray-50 dark:file:bg-gray-600 file:text-gray-600 dark:file:text-gray-200 hover:file:bg-gray-100 dark:hover:file:bg-gray-500"
+          className="hidden"
         />
-        <button
-          onClick={handleUpload}
-          disabled={isPending}
-          className={`upload-file-button px-4 py-2 rounded-md text-white ${
-            isPending
-              ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-          }`}
-        >
-          {isPending ? "Uploading..." : "Upload"}
-        </button>
       </div>
-      {isSuccess && (
-        <p className="upload-success mt-2 text-sm text-green-600 dark:text-green-400">
-          File uploaded successfully!
-        </p>
-      )}
-      {isError && (
-        <p className="upload-error mt-2 text-sm text-red-600 dark:text-red-400">
-          Error: {error?.message || "Failed to upload file."}
-        </p>
-      )}
+      <div className="flex flex-col items-start space-y-2">
+        {fileName && (
+          <span className="text-sm text-gray-700 dark:text-gray-200">
+            {fileName}
+          </span>
+        )}
+        {file && (
+          <button
+            onClick={handleUpload}
+            disabled={isPending}
+            title={isPending ? "Uploading..." : "Upload"}
+            className="p-2 rounded-md text-white bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {isPending ? (
+              <ArrowPathIcon className="w-5 h-5 animate-spin" />
+            ) : (
+              <CloudArrowUpIcon className="w-5 h-5" />
+            )}
+          </button>
+        )}
+        {isSuccess && (
+          <p className="text-sm text-green-600 dark:text-green-400">
+            File uploaded successfully!
+          </p>
+        )}
+        {isError && (
+          <p className="text-sm text-red-600 dark:text-red-400">
+            Error: {error?.message || "Failed to upload file."}
+          </p>
+        )}
+      </div>
     </div>
   );
 };
