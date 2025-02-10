@@ -20,6 +20,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
   boardId,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isPreview, setIsPreview] = useState(false);
   const [editText, setEditText] = useState(comment.text || "");
 
   const { usernames, isLoading } = useBoardUsernames(boardId);
@@ -29,6 +30,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
     if (editText.trim() && comment.id) {
       onEdit(comment.id, editText);
       setIsEditing(false);
+      setIsPreview(false);
     }
   };
 
@@ -40,28 +42,55 @@ const CommentItem: React.FC<CommentItemProps> = ({
     <div className="p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 shadow-sm">
       {isEditing ? (
         <form onSubmit={handleEditSubmit} className="space-y-3">
-          {!isLoading && (
-            <MentionableTextarea
-              value={editText}
-              setValue={setEditText}
-              placeholder="Edit your comment..."
-              suggestions={usernames}
-              onSelectSuggestion={handleSelectSuggestion}
-              containerClassName="mb-4"
-              textareaClassName="shadow-sm"
-            />
+          {isPreview ? (
+            <div className="p-2 border rounded bg-gray-50 dark:bg-gray-800">
+              {editText.trim() ? (
+                <RenderMarkdown markdown={editText} />
+              ) : (
+                <p>No comment provided.</p>
+              )}
+            </div>
+          ) : (
+            !isLoading && (
+              <MentionableTextarea
+                value={editText}
+                setValue={setEditText}
+                placeholder="Edit your comment..."
+                suggestions={usernames}
+                onSelectSuggestion={handleSelectSuggestion}
+                containerClassName="mb-4"
+                textareaClassName="shadow-sm"
+              />
+            )
           )}
           <div className="flex space-x-2">
             <button
+              type="button"
+              onClick={() => setIsPreview((prev) => !prev)}
+              disabled={!isPreview && !editText.trim()}
+              className={`px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 ${
+                !isPreview && !editText.trim()
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+            >
+              {isPreview ? "Back to Edit" : "Preview"}
+            </button>
+            <button
               type="submit"
+              disabled={!editText.trim()}
               className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
             >
               Save
             </button>
             <button
               type="button"
+              onClick={() => {
+                setIsEditing(false);
+                setIsPreview(false);
+                setEditText(comment.text || "");
+              }}
               className="py-2 px-4 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500"
-              onClick={() => setIsEditing(false)}
             >
               Cancel
             </button>
