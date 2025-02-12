@@ -17,6 +17,7 @@ server-watch:
 [working-directory: "server"]
 lint:
   @golangci-lint run
+  @testifylint --enable-all ./...
 
 # Client commands
 # Starts the client development server using npm.
