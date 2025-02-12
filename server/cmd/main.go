@@ -70,7 +70,7 @@ func NewRouter(p Params) (*gin.Engine, error) {
 	corsMiddleware := middleware.Cors(p.Config)
 	var rateLimitMiddleware gin.HandlerFunc
 	if p.Config.RateLimit.Enabled {
-		fmt.Println("Rate limit enabled: limit", p.Config.RateLimit.Limit, "window", p.Config.RateLimit.Window)
+		log.Printf("Rate limit enabled: limit %d, window %d", p.Config.RateLimit.Limit, p.Config.RateLimit.Window)
 		rateLimitMiddleware = middleware.RateLimit(
 			p.Config.RateLimit.Limit,
 			time.Duration(p.Config.RateLimit.Window)*time.Minute,
@@ -87,9 +87,27 @@ func NewRouter(p Params) (*gin.Engine, error) {
 	router.Use(sessionMiddleware)
 	router.Use(p.MW.EnsureCSRFTokenExistsInSession())
 
-	controllers := controllers.NewControllers(p.Config, p.AuthS, p.AdminS, p.DB, p.Helpers, p.BoardS, p.RoleS, p.ColumnS, p.SwimlaneS, p.TaskS, p.CommentS, p.SettingsS, p.NotifS, p.TaskEventBus, p.CommentEventBus, p.FileEventBus, p.LinkEventBus, p.ExternalLinkEventBus)
-	appRouter := routes.NewRouter(controllers, p.Config, p.DB, p.MW)
-
+	ctrls := controllers.NewControllers(
+		p.Config,
+		p.AuthS,
+		p.AdminS,
+		p.DB,
+		p.Helpers,
+		p.BoardS,
+		p.RoleS,
+		p.ColumnS,
+		p.SwimlaneS,
+		p.TaskS,
+		p.CommentS,
+		p.SettingsS,
+		p.NotifS,
+		p.TaskEventBus,
+		p.CommentEventBus,
+		p.FileEventBus,
+		p.LinkEventBus,
+		p.ExternalLinkEventBus,
+	)
+	appRouter := routes.NewRouter(ctrls, p.Config, p.DB, p.MW)
 	appRouter.RegisterRoutes(router)
 
 	if err := p.RoleS.SeedRoles(); err != nil {
@@ -103,7 +121,12 @@ func NewRouter(p Params) (*gin.Engine, error) {
 	return router, nil
 }
 
-func main() {
+func setupRouter() (*gin.Engine, *config.Config, func()) {
+	var (
+		router *gin.Engine
+		cfg    *config.Config
+	)
+
 	app := fx.New(
 		fx.Provide(
 			config.LoadConfig,
@@ -127,54 +150,33 @@ func main() {
 			eventBus.NewTaskLinkEventBus,
 			eventBus.NewTaskExternalLinkEventBus,
 			notification.NewNotificationSubscriber,
+			NewRouter,
 		),
-		fx.Invoke(func(lc fx.Lifecycle, config *config.Config, db *repository.Database, authS *auth.AuthService, adminS *admin.AdminService, roleS *role.RoleService, boardS *board.BoardService, columnS *column.ColumnService, swimlaneS *swimlane.SwimlaneService, taskS *task.TaskService, commentS *comment.CommentService, settingsS *settings.SettingsService, emailS *email.EmailService, helpers *helpers.HelperService, mw *middleware.Middleware, notificationS *notification.NotificationService, taskEventBus *eventBus.EventBus[models.Task], commentEventBus *eventBus.EventBus[models.Comment], fileEventBus *eventBus.EventBus[models.File], linkEventBus *eventBus.EventBus[models.TaskLinks], externalLinkEventBus *eventBus.EventBus[models.TaskExternalLink], notificationSubscriber *notification.NotificationSubscriber) {
-			params := Params{
-				Config:               config,
-				DB:                   db,
-				AuthS:                authS,
-				AdminS:               adminS,
-				RoleS:                roleS,
-				BoardS:               boardS,
-				ColumnS:              columnS,
-				SwimlaneS:            swimlaneS,
-				TaskS:                taskS,
-				CommentS:             commentS,
-				SettingsS:            settingsS,
-				EmailS:               emailS,
-				Helpers:              helpers,
-				MW:                   mw,
-				NotifS:               notificationS,
-				TaskEventBus:         taskEventBus,
-				CommentEventBus:      commentEventBus,
-				FileEventBus:         fileEventBus,
-				LinkEventBus:         linkEventBus,
-				ExternalLinkEventBus: externalLinkEventBus,
-				NotifSubscriber:      notificationSubscriber,
-			}
-
-			router, err := NewRouter(params)
-			if err != nil {
-				log.Fatalf("Failed to initialize router: %v", err)
-			}
-
-			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					go func() {
-						notificationSubscriber.Subscribe()
-						if err := router.Run(":8090"); err != nil {
-							log.Fatalf("Server failed to start: %v", err)
-						}
-					}()
-					return nil
-				},
-				OnStop: func(ctx context.Context) error {
-					fmt.Println("Shutting down...")
-					return nil
-				},
-			})
+		fx.Populate(&router, &cfg),
+		fx.Invoke(func(ns *notification.NotificationSubscriber) {
+			go ns.Subscribe()
 		}),
 	)
 
-	app.Run()
+	if err := app.Start(context.Background()); err != nil {
+		log.Fatalf("Failed to start fx app: %v", err)
+	}
+
+	cleanup := func() {
+		if err := app.Stop(context.Background()); err != nil {
+			log.Fatalf("Failed to stop fx app: %v", err)
+		}
+	}
+
+	return router, cfg, cleanup
+}
+
+func main() {
+	router, _, cleanup := setupRouter()
+	defer cleanup()
+
+	log.Printf("Starting server on %s", "8090")
+	if err := router.Run(":8090"); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
 }
