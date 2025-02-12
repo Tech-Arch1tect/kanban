@@ -19,6 +19,11 @@ lint:
   @golangci-lint run
   @testifylint --enable-all ./...
 
+# Tests the server code.
+[working-directory: "server"]
+test:
+  @go test ./...
+
 # Client commands
 # Starts the client development server using npm.
 [working-directory: "client"]
