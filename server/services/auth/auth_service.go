@@ -49,12 +49,10 @@ func (s *AuthService) Register(username, email, password string) error {
 		user.Role = models.RoleAdmin
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
+	if err := user.HashPassword(); err != nil {
 		return err
 	}
 
-	user.Password = string(hashedPassword)
 	if err := s.db.UserRepository.Create(&user); err != nil {
 		return err
 	}

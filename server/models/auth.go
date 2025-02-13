@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -14,4 +16,13 @@ type User struct {
 	TotpEnabled         bool      `gorm:"default:false" json:"totp_enabled"`
 	PasswordResetToken  string    `json:"-"`
 	PasswordResetSentAt time.Time `json:"-"`
+}
+
+func (u *User) HashPassword() error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	u.Password = string(hashedPassword)
+	return nil
 }
