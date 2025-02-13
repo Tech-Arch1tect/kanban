@@ -22,8 +22,8 @@ lint:
 # Tests the server code.
 [working-directory: "server"]
 test:
-  @go test ./...
-  rm -f tests/integration/test.db
+  @rm -f tests/integration/test.db
+  @go test -count=1 ./...
 
 # Client commands
 # Starts the client development server using npm.
