@@ -150,7 +150,10 @@ func SetupRouter() (*gin.Engine, *config.Config, func()) {
 		fx.Populate(&router, &cfg),
 		fx.Invoke(func(ns *notification.NotificationSubscriber, tds *testdata.TestdataService) {
 			go ns.Subscribe()
-			tds.Init()
+			err := tds.Init()
+			if err != nil {
+				panic(err)
+			}
 		}),
 	)
 

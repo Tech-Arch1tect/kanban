@@ -31,7 +31,10 @@ func (tds *TestdataService) insertTestData() error {
 		return err
 	}
 	if numBoards == 0 {
-		tds.db.BoardRepository.Create(tests.TestBoard)
+		err := tds.db.BoardRepository.Create(tests.TestBoard)
+		if err != nil {
+			return err
+		}
 	}
 
 	numUsers, err := tds.db.UserRepository.Count()
@@ -47,8 +50,14 @@ func (tds *TestdataService) insertTestData() error {
 		if err != nil {
 			return err
 		}
-		tds.db.UserRepository.Create(tests.TestAdminUser)
-		tds.db.UserRepository.Create(tests.TestUser)
+		err = tds.db.UserRepository.Create(tests.TestAdminUser)
+		if err != nil {
+			return err
+		}
+		err = tds.db.UserRepository.Create(tests.TestUser)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
