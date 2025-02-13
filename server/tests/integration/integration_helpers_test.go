@@ -29,35 +29,6 @@ func getCSRFToken(t *testing.T, router http.Handler) (string, []*http.Cookie) {
 	return csrfToken, cookies
 }
 
-func registerUser(t *testing.T, router http.Handler, csrfToken string, cookies []*http.Cookie, username, email, password string) {
-	data := map[string]string{
-		"username": username,
-		"email":    email,
-		"password": password,
-	}
-	body, err := json.Marshal(data)
-	require.NoError(t, err)
-
-	req := httptest.NewRequest("POST", "/api/v1/auth/register", bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-CSRF-Token", csrfToken)
-	for _, cookie := range cookies {
-		req.AddCookie(cookie)
-	}
-	resp := httptest.NewRecorder()
-	router.ServeHTTP(resp, req)
-	require.Equal(t, http.StatusCreated, resp.Code, "registration should succeed")
-}
-
-func findCookieByName(cookies []*http.Cookie, name string) *http.Cookie {
-	for _, cookie := range cookies {
-		if cookie.Name == name {
-			return cookie
-		}
-	}
-	return nil
-}
-
 func mergeCookies(oldCookies, newCookies []*http.Cookie) []*http.Cookie {
 	cookieMap := make(map[string]*http.Cookie)
 	for _, c := range oldCookies {
@@ -73,45 +44,47 @@ func mergeCookies(oldCookies, newCookies []*http.Cookie) []*http.Cookie {
 	return merged
 }
 
-func loginUser(t *testing.T, router http.Handler, csrfToken string, cookies []*http.Cookie, email, password string) ([]*http.Cookie, *http.Cookie) {
-	data := map[string]string{
-		"email":    email,
-		"password": password,
+func doAPIRequest(t *testing.T, router http.Handler, method, endpoint string, requestData interface{}, cookies []*http.Cookie, expectedStatus int) (map[string]interface{}, []*http.Cookie) {
+	var csrfToken string
+	if method == "POST" || method == "PUT" || method == "DELETE" {
+		var csrfCookies []*http.Cookie
+		csrfToken, csrfCookies = getCSRFToken(t, router)
+		cookies = mergeCookies(cookies, csrfCookies)
 	}
-	body, err := json.Marshal(data)
-	require.NoError(t, err)
 
-	req := httptest.NewRequest("POST", "/api/v1/auth/login", bytes.NewBuffer(body))
+	var requestBody []byte
+	if requestData != nil {
+		var err error
+		requestBody, err = json.Marshal(requestData)
+		require.NoError(t, err, "failed to marshal request data")
+	}
+
+	req := httptest.NewRequest(method, endpoint, bytes.NewBuffer(requestBody))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-CSRF-Token", csrfToken)
+	if csrfToken != "" {
+		req.Header.Set("X-CSRF-Token", csrfToken)
+	}
+
 	for _, cookie := range cookies {
 		req.AddCookie(cookie)
 	}
+
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
-	require.Equal(t, http.StatusOK, resp.Code, "login should succeed")
+	require.Equal(t, expectedStatus, resp.Code, "%s %s should return status %d", method, endpoint, expectedStatus)
 
-	loginCookies := resp.Result().Cookies()
-	cookies = mergeCookies(cookies, loginCookies)
-	sessionCookie := findCookieByName(cookies, "mysession")
-	require.NotNil(t, sessionCookie, "session cookie not found")
-	return cookies, sessionCookie
-}
+	respCookies := resp.Result().Cookies()
+	cookies = mergeCookies(cookies, respCookies)
 
-func getProfile(t *testing.T, router http.Handler, cookies []*http.Cookie) map[string]interface{} {
-	req := httptest.NewRequest("GET", "/api/v1/auth/profile", nil)
-	req.URL.Scheme = "https"
-	for _, cookie := range cookies {
-		req.AddCookie(cookie)
+	var response map[string]interface{}
+	if len(resp.Body.Bytes()) > 0 {
+		err := json.Unmarshal(resp.Body.Bytes(), &response)
+		require.NoError(t, err, "failed to parse response body")
+	} else {
+		response = make(map[string]interface{})
 	}
-	resp := httptest.NewRecorder()
-	router.ServeHTTP(resp, req)
-	require.Equal(t, http.StatusOK, resp.Code, "profile endpoint should succeed")
 
-	var profile map[string]interface{}
-	err := json.Unmarshal(resp.Body.Bytes(), &profile)
-	require.NoError(t, err)
-	return profile
+	return response, cookies
 }
 
 func getTestingRouter() http.Handler {
