@@ -24,6 +24,7 @@ import (
 	"server/services/settings"
 	"server/services/swimlane"
 	"server/services/task"
+	testdata "server/services/testData"
 	"time"
 
 	"github.com/gin-gonic/contrib/sessions"
@@ -46,6 +47,7 @@ type Params struct {
 	SettingsS            *settings.SettingsService
 	EmailS               *email.EmailService
 	Helpers              *helpers.HelperService
+	TestDataService      *testdata.TestdataService
 	MW                   *middleware.Middleware
 	NotifS               *notification.NotificationService
 	TaskEventBus         *eventBus.EventBus[models.Task]
@@ -142,11 +144,13 @@ func SetupRouter() (*gin.Engine, *config.Config, func()) {
 			eventBus.NewTaskLinkEventBus,
 			eventBus.NewTaskExternalLinkEventBus,
 			notification.NewNotificationSubscriber,
+			testdata.NewTestdataService,
 			NewRouter,
 		),
 		fx.Populate(&router, &cfg),
-		fx.Invoke(func(ns *notification.NotificationSubscriber) {
+		fx.Invoke(func(ns *notification.NotificationSubscriber, tds *testdata.TestdataService) {
 			go ns.Subscribe()
+			tds.Init()
 		}),
 	)
 
