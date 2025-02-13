@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"server/cmd/initHelper"
+	"server/tests"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -93,4 +94,24 @@ func getTestingRouter() http.Handler {
 	router, _, cleanup := initHelper.SetupRouter()
 	defer cleanup()
 	return router
+}
+
+func Login(t *testing.T, r http.Handler, role string) []*http.Cookie {
+	var email string
+	password := "password123"
+	if role == "admin" {
+		email = tests.TestAdminUser.Email
+	} else {
+		email = tests.TestUser.Email
+	}
+	var cookies []*http.Cookie
+
+	loginData := map[string]string{
+		"email":    email,
+		"password": password,
+	}
+
+	_, cookies = doAPIRequest(t, r, "POST", "/api/v1/auth/login", loginData, cookies, http.StatusOK)
+
+	return cookies
 }
