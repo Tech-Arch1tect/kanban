@@ -2,7 +2,6 @@ package integration
 
 import (
 	"log"
-	"server/cmd/initHelper"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,8 +9,7 @@ import (
 
 // this test registers a new user, logs in, and retrieves the profile
 func TestRegisterLoginProfile(t *testing.T) {
-	router, _, cleanup := initHelper.SetupRouter()
-	defer cleanup()
+	router := getTestingRouter()
 
 	csrfToken, cookies := getCSRFToken(t, router)
 	username := "integration_user"

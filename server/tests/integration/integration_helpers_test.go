@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"server/cmd/initHelper"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
@@ -110,4 +113,13 @@ func getProfile(t *testing.T, router http.Handler, cookies []*http.Cookie) map[s
 	err := json.Unmarshal(resp.Body.Bytes(), &profile)
 	require.NoError(t, err)
 	return profile
+}
+
+func getTestingRouter() http.Handler {
+	dateString := time.Now().Format("2006-01-02 15:04:05")
+	os.Setenv("SQLITE_FILE_PATH", "test-"+dateString+".db")
+	os.Setenv("InsertTestData", "true")
+	router, _, cleanup := initHelper.SetupRouter()
+	defer cleanup()
+	return router
 }
