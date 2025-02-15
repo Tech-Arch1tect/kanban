@@ -42,7 +42,7 @@ jobs:
         working-directory: server
     runs-on: ubuntu-latest
     steps:
-      <<: *common-steps
+      - <<: *common-steps
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -55,6 +55,6 @@ jobs:
         working-directory: server
     runs-on: ubuntu-latest
     steps:
-      <<: *common-steps
+      - <<: *common-steps
       - name: Run Go tests
         run: go test -v ./...
