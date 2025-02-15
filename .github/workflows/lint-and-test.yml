@@ -73,5 +73,15 @@ jobs:
         with:
           name: generated-files
           path: server
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            pkg/mod
+            go.sum
+          key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+      - name: Download Dependencies
+        run: go mod download
+        shell: bash
       - name: Run Go tests
         run: go test -v ./...
