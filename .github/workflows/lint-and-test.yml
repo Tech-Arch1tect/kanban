@@ -21,7 +21,7 @@ jobs:
         uses: ./.github/actions/common-steps
       - name: Debug and remove Go installation from disk
         run: |
-          GO_ROOT=$(go env GOROOT)
+          GO_ROOT="../../../go/"
           echo "GO_ROOT is set to: $GO_ROOT"
           if [ -z "$GO_ROOT" ]; then
             echo "Error: GOROOT is not set. Exiting."
