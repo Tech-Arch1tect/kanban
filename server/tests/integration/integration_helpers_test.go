@@ -26,6 +26,7 @@ func NewAPITestClient() (*APITestClient, error) {
 	os.Setenv("SQLITE_FILE_PATH", "test.db")
 	os.Setenv("InsertTestData", "true")
 	os.Setenv("COOKIE_SECURE", "false")
+	os.Setenv("RATE_LIMIT_ENABLED", "false")
 
 	router, _, cleanup := initHelper.SetupRouter()
 
