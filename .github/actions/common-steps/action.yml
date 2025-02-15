@@ -1,10 +1,6 @@
 name: "Common Steps"
 description: "Reusable steps for lint and test jobs."
-inputs:
-  working-directory:
-    description: "Subdirectory in which to run the commands"
-    required: false
-    default: "server"
+
 runs:
   using: "composite"
   steps:
@@ -12,19 +8,22 @@ runs:
       uses: actions/cache@v3
       with:
         path: |
-          ${{ inputs.working-directory }}/pkg/mod
-          ${{ inputs.working-directory }}/go.sum
-        key: ${{ runner.os }}-go-${{ hashFiles(format('{0}/go.sum', inputs.working-directory)) }}
+          server/pkg/mod
+          server/go.sum
+        key: ${{ runner.os }}-go-${{ hashFiles(format('{0}/go.sum', 'server')) }}
 
     - name: Download Dependencies
-      run: cd ${{ inputs.working-directory }} && go mod download
+      run: go mod download
       shell: bash
+      working-directory: server
 
     - name: Install swag CLI
-      run: cd ${{ inputs.working-directory }} && go install github.com/swaggo/swag/cmd/swag@latest
+      run: go install github.com/swaggo/swag/cmd/swag@latest
       shell: bash
+      working-directory: server
 
     - name: Generate Swagger docs
-      run: cd ${{ inputs.working-directory }} && swag init --pd --parseInternal -g cmd/main.go
+      run: swag init --pd --parseInternal -g cmd/main.go
       shell: bash
+      working-directory: server
       continue-on-error: true
