@@ -72,6 +72,12 @@ func NewRouter(p Params) (*gin.Engine, error) {
 	}
 
 	sessionStore := sessions.NewCookieStore([]byte(p.Config.CookieSecret))
+	sessionStore.Options(sessions.Options{
+		Path:     "/",
+		MaxAge:   p.Config.CookieMaxAge,
+		HttpOnly: p.Config.CookieHttpOnly,
+		Secure:   p.Config.CookieSecure,
+	})
 	sessionMiddleware := sessions.Sessions(p.Config.SessionName, sessionStore)
 
 	router.Use(corsMiddleware)

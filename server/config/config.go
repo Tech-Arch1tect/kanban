@@ -26,15 +26,18 @@ type SMTPConfig struct {
 }
 
 type Config struct {
-	Database     DatabaseConfig
-	CookieSecret string `validate:"required"`
-	SessionName  string `validate:"required"`
-	AllowOrigin  string `validate:"required,url"`
-	AppName      string `validate:"required"`
-	AppUrl       string `validate:"required,url"`
-	SMTP         SMTPConfig
-	RateLimit    RateLimitConfig
-	DataDir      string `validate:"required"`
+	Database       DatabaseConfig
+	CookieSecret   string `validate:"required"`
+	CookieMaxAge   int    `validate:"min=0"`
+	CookieHttpOnly bool
+	CookieSecure   bool
+	SessionName    string `validate:"required"`
+	AllowOrigin    string `validate:"required,url"`
+	AppName        string `validate:"required"`
+	AppUrl         string `validate:"required,url"`
+	SMTP           SMTPConfig
+	RateLimit      RateLimitConfig
+	DataDir        string `validate:"required"`
 }
 
 type RateLimitConfig struct {
@@ -74,11 +77,14 @@ func LoadConfig() (*Config, error) {
 			},
 			SQLite: SQLiteConfig{FilePath: os.Getenv("SQLITE_FILE_PATH")},
 		},
-		CookieSecret: os.Getenv("COOKIE_SECRET"),
-		SessionName:  os.Getenv("SESSION_NAME"),
-		AllowOrigin:  os.Getenv("ALLOW_ORIGIN"),
-		AppName:      os.Getenv("APP_NAME"),
-		AppUrl:       os.Getenv("APP_URL"),
+		CookieSecret:   os.Getenv("COOKIE_SECRET"),
+		CookieMaxAge:   getIntEnv("COOKIE_MAX_AGE", 2592000),
+		CookieHttpOnly: os.Getenv("COOKIE_HTTP_ONLY") != "false",
+		CookieSecure:   os.Getenv("COOKIE_SECURE") != "false",
+		SessionName:    os.Getenv("SESSION_NAME"),
+		AllowOrigin:    os.Getenv("ALLOW_ORIGIN"),
+		AppName:        os.Getenv("APP_NAME"),
+		AppUrl:         os.Getenv("APP_URL"),
 		SMTP: SMTPConfig{
 			Host:     os.Getenv("SMTP_HOST"),
 			Port:     os.Getenv("SMTP_PORT"),
