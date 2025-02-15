@@ -19,10 +19,13 @@ runs:
 
     - name: Download Dependencies
       run: go mod download
+      shell: bash
 
     - name: Install swag CLI
       run: go install github.com/swaggo/swag/cmd/swag@latest
+      shell: bash
 
     - name: Generate Swagger docs
       run: swag init --pd --parseInternal -g cmd/main.go
+      shell: bash
       continue-on-error: true
