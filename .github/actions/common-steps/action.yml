@@ -19,7 +19,7 @@ runs:
         path: |
           ${{ inputs.working-directory }}/pkg/mod
           ${{ inputs.working-directory }}/go.sum
-        key: ${{ runner.os }}-go-${{ hashFiles(inputs.working-directory + '/go.sum') }}
+        key: ${{ runner.os }}-go-${{ hashFiles(format('{0}/go.sum', inputs.working-directory)) }}
 
     - name: Download Dependencies
       run: cd ${{ inputs.working-directory }} && go mod download
