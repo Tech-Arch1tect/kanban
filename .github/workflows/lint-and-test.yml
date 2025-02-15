@@ -79,7 +79,7 @@ jobs:
           path: |
             pkg/mod
             go.sum
-          key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('server/go.sum') }}
       - name: Download Dependencies
         run: go mod download
         shell: bash
