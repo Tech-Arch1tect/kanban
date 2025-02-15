@@ -19,11 +19,33 @@ jobs:
         uses: actions/checkout@v3
       - name: Run common steps
         uses: ./.github/actions/common-steps
-      - name: Uninstall Go
+      - name: Debug and remove Go installation from disk
         run: |
-          echo "Uninstalling Go..."
-          sudo rm -rf "$(go env GOROOT)"
-          echo "Go uninstalled"
+          GO_ROOT=$(go env GOROOT)
+          echo "GO_ROOT is set to: $GO_ROOT"
+          if [ -z "$GO_ROOT" ]; then
+            echo "Error: GOROOT is not set. Exiting."
+            exit 1
+          fi
+          if [ ! -d "$GO_ROOT" ]; then
+            echo "Directory $GO_ROOT does not exist. Nothing to remove."
+          else
+            echo "Directory $GO_ROOT size before removal:"
+            du -sh "$GO_ROOT"
+            echo "Removing directory $GO_ROOT"
+            sudo rm -rf "$GO_ROOT"
+            if [ $? -ne 0 ]; then
+               echo "Error: Failed to remove $GO_ROOT"
+               exit 1
+            fi
+            if [ -d "$GO_ROOT" ]; then
+               echo "Error: Directory $GO_ROOT still exists after removal."
+               exit 1
+            else
+               echo "Directory $GO_ROOT removed successfully."
+            fi
+          fi
+        shell: bash
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
