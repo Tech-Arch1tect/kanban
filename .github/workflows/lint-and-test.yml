@@ -64,9 +64,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Copy server/go.sum
-        run: cp server/go.sum ./
-        shell: bash
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
