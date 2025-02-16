@@ -3,13 +3,14 @@ package integration
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-// TestAdminBoard tests that an admin can create/delete a board.
+// TestAdminBoard tests that an admin can create/get/delete a board.
 func TestAdminBoard(t *testing.T) {
 	client, err := NewAPITestClient()
 	require.NoError(t, err)
@@ -39,6 +40,17 @@ func TestAdminBoard(t *testing.T) {
 	require.Equal(t, "Test Board test", board["name"], "board name should match")
 	require.Equal(t, "test-board-test", board["slug"], "board slug should be lowercased")
 
+	res, err = client.DoRequest("GET", "/api/v1/boards/get/"+fmt.Sprintf("%v", board["id"].(float64)), nil, nil)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, res.StatusCode)
+
+	res, err = client.DoRequest("GET", "/api/v1/boards/get-by-slug/"+board["slug"].(string), nil, nil)
+	require.NoError(t, err)
+	err = json.NewDecoder(res.Body).Decode(&response)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, res.StatusCode)
+	require.Equal(t, "Test Board test", response["board"].(map[string]interface{})["name"], "board name should match")
+
 	deleteBoardData := map[string]interface{}{
 		"id": board["id"].(float64),
 	}
@@ -50,7 +62,7 @@ func TestAdminBoard(t *testing.T) {
 	require.Equal(t, http.StatusOK, res.StatusCode)
 }
 
-// TestUserBoard tests that a user can NOT create/delete a board.
+// TestUserBoard tests that a user can NOT create/get/delete a board.
 func TestUserBoard(t *testing.T) {
 	client, err := NewAPITestClient()
 	require.NoError(t, err)
@@ -74,6 +86,14 @@ func TestUserBoard(t *testing.T) {
 	var response map[string]interface{}
 	err = json.NewDecoder(res.Body).Decode(&response)
 	require.NoError(t, err)
+
+	res, err = client.DoRequest("GET", "/api/v1/boards/get/1", nil, nil)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusForbidden, res.StatusCode)
+
+	res, err = client.DoRequest("GET", "/api/v1/boards/get-by-slug/test-board", nil, nil)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusForbidden, res.StatusCode)
 
 	deleteBoardData := map[string]interface{}{
 		"id": 1,
