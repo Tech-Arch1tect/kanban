@@ -59,6 +59,13 @@ type Params struct {
 }
 
 func NewRouter(p Params) (*gin.Engine, error) {
+	if p.Config.Environment == "production" {
+		log.Println("setting gin mode to release mode")
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		log.Println("Warning: gin mode is set to debug mode. Please use APP_ENVIRONMENT=production environment variable to run in production mode")
+		gin.SetMode(gin.DebugMode)
+	}
 	router := gin.Default()
 
 	corsMiddleware := middleware.Cors(p.Config)

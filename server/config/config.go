@@ -26,6 +26,7 @@ type SMTPConfig struct {
 }
 
 type Config struct {
+	Environment    string `validate:"required,oneof=development production testing"`
 	Database       DatabaseConfig
 	CookieSecret   string `validate:"required"`
 	CookieMaxAge   int    `validate:"min=0"`
@@ -66,6 +67,7 @@ var validate = validator.New()
 
 func LoadConfig() (*Config, error) {
 	cfg := &Config{
+		Environment: os.Getenv("APP_ENVIRONMENT"),
 		Database: DatabaseConfig{
 			Type: os.Getenv("DB_TYPE"),
 			MySQL: MySQLConfig{
@@ -116,6 +118,10 @@ func LoadConfig() (*Config, error) {
 }
 
 func setDefaults(cfg *Config) {
+	if cfg.Environment == "" {
+		cfg.Environment = "production"
+		log.Printf("Using default ENVIRONMENT: %s", cfg.Environment)
+	}
 	if cfg.Database.Type == "" {
 		cfg.Database.Type = "sqlite"
 		log.Printf("Using default DB_TYPE: %s", cfg.Database.Type)
