@@ -82,7 +82,10 @@ func (s *EmailService) SendPlainText(to, subject, body string) error {
 	msg.SetBodyString(mail.TypeTextPlain, body)
 
 	log.Println("Sending plain text email to", to)
-	return s.client.DialAndSend(msg)
+	if s.cfg.Environment != "testing" {
+		return s.client.DialAndSend(msg)
+	}
+	return nil
 }
 
 func (s *EmailService) SendHTMLTemplate(to, subject, tplName string, data interface{}) error {
@@ -109,5 +112,8 @@ func (s *EmailService) SendHTMLTemplate(to, subject, tplName string, data interf
 	msg.SetBodyString(mail.TypeTextHTML, bodyBuffer.String())
 
 	log.Println("Sending HTML email to", to, "using template:", tplName)
-	return s.client.DialAndSend(msg)
+	if s.cfg.Environment != "testing" {
+		return s.client.DialAndSend(msg)
+	}
+	return nil
 }

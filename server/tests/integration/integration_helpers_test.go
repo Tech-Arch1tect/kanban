@@ -27,6 +27,7 @@ func NewAPITestClient() (*APITestClient, error) {
 	os.Setenv("InsertTestData", "true")
 	os.Setenv("COOKIE_SECURE", "false")
 	os.Setenv("RATE_LIMIT_ENABLED", "false")
+	os.Setenv("APP_ENVIRONMENT", "testing")
 
 	router, _, cleanup := initHelper.SetupRouter()
 
