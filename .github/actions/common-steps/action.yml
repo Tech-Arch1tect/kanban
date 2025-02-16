@@ -1,0 +1,29 @@
+name: "Common Steps"
+description: "Reusable steps for lint and test jobs."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          server/pkg/mod
+          server/go.sum
+        key: ${{ runner.os }}-go-${{ hashFiles(format('{0}/go.sum', 'server')) }}
+
+    - name: Download Dependencies
+      run: go mod download
+      shell: bash
+      working-directory: server
+
+    - name: Install swag CLI
+      run: go install github.com/swaggo/swag/cmd/swag@latest
+      shell: bash
+      working-directory: server
+
+    - name: Generate Swagger docs
+      run: swag init --pd --parseInternal -g cmd/main.go
+      shell: bash
+      working-directory: server
+      continue-on-error: true
