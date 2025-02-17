@@ -119,7 +119,7 @@ func TestUserBoard(t *testing.T) {
 	err = json.NewDecoder(res.Body).Decode(&response)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode)
-	require.Len(t, response["boards"], 0)
+	require.Empty(t, response["boards"])
 	defer res.Body.Close()
 
 	res, err = client.DoRequest("GET", "/api/v1/boards/permissions/"+fmt.Sprintf("%v", 1), nil, nil)
