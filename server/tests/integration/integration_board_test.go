@@ -57,6 +57,14 @@ func TestAdminBoard(t *testing.T) {
 	payload, err = json.Marshal(deleteBoardData)
 	require.NoError(t, err)
 
+	res, err = client.DoRequest("GET", "/api/v1/boards/list", nil, nil)
+	require.NoError(t, err)
+	err = json.NewDecoder(res.Body).Decode(&response)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, res.StatusCode)
+	require.Len(t, response["boards"], 2)
+	defer res.Body.Close()
+
 	res, err = client.DoRequest("POST", "/api/v1/boards/delete", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode)
@@ -94,6 +102,14 @@ func TestUserBoard(t *testing.T) {
 	res, err = client.DoRequest("GET", "/api/v1/boards/get-by-slug/test-board", nil, nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusForbidden, res.StatusCode)
+
+	res, err = client.DoRequest("GET", "/api/v1/boards/list", nil, nil)
+	require.NoError(t, err)
+	err = json.NewDecoder(res.Body).Decode(&response)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, res.StatusCode)
+	require.Len(t, response["boards"], 0)
+	defer res.Body.Close()
 
 	deleteBoardData := map[string]interface{}{
 		"id": 1,
