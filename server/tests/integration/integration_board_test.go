@@ -65,6 +65,17 @@ func TestAdminBoard(t *testing.T) {
 	require.Len(t, response["boards"], 2)
 	defer res.Body.Close()
 
+	res, err = client.DoRequest("GET", "/api/v1/boards/permissions/"+fmt.Sprintf("%v", board["id"].(float64)), nil, nil)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, res.StatusCode)
+
+	err = json.NewDecoder(res.Body).Decode(&response)
+	require.NoError(t, err)
+
+	users, ok := response["users"].([]interface{})
+	require.True(t, ok, "Expected users to be a slice")
+	require.Len(t, users, 1, "Expected 1 user")
+
 	res, err = client.DoRequest("POST", "/api/v1/boards/delete", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode)
@@ -110,6 +121,10 @@ func TestUserBoard(t *testing.T) {
 	require.Equal(t, http.StatusOK, res.StatusCode)
 	require.Len(t, response["boards"], 0)
 	defer res.Body.Close()
+
+	res, err = client.DoRequest("GET", "/api/v1/boards/permissions/"+fmt.Sprintf("%v", 1), nil, nil)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusForbidden, res.StatusCode)
 
 	deleteBoardData := map[string]interface{}{
 		"id": 1,
