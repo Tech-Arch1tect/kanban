@@ -363,6 +363,10 @@ func (bc *BoardController) RemoveUserFromBoard(c *gin.Context) {
 
 	err = bc.bs.RemoveUserFromBoard(user.ID, req.UserID, req.BoardID)
 	if err != nil {
+		if err.Error() == "forbidden" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
