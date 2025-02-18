@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"server/tests"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -51,12 +52,6 @@ func TestAdminBoard(t *testing.T) {
 	require.Equal(t, http.StatusOK, res.StatusCode)
 	require.Equal(t, "Test Board test", response["board"].(map[string]interface{})["name"], "board name should match")
 
-	deleteBoardData := map[string]interface{}{
-		"id": board["id"].(float64),
-	}
-	payload, err = json.Marshal(deleteBoardData)
-	require.NoError(t, err)
-
 	res, err = client.DoRequest("GET", "/api/v1/boards/list", nil, nil)
 	require.NoError(t, err)
 	err = json.NewDecoder(res.Body).Decode(&response)
@@ -75,6 +70,24 @@ func TestAdminBoard(t *testing.T) {
 	users, ok := response["users"].([]interface{})
 	require.True(t, ok, "Expected users to be a slice")
 	require.Len(t, users, 1, "Expected 1 user")
+
+	data := map[string]interface{}{
+		"board_id": board["id"].(float64),
+		"email":    tests.TestUser.Email,
+		"role":     "member",
+	}
+	payload, err = json.Marshal(data)
+	require.NoError(t, err)
+
+	res, err = client.DoRequest("POST", "/api/v1/boards/add-or-invite", bytes.NewReader(payload), nil)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, res.StatusCode)
+
+	deleteBoardData := map[string]interface{}{
+		"id": board["id"].(float64),
+	}
+	payload, err = json.Marshal(deleteBoardData)
+	require.NoError(t, err)
 
 	res, err = client.DoRequest("POST", "/api/v1/boards/delete", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
@@ -123,6 +136,18 @@ func TestUserBoard(t *testing.T) {
 	defer res.Body.Close()
 
 	res, err = client.DoRequest("GET", "/api/v1/boards/permissions/"+fmt.Sprintf("%v", 1), nil, nil)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusForbidden, res.StatusCode)
+
+	data := map[string]interface{}{
+		"board_id": 1,
+		"email":    "testinginvite@example.local",
+		"role":     "member",
+	}
+	payload, err = json.Marshal(data)
+	require.NoError(t, err)
+
+	res, err = client.DoRequest("POST", "/api/v1/boards/add-or-invite", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusForbidden, res.StatusCode)
 
