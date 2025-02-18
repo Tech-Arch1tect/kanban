@@ -270,6 +270,10 @@ func (bc *BoardController) AddOrInviteUserToBoard(c *gin.Context) {
 
 	err = bc.bs.AddOrInviteUserToBoard(user.ID, req.BoardID, req.Email, role)
 	if err != nil {
+		if err.Error() == "forbidden" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
