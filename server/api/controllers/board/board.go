@@ -414,6 +414,10 @@ func (bc *BoardController) ChangeBoardRole(c *gin.Context) {
 
 	err = bc.bs.ChangeBoardRole(user.ID, req.UserID, req.BoardID, req.Role)
 	if err != nil {
+		if err.Error() == "forbidden" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
