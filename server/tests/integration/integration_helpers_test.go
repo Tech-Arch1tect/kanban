@@ -12,9 +12,6 @@ import (
 	"server/cmd/initHelper"
 	"server/tests"
 	"strings"
-	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 type APITestClient struct {
@@ -83,6 +80,20 @@ func (c *APITestClient) DoRequest(method, path string, body io.Reader, headers m
 	return c.client.Do(req)
 }
 
+// DoJSONRequest sends a request, decodes the JSON response into v, and closes the response body.
+func (c *APITestClient) DoJSONRequest(method, path string, body io.Reader, headers map[string]string, v interface{}) (*http.Response, error) {
+	res, err := c.DoRequest(method, path, body, headers)
+	if err != nil {
+		return nil, err
+	}
+	err = json.NewDecoder(res.Body).Decode(v)
+	res.Body.Close()
+	if err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
 func (c *APITestClient) GetCSRFToken() (string, error) {
 	res, err := c.client.Get(c.baseURL + "/api/v1/auth/csrf-token")
 	if err != nil {
@@ -141,10 +152,4 @@ func Login(client *APITestClient, role string) error {
 		return errors.New("login failed: unexpected status code")
 	}
 	return nil
-}
-
-func decodeAndCloseResponseBody(t *testing.T, res *http.Response, v interface{}) {
-	defer res.Body.Close()
-	err := json.NewDecoder(res.Body).Decode(v)
-	require.NoError(t, err)
 }

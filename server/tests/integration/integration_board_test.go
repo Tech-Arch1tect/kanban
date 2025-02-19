@@ -31,12 +31,10 @@ func TestAdminBoard(t *testing.T) {
 		payload, err := json.Marshal(boardData)
 		require.NoError(t, err)
 
-		res, err := client.DoRequest("POST", "/api/v1/boards/create", bytes.NewReader(payload), nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("POST", "/api/v1/boards/create", bytes.NewReader(payload), nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
-
-		var response map[string]interface{}
-		decodeAndCloseResponseBody(t, res, &response)
 
 		var ok bool
 		board, ok = response["board"].(map[string]interface{})
@@ -47,12 +45,10 @@ func TestAdminBoard(t *testing.T) {
 
 	t.Run("Get Board by ID", func(t *testing.T) {
 		boardID := fmt.Sprintf("%v", board["id"].(float64))
-		res, err := client.DoRequest("GET", "/api/v1/boards/get/"+boardID, nil, nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("GET", "/api/v1/boards/get/"+boardID, nil, nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
-
-		var response map[string]interface{}
-		decodeAndCloseResponseBody(t, res, &response)
 
 		boardResp, ok := response["board"].(map[string]interface{})
 		require.True(t, ok, "expected board in response")
@@ -60,30 +56,27 @@ func TestAdminBoard(t *testing.T) {
 	})
 
 	t.Run("Get Board by Slug", func(t *testing.T) {
-		res, err := client.DoRequest("GET", "/api/v1/boards/get-by-slug/"+board["slug"].(string), nil, nil)
-		require.NoError(t, err)
 		var response map[string]interface{}
-		decodeAndCloseResponseBody(t, res, &response)
+		res, err := client.DoJSONRequest("GET", "/api/v1/boards/get-by-slug/"+board["slug"].(string), nil, nil, &response)
+		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
 		require.Equal(t, "Test Board test", response["board"].(map[string]interface{})["name"], "board name should match")
 	})
 
 	t.Run("List Boards", func(t *testing.T) {
-		res, err := client.DoRequest("GET", "/api/v1/boards/list", nil, nil)
-		require.NoError(t, err)
 		var response map[string]interface{}
-		decodeAndCloseResponseBody(t, res, &response)
+		res, err := client.DoJSONRequest("GET", "/api/v1/boards/list", nil, nil, &response)
+		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
 		require.Len(t, response["boards"], 2)
 	})
 
 	t.Run("Get Board Permissions", func(t *testing.T) {
 		boardID := fmt.Sprintf("%v", board["id"].(float64))
-		res, err := client.DoRequest("GET", "/api/v1/boards/permissions/"+boardID, nil, nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("GET", "/api/v1/boards/permissions/"+boardID, nil, nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
-		var response map[string]interface{}
-		decodeAndCloseResponseBody(t, res, &response)
 
 		users, ok := response["users"].([]interface{})
 		require.True(t, ok, "Expected users to be a slice")
@@ -99,10 +92,10 @@ func TestAdminBoard(t *testing.T) {
 		payload, err := json.Marshal(data)
 		require.NoError(t, err)
 
-		res, err := client.DoRequest("POST", "/api/v1/boards/add-or-invite", bytes.NewReader(payload), nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("POST", "/api/v1/boards/add-or-invite", bytes.NewReader(payload), nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
-		res.Body.Close()
 	})
 
 	t.Run("Change User Role", func(t *testing.T) {
@@ -114,10 +107,10 @@ func TestAdminBoard(t *testing.T) {
 		payload, err := json.Marshal(data)
 		require.NoError(t, err)
 
-		res, err := client.DoRequest("POST", "/api/v1/boards/change-role", bytes.NewReader(payload), nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("POST", "/api/v1/boards/change-role", bytes.NewReader(payload), nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
-		res.Body.Close()
 	})
 
 	t.Run("Remove User from Board", func(t *testing.T) {
@@ -128,10 +121,10 @@ func TestAdminBoard(t *testing.T) {
 		payload, err := json.Marshal(data)
 		require.NoError(t, err)
 
-		res, err := client.DoRequest("POST", "/api/v1/boards/remove-user", bytes.NewReader(payload), nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("POST", "/api/v1/boards/remove-user", bytes.NewReader(payload), nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
-		res.Body.Close()
 	})
 
 	t.Run("Delete Board", func(t *testing.T) {
@@ -141,10 +134,10 @@ func TestAdminBoard(t *testing.T) {
 		payload, err := json.Marshal(deleteBoardData)
 		require.NoError(t, err)
 
-		res, err := client.DoRequest("POST", "/api/v1/boards/delete", bytes.NewReader(payload), nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("POST", "/api/v1/boards/delete", bytes.NewReader(payload), nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
-		res.Body.Close()
 	})
 }
 
@@ -166,42 +159,40 @@ func TestUserBoard(t *testing.T) {
 		payload, err := json.Marshal(boardData)
 		require.NoError(t, err)
 
-		res, err := client.DoRequest("POST", "/api/v1/boards/create", bytes.NewReader(payload), nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("POST", "/api/v1/boards/create", bytes.NewReader(payload), nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusUnauthorized, res.StatusCode)
-		res.Body.Close()
 	})
 
 	t.Run("Get Board by ID Forbidden", func(t *testing.T) {
-		res, err := client.DoRequest("GET", "/api/v1/boards/get/1", nil, nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("GET", "/api/v1/boards/get/1", nil, nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusForbidden, res.StatusCode)
-		res.Body.Close()
 	})
 
 	t.Run("Get Board by Slug Forbidden", func(t *testing.T) {
-		res, err := client.DoRequest("GET", "/api/v1/boards/get-by-slug/test-board", nil, nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("GET", "/api/v1/boards/get-by-slug/test-board", nil, nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusForbidden, res.StatusCode)
-		res.Body.Close()
 	})
 
 	t.Run("List Boards", func(t *testing.T) {
-		res, err := client.DoRequest("GET", "/api/v1/boards/list", nil, nil)
-		require.NoError(t, err)
-
 		var response map[string]interface{}
-		decodeAndCloseResponseBody(t, res, &response)
+		res, err := client.DoJSONRequest("GET", "/api/v1/boards/list", nil, nil, &response)
+		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
 		require.Empty(t, response["boards"])
 	})
 
 	t.Run("Get Board Permissions Forbidden", func(t *testing.T) {
 		boardID := fmt.Sprintf("%v", 1)
-		res, err := client.DoRequest("GET", "/api/v1/boards/permissions/"+boardID, nil, nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("GET", "/api/v1/boards/permissions/"+boardID, nil, nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusForbidden, res.StatusCode)
-		res.Body.Close()
 	})
 
 	t.Run("Add or Invite User Forbidden", func(t *testing.T) {
@@ -213,10 +204,10 @@ func TestUserBoard(t *testing.T) {
 		payload, err := json.Marshal(data)
 		require.NoError(t, err)
 
-		res, err := client.DoRequest("POST", "/api/v1/boards/add-or-invite", bytes.NewReader(payload), nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("POST", "/api/v1/boards/add-or-invite", bytes.NewReader(payload), nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusForbidden, res.StatusCode)
-		res.Body.Close()
 	})
 
 	t.Run("Change Board Role Forbidden", func(t *testing.T) {
@@ -228,10 +219,10 @@ func TestUserBoard(t *testing.T) {
 		payload, err := json.Marshal(data)
 		require.NoError(t, err)
 
-		res, err := client.DoRequest("POST", "/api/v1/boards/change-role", bytes.NewReader(payload), nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("POST", "/api/v1/boards/change-role", bytes.NewReader(payload), nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusForbidden, res.StatusCode)
-		res.Body.Close()
 	})
 
 	t.Run("Remove User from Board Forbidden", func(t *testing.T) {
@@ -242,10 +233,10 @@ func TestUserBoard(t *testing.T) {
 		payload, err := json.Marshal(data)
 		require.NoError(t, err)
 
-		res, err := client.DoRequest("POST", "/api/v1/boards/remove-user", bytes.NewReader(payload), nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("POST", "/api/v1/boards/remove-user", bytes.NewReader(payload), nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusForbidden, res.StatusCode)
-		res.Body.Close()
 	})
 
 	t.Run("Delete Board Unauthorized", func(t *testing.T) {
@@ -255,9 +246,9 @@ func TestUserBoard(t *testing.T) {
 		payload, err := json.Marshal(deleteBoardData)
 		require.NoError(t, err)
 
-		res, err := client.DoRequest("POST", "/api/v1/boards/delete", bytes.NewReader(payload), nil)
+		var response map[string]interface{}
+		res, err := client.DoJSONRequest("POST", "/api/v1/boards/delete", bytes.NewReader(payload), nil, &response)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusUnauthorized, res.StatusCode)
-		res.Body.Close()
 	})
 }
