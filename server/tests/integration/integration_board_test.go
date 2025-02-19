@@ -86,6 +86,18 @@ func TestAdminBoard(t *testing.T) {
 	data = map[string]interface{}{
 		"board_id": board["id"].(float64),
 		"user_id":  2,
+		"role":     "admin",
+	}
+	payload, err = json.Marshal(data)
+	require.NoError(t, err)
+
+	res, err = client.DoRequest("POST", "/api/v1/boards/change-role", bytes.NewReader(payload), nil)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, res.StatusCode)
+
+	data = map[string]interface{}{
+		"board_id": board["id"].(float64),
+		"user_id":  2,
 	}
 	payload, err = json.Marshal(data)
 	require.NoError(t, err)
@@ -159,6 +171,18 @@ func TestUserBoard(t *testing.T) {
 	require.NoError(t, err)
 
 	res, err = client.DoRequest("POST", "/api/v1/boards/add-or-invite", bytes.NewReader(payload), nil)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusForbidden, res.StatusCode)
+
+	data = map[string]interface{}{
+		"board_id": 1,
+		"user_id":  2,
+		"role":     "admin",
+	}
+	payload, err = json.Marshal(data)
+	require.NoError(t, err)
+
+	res, err = client.DoRequest("POST", "/api/v1/boards/change-role", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusForbidden, res.StatusCode)
 
