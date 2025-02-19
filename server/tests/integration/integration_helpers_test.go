@@ -12,6 +12,9 @@ import (
 	"server/cmd/initHelper"
 	"server/tests"
 	"strings"
+	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 type APITestClient struct {
@@ -138,4 +141,10 @@ func Login(client *APITestClient, role string) error {
 		return errors.New("login failed: unexpected status code")
 	}
 	return nil
+}
+
+func decodeAndCloseResponseBody(t *testing.T, res *http.Response, v interface{}) {
+	defer res.Body.Close()
+	err := json.NewDecoder(res.Body).Decode(v)
+	require.NoError(t, err)
 }

@@ -33,8 +33,7 @@ func TestAdminBoard(t *testing.T) {
 	require.Equal(t, http.StatusOK, res.StatusCode)
 
 	var response map[string]interface{}
-	err = json.NewDecoder(res.Body).Decode(&response)
-	require.NoError(t, err)
+	decodeAndCloseResponseBody(t, res, &response)
 
 	board, ok := response["board"].(map[string]interface{})
 	require.True(t, ok, "board response missing")
@@ -44,28 +43,24 @@ func TestAdminBoard(t *testing.T) {
 	res, err = client.DoRequest("GET", "/api/v1/boards/get/"+fmt.Sprintf("%v", board["id"].(float64)), nil, nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode)
+	res.Body.Close()
 
 	res, err = client.DoRequest("GET", "/api/v1/boards/get-by-slug/"+board["slug"].(string), nil, nil)
 	require.NoError(t, err)
-	err = json.NewDecoder(res.Body).Decode(&response)
-	require.NoError(t, err)
+	decodeAndCloseResponseBody(t, res, &response)
 	require.Equal(t, http.StatusOK, res.StatusCode)
 	require.Equal(t, "Test Board test", response["board"].(map[string]interface{})["name"], "board name should match")
 
 	res, err = client.DoRequest("GET", "/api/v1/boards/list", nil, nil)
 	require.NoError(t, err)
-	err = json.NewDecoder(res.Body).Decode(&response)
-	require.NoError(t, err)
+	decodeAndCloseResponseBody(t, res, &response)
 	require.Equal(t, http.StatusOK, res.StatusCode)
 	require.Len(t, response["boards"], 2)
-	defer res.Body.Close()
 
 	res, err = client.DoRequest("GET", "/api/v1/boards/permissions/"+fmt.Sprintf("%v", board["id"].(float64)), nil, nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode)
-
-	err = json.NewDecoder(res.Body).Decode(&response)
-	require.NoError(t, err)
+	decodeAndCloseResponseBody(t, res, &response)
 
 	users, ok := response["users"].([]interface{})
 	require.True(t, ok, "Expected users to be a slice")
@@ -82,6 +77,7 @@ func TestAdminBoard(t *testing.T) {
 	res, err = client.DoRequest("POST", "/api/v1/boards/add-or-invite", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode)
+	res.Body.Close()
 
 	data = map[string]interface{}{
 		"board_id": board["id"].(float64),
@@ -94,6 +90,7 @@ func TestAdminBoard(t *testing.T) {
 	res, err = client.DoRequest("POST", "/api/v1/boards/change-role", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode)
+	res.Body.Close()
 
 	data = map[string]interface{}{
 		"board_id": board["id"].(float64),
@@ -105,6 +102,7 @@ func TestAdminBoard(t *testing.T) {
 	res, err = client.DoRequest("POST", "/api/v1/boards/remove-user", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode)
+	res.Body.Close()
 
 	deleteBoardData := map[string]interface{}{
 		"id": board["id"].(float64),
@@ -115,6 +113,7 @@ func TestAdminBoard(t *testing.T) {
 	res, err = client.DoRequest("POST", "/api/v1/boards/delete", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, res.StatusCode)
+	res.Body.Close()
 }
 
 // TestUserBoard tests that a user can NOT create/get/delete a board.
@@ -137,30 +136,29 @@ func TestUserBoard(t *testing.T) {
 	res, err := client.DoRequest("POST", "/api/v1/boards/create", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusUnauthorized, res.StatusCode)
+	res.Body.Close()
 
 	var response map[string]interface{}
-	err = json.NewDecoder(res.Body).Decode(&response)
-	require.NoError(t, err)
-
 	res, err = client.DoRequest("GET", "/api/v1/boards/get/1", nil, nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusForbidden, res.StatusCode)
+	res.Body.Close()
 
 	res, err = client.DoRequest("GET", "/api/v1/boards/get-by-slug/test-board", nil, nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusForbidden, res.StatusCode)
+	res.Body.Close()
 
 	res, err = client.DoRequest("GET", "/api/v1/boards/list", nil, nil)
 	require.NoError(t, err)
-	err = json.NewDecoder(res.Body).Decode(&response)
-	require.NoError(t, err)
+	decodeAndCloseResponseBody(t, res, &response)
 	require.Equal(t, http.StatusOK, res.StatusCode)
 	require.Empty(t, response["boards"])
-	defer res.Body.Close()
 
 	res, err = client.DoRequest("GET", "/api/v1/boards/permissions/"+fmt.Sprintf("%v", 1), nil, nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusForbidden, res.StatusCode)
+	res.Body.Close()
 
 	data := map[string]interface{}{
 		"board_id": 1,
@@ -173,6 +171,7 @@ func TestUserBoard(t *testing.T) {
 	res, err = client.DoRequest("POST", "/api/v1/boards/add-or-invite", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusForbidden, res.StatusCode)
+	res.Body.Close()
 
 	data = map[string]interface{}{
 		"board_id": 1,
@@ -185,6 +184,7 @@ func TestUserBoard(t *testing.T) {
 	res, err = client.DoRequest("POST", "/api/v1/boards/change-role", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusForbidden, res.StatusCode)
+	res.Body.Close()
 
 	data = map[string]interface{}{
 		"board_id": 1,
@@ -196,6 +196,7 @@ func TestUserBoard(t *testing.T) {
 	res, err = client.DoRequest("POST", "/api/v1/boards/remove-user", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusForbidden, res.StatusCode)
+	res.Body.Close()
 
 	deleteBoardData := map[string]interface{}{
 		"id": 1,
@@ -206,4 +207,5 @@ func TestUserBoard(t *testing.T) {
 	res, err = client.DoRequest("POST", "/api/v1/boards/delete", bytes.NewReader(payload), nil)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusUnauthorized, res.StatusCode)
+	res.Body.Close()
 }
