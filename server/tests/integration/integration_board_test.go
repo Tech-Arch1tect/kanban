@@ -50,7 +50,13 @@ func TestAdminBoard(t *testing.T) {
 		res, err := client.DoRequest("GET", "/api/v1/boards/get/"+boardID, nil, nil)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
-		res.Body.Close()
+
+		var response map[string]interface{}
+		decodeAndCloseResponseBody(t, res, &response)
+
+		boardResp, ok := response["board"].(map[string]interface{})
+		require.True(t, ok, "expected board in response")
+		require.Equal(t, "Test Board test", boardResp["name"], "board name should match")
 	})
 
 	t.Run("Get Board by Slug", func(t *testing.T) {
