@@ -11,6 +11,23 @@ type CreateCommentResponse struct {
 	Comment models.Comment `json:"comment"`
 }
 
+type CreateCommentReactionRequest struct {
+	CommentID uint   `json:"comment_id"`
+	Reaction  string `json:"reaction"`
+}
+
+type CreateCommentReactionResponse struct {
+	Reaction models.Reaction `json:"reaction"`
+}
+
+type DeleteCommentReactionRequest struct {
+	ReactionID uint `json:"reaction_id"`
+}
+
+type DeleteCommentReactionResponse struct {
+	Reaction models.Reaction `json:"reaction"`
+}
+
 type DeleteCommentRequest struct {
 	ID uint `json:"id"`
 }

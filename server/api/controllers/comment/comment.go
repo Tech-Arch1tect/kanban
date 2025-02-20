@@ -66,6 +66,46 @@ func (cc *CommentController) CreateComment(c *gin.Context) {
 	c.JSON(http.StatusOK, CreateCommentResponse{Comment: comment})
 }
 
+// @Summary Create a comment reaction
+// @Description Create a reaction for a comment
+// @Tags comments
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body CreateCommentReactionRequest true "Create comment reaction request"
+// @Success 200 {object} CreateCommentReactionResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/comments/create-reaction [post]
+func (cc *CommentController) CreateCommentReaction(c *gin.Context) {
+	var request CreateCommentReactionRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := cc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	reaction, err := cc.cs.CreateCommentReaction(user.ID, request.CommentID, request.Reaction)
+	if err != nil {
+		status := http.StatusInternalServerError
+		if err.Error() == "forbidden" {
+			status = http.StatusForbidden
+		}
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, CreateCommentReactionResponse{Reaction: reaction})
+}
+
 // @Summary Delete a comment
 // @Description Delete a comment
 // @Tags comments
@@ -108,6 +148,46 @@ func (cc *CommentController) DeleteComment(c *gin.Context) {
 	cc.ce.Publish("comment.deleted", comment, user)
 
 	c.JSON(http.StatusOK, DeleteCommentResponse{Comment: comment})
+}
+
+// @Summary Delete a comment reaction
+// @Description Delete a reaction for a comment
+// @Tags comments
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body DeleteCommentReactionRequest true "Delete comment reaction request"
+// @Success 200 {object} DeleteCommentReactionResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/comments/delete-reaction [post]
+func (cc *CommentController) DeleteCommentReaction(c *gin.Context) {
+	var request DeleteCommentReactionRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := cc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	reaction, err := cc.cs.DeleteCommentReaction(user.ID, request.ReactionID)
+	if err != nil {
+		status := http.StatusInternalServerError
+		if err.Error() == "forbidden" {
+			status = http.StatusForbidden
+		}
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, DeleteCommentReactionResponse{Reaction: reaction})
 }
 
 // @Summary Edit a comment

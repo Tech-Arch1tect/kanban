@@ -10,5 +10,7 @@ func (r *router) RegisterCommentRoutes(router *gin.RouterGroup) {
 		comment.POST("/create", r.cr.CommentController.CreateComment)
 		comment.POST("/delete", r.cr.CommentController.DeleteComment)
 		comment.POST("/edit", r.cr.CommentController.EditComment)
+		comment.POST("/create-reaction", r.cr.CommentController.CreateCommentReaction)
+		comment.POST("/delete-reaction", r.cr.CommentController.DeleteCommentReaction)
 	}
 }
