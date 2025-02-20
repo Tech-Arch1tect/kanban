@@ -15,7 +15,7 @@ func (cs *CommentService) GetComment(commentID uint) (models.Comment, error) {
 }
 
 func (cs *CommentService) GetCommentReaction(reactionID uint) (models.Reaction, error) {
-	reaction, err := cs.db.CommentReactionRepository.GetByID(reactionID, repository.WithPreload("Comment"), repository.WithPreload("User"), repository.WithPreload("Comment.Task"))
+	reaction, err := cs.db.CommentReactionRepository.GetByID(reactionID, repository.WithPreload("Comment"), repository.WithPreload("User"), repository.WithPreload("Comment.Task"), repository.WithPreload("Comment.User"), repository.WithPreload("Comment.Task.Board"))
 	if err != nil {
 		return models.Reaction{}, err
 	}
