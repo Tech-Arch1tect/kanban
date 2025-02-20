@@ -17,4 +17,6 @@ export const friendlyEventNames: Record<string, string> = {
   "externallink.created": "External link created",
   "externallink.updated": "External link updated",
   "externallink.deleted": "External link deleted",
+  "reaction.created": "Comment reaction created",
+  "reaction.deleted": "Comment reaction deleted",
 };
