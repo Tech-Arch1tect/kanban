@@ -59,5 +59,5 @@ func (cs *CommentService) CreateCommentReaction(userID, commentID uint, reaction
 		return models.Reaction{}, err
 	}
 
-	return reaction, nil
+	return cs.GetCommentReaction(reaction.ID)
 }
