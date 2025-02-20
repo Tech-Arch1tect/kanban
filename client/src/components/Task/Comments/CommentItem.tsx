@@ -24,6 +24,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
   const [editText, setEditText] = useState(comment.text || "");
+  const [isHovered, setIsHovered] = useState(false);
 
   const { usernames, isLoading } = useBoardUsernames(boardId);
 
@@ -41,7 +42,11 @@ const CommentItem: React.FC<CommentItemProps> = ({
   };
 
   return (
-    <div className="p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 shadow-sm">
+    <div
+      className="p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 shadow-sm relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {isEditing ? (
         <form onSubmit={handleEditSubmit} className="space-y-3">
           {isPreview ? (
@@ -108,11 +113,15 @@ const CommentItem: React.FC<CommentItemProps> = ({
             <span className="font-medium text-gray-700 dark:text-gray-200">
               {comment.user?.username || "Unknown User"}
             </span>
-            <div className="flex items-center space-x-3">
-              <ReactionPicker
-                commentId={comment.id as number}
-                taskId={comment.taskId as number}
-              />
+            <div className="flex items-center space-x-3 relative">
+              <div className="relative">
+                {isHovered && (
+                  <ReactionPicker
+                    commentId={comment.id as number}
+                    taskId={comment.taskId as number}
+                  />
+                )}
+              </div>
               <div className="text-gray-600 dark:text-gray-300 text-sm">
                 <span className="block">
                   Created:{" "}
@@ -131,7 +140,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
               </div>
             </div>
           </div>
-
           {profile?.id === comment.user?.id && (
             <div className="flex space-x-2 mt-3">
               <button
