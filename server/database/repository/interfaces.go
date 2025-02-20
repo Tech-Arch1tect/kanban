@@ -33,6 +33,7 @@ type Database struct {
 	NotificationConfigurationRepository NotificationConfigurationRepository
 	NotificationEventRepository         NotificationEventRepository
 	NotificationLogRepository           NotificationLogRepository
+	CommentReactionRepository           CommentReactionRepository
 }
 
 func (db *Database) Migrate() error {
@@ -112,6 +113,11 @@ func (db *Database) Migrate() error {
 	}
 
 	err = db.NotificationLogRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	err = db.CommentReactionRepository.Migrate()
 	if err != nil {
 		return err
 	}

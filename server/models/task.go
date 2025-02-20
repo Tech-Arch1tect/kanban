@@ -47,11 +47,21 @@ func (t *Task) Validate() error {
 
 type Comment struct {
 	Model
-	User   User   `gorm:"foreignKey:UserID" json:"user"`
-	UserID uint   `json:"user_id"`
-	Task   Task   `gorm:"foreignKey:TaskID" json:"task"`
-	TaskID uint   `json:"task_id"`
-	Text   string `json:"text"`
+	User      User       `gorm:"foreignKey:UserID" json:"user"`
+	UserID    uint       `json:"user_id"`
+	Task      Task       `gorm:"foreignKey:TaskID" json:"task"`
+	TaskID    uint       `json:"task_id"`
+	Text      string     `json:"text"`
+	Reactions []Reaction `gorm:"foreignKey:CommentID" json:"reactions"`
+}
+
+type Reaction struct {
+	Model
+	CommentID uint    `json:"comment_id" gorm:"not null; uniqueIndex:idx_reactions"`
+	Comment   Comment `gorm:"foreignKey:CommentID" json:"comment"`
+	User      User    `gorm:"foreignKey:UserID" json:"user"`
+	UserID    uint    `json:"user_id" gorm:"not null; uniqueIndex:idx_reactions"`
+	Reaction  string  `json:"reaction" gorm:"not null; uniqueIndex:idx_reactions"`
 }
 
 type File struct {

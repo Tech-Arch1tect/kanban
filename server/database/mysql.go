@@ -52,5 +52,6 @@ func newMySQLDB(cfg *config.Config) (*repository.Database, error) {
 		NotificationConfigurationRepository: repository.NewNotificationConfigurationRepository(gormDB),
 		NotificationEventRepository:         repository.NewNotificationEventRepository(gormDB),
 		NotificationLogRepository:           repository.NewNotificationLogRepository(gormDB),
+		CommentReactionRepository:           repository.NewCommentReactionRepository(gormDB),
 	}, nil
 }
