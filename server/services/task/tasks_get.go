@@ -21,6 +21,7 @@ func (ts *TaskService) CommonPreloadFields() []string {
 		"Subtasks.Creator", "Subtasks.Assignee", "Subtasks.Comments", "Subtasks.Comments.User", "Subtasks.Files",
 		"Subtasks.SrcLinks", "Subtasks.DstLinks", "Subtasks.SrcLinks.SrcTask", "Subtasks.SrcLinks.DstTask",
 		"Subtasks.DstLinks.DstTask", "Subtasks.DstLinks.SrcTask", "Subtasks.ExternalLinks", "Subtasks.ParentTask",
+		"Comments.Reactions", "Comments.Reactions.User",
 	}
 }
 
