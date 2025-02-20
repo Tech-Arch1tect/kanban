@@ -1,8 +1,6 @@
 module server
 
-go 1.23
-
-toolchain go1.23.2
+go 1.24
 
 require (
 	github.com/go-playground/validator/v10 v10.25.0
@@ -20,7 +18,7 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/boj/redistore v1.3.0 // indirect
 	github.com/boombuler/barcode v1.0.2 // indirect
-	github.com/bytedance/sonic v1.12.8 // indirect
+	github.com/bytedance/sonic v1.12.9 // indirect
 	github.com/bytedance/sonic/loader v0.2.3 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -65,12 +63,12 @@ require (
 require (
 	github.com/gin-gonic/contrib v0.0.0-20250113154928-93b827325fec
 	github.com/gin-gonic/gin v1.10.0
-	github.com/go-sql-driver/mysql v1.8.1 // indirect
+	github.com/go-sql-driver/mysql v1.9.0 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/pquerna/otp v1.4.0
-	github.com/wneessen/go-mail v0.6.1
+	github.com/wneessen/go-mail v0.6.2
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 )
