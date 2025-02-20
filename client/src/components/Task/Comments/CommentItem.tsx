@@ -1,8 +1,10 @@
-import React, { useState, memo } from "react";
+import { useState, memo } from "react";
 import RenderMarkdown from "../../Utility/RenderMarkdown";
 import { ModelsComment, ModelsUser } from "../../../typescript-fetch-client";
 import MentionableTextarea from "../../Utility/MentionableTextarea";
 import { useBoardUsernames } from "../../../hooks/boards/useBoardUsernames";
+import ReactionList from "./ReactionList";
+import ReactionPicker from "./ReactionPicker";
 
 interface CommentItemProps {
   comment: ModelsComment;
@@ -101,27 +103,35 @@ const CommentItem: React.FC<CommentItemProps> = ({
           <div className="text-gray-800 dark:text-gray-200">
             <RenderMarkdown markdown={comment.text || ""} />
           </div>
-          <div className="mt-3 text-sm flex justify-between items-center">
+          <ReactionList reactions={comment.reactions || []} />
+          <div className="mt-3 flex justify-between items-center">
             <span className="font-medium text-gray-700 dark:text-gray-200">
               {comment.user?.username || "Unknown User"}
             </span>
-            <div className="text-gray-600 dark:text-gray-300">
-              <span className="block">
-                Created:{" "}
-                {comment.createdAt
-                  ? new Date(comment.createdAt).toLocaleString()
-                  : "Unknown Date"}
-              </span>
-              {comment.updatedAt !== comment.createdAt && (
+            <div className="flex items-center space-x-3">
+              <ReactionPicker
+                commentId={comment.id as number}
+                taskId={comment.taskId as number}
+              />
+              <div className="text-gray-600 dark:text-gray-300 text-sm">
                 <span className="block">
-                  Updated:{" "}
-                  {comment.updatedAt
-                    ? new Date(comment.updatedAt).toLocaleString()
+                  Created:{" "}
+                  {comment.createdAt
+                    ? new Date(comment.createdAt).toLocaleString()
                     : "Unknown Date"}
                 </span>
-              )}
+                {comment.updatedAt !== comment.createdAt && (
+                  <span className="block">
+                    Updated:{" "}
+                    {comment.updatedAt
+                      ? new Date(comment.updatedAt).toLocaleString()
+                      : "Unknown Date"}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
+
           {profile?.id === comment.user?.id && (
             <div className="flex space-x-2 mt-3">
               <button
