@@ -33,3 +33,31 @@ func (cs *CommentService) CreateComment(userID, taskID uint, text string) (model
 
 	return comment, nil
 }
+
+func (cs *CommentService) CreateCommentReaction(userID, commentID uint, reactionStr string) (models.Reaction, error) {
+	comment, err := cs.GetComment(commentID)
+	if err != nil {
+		return models.Reaction{}, err
+	}
+
+	can, err := cs.rs.CheckRole(userID, comment.Task.BoardID, role.MemberRole)
+	if err != nil {
+		return models.Reaction{}, err
+	}
+
+	if !can {
+		return models.Reaction{}, errors.New("forbidden")
+	}
+
+	reaction := models.Reaction{
+		CommentID: commentID,
+		UserID:    userID,
+		Reaction:  reactionStr,
+	}
+
+	if err := cs.db.CommentReactionRepository.Create(&reaction); err != nil {
+		return models.Reaction{}, err
+	}
+
+	return reaction, nil
+}
