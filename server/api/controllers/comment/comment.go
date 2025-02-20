@@ -13,15 +13,16 @@ import (
 )
 
 type CommentController struct {
-	cs *comment.CommentService
-	hs *helpers.HelperService
-	rs *role.RoleService
-	db *repository.Database
-	ce *eventBus.EventBus[models.Comment]
+	cs  *comment.CommentService
+	hs  *helpers.HelperService
+	rs  *role.RoleService
+	db  *repository.Database
+	ce  *eventBus.EventBus[models.Comment]
+	cre *eventBus.EventBus[models.Reaction]
 }
 
-func NewCommentController(cs *comment.CommentService, hs *helpers.HelperService, rs *role.RoleService, db *repository.Database, ce *eventBus.EventBus[models.Comment]) *CommentController {
-	return &CommentController{cs: cs, hs: hs, rs: rs, db: db, ce: ce}
+func NewCommentController(cs *comment.CommentService, hs *helpers.HelperService, rs *role.RoleService, db *repository.Database, ce *eventBus.EventBus[models.Comment], cre *eventBus.EventBus[models.Reaction]) *CommentController {
+	return &CommentController{cs: cs, hs: hs, rs: rs, db: db, ce: ce, cre: cre}
 }
 
 // @Summary Create a comment
@@ -102,6 +103,8 @@ func (cc *CommentController) CreateCommentReaction(c *gin.Context) {
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
+
+	cc.cre.Publish("reaction.created", reaction, user)
 
 	c.JSON(http.StatusOK, CreateCommentReactionResponse{Reaction: reaction})
 }
@@ -186,6 +189,8 @@ func (cc *CommentController) DeleteCommentReaction(c *gin.Context) {
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
+
+	cc.cre.Publish("reaction.deleted", reaction, user)
 
 	c.JSON(http.StatusOK, DeleteCommentReactionResponse{Reaction: reaction})
 }

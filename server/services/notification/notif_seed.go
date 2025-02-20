@@ -24,6 +24,11 @@ var commentEvents = []string{
 	"comment.deleted",
 }
 
+var reactionEvents = []string{
+	"reaction.created",
+	"reaction.deleted",
+}
+
 var fileEvents = []string{
 	"file.created",
 	"file.updated",
@@ -41,7 +46,7 @@ var externalLinkEvents = []string{
 	"externallink.deleted",
 }
 
-var AllEvents = append(append(append(append(taskEvents, commentEvents...), fileEvents...), linkEvents...), externalLinkEvents...)
+var AllEvents = append(append(append(append(append(taskEvents, commentEvents...), fileEvents...), linkEvents...), externalLinkEvents...), reactionEvents...)
 
 func (ns *NotificationService) SeedNotificationEvents() error {
 	for _, event := range AllEvents {

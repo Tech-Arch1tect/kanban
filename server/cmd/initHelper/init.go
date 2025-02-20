@@ -34,28 +34,29 @@ import (
 
 type Params struct {
 	fx.In
-	Config               *config.Config
-	DB                   *repository.Database
-	AuthS                *auth.AuthService
-	AdminS               *admin.AdminService
-	RoleS                *role.RoleService
-	BoardS               *board.BoardService
-	ColumnS              *column.ColumnService
-	SwimlaneS            *swimlane.SwimlaneService
-	TaskS                *task.TaskService
-	CommentS             *comment.CommentService
-	SettingsS            *settings.SettingsService
-	EmailS               *email.EmailService
-	Helpers              *helpers.HelperService
-	TestDataService      *testdata.TestdataService
-	MW                   *middleware.Middleware
-	NotifS               *notification.NotificationService
-	TaskEventBus         *eventBus.EventBus[models.Task]
-	CommentEventBus      *eventBus.EventBus[models.Comment]
-	FileEventBus         *eventBus.EventBus[models.File]
-	LinkEventBus         *eventBus.EventBus[models.TaskLinks]
-	ExternalLinkEventBus *eventBus.EventBus[models.TaskExternalLink]
-	NotifSubscriber      *notification.NotificationSubscriber
+	Config                  *config.Config
+	DB                      *repository.Database
+	AuthS                   *auth.AuthService
+	AdminS                  *admin.AdminService
+	RoleS                   *role.RoleService
+	BoardS                  *board.BoardService
+	ColumnS                 *column.ColumnService
+	SwimlaneS               *swimlane.SwimlaneService
+	TaskS                   *task.TaskService
+	CommentS                *comment.CommentService
+	SettingsS               *settings.SettingsService
+	EmailS                  *email.EmailService
+	Helpers                 *helpers.HelperService
+	TestDataService         *testdata.TestdataService
+	MW                      *middleware.Middleware
+	NotifS                  *notification.NotificationService
+	TaskEventBus            *eventBus.EventBus[models.Task]
+	CommentEventBus         *eventBus.EventBus[models.Comment]
+	FileEventBus            *eventBus.EventBus[models.File]
+	LinkEventBus            *eventBus.EventBus[models.TaskLinks]
+	ExternalLinkEventBus    *eventBus.EventBus[models.TaskExternalLink]
+	CommentReactionEventBus *eventBus.EventBus[models.Reaction]
+	NotifSubscriber         *notification.NotificationSubscriber
 }
 
 func NewRouter(p Params) (*gin.Engine, error) {
@@ -113,6 +114,7 @@ func NewRouter(p Params) (*gin.Engine, error) {
 		p.FileEventBus,
 		p.LinkEventBus,
 		p.ExternalLinkEventBus,
+		p.CommentReactionEventBus,
 	)
 	appRouter := routes.NewRouter(ctrls, p.Config, p.DB, p.MW)
 	appRouter.RegisterRoutes(router)
@@ -156,6 +158,7 @@ func SetupRouter() (*gin.Engine, *config.Config, func()) {
 			eventBus.NewFileEventBus,
 			eventBus.NewTaskLinkEventBus,
 			eventBus.NewTaskExternalLinkEventBus,
+			eventBus.NewCommentReactionEventBus,
 			notification.NewNotificationSubscriber,
 			testdata.NewTestdataService,
 			NewRouter,
