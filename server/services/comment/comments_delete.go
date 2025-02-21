@@ -7,7 +7,7 @@ import (
 	"server/services/role"
 )
 
-func (cs *CommentService) DeleteComment(userID, commentID uint) (models.Comment, error) {
+func (cs *CommentService) DeleteCommentRequest(userID, commentID uint) (models.Comment, error) {
 	comment, err := cs.db.CommentRepository.GetByID(commentID, repository.WithPreload("Task"))
 	if err != nil {
 		return models.Comment{}, err
@@ -22,14 +22,28 @@ func (cs *CommentService) DeleteComment(userID, commentID uint) (models.Comment,
 		return models.Comment{}, errors.New("forbidden")
 	}
 
-	if err := cs.db.CommentRepository.Delete(comment.ID); err != nil {
+	err = cs.DeleteComment(comment.ID)
+	if err != nil {
 		return models.Comment{}, err
 	}
 
 	return comment, nil
 }
 
-func (cs *CommentService) DeleteCommentReaction(userID, reactionID uint) (models.Reaction, error) {
+func (cs *CommentService) DeleteComment(commentID uint) error {
+	reactions, err := cs.db.CommentReactionRepository.GetAll(repository.WithWhere("comment_id = ?", commentID))
+	if err != nil {
+		return err
+	}
+
+	for _, reaction := range reactions {
+		cs.DeleteCommentReaction(reaction.ID)
+	}
+
+	return cs.db.CommentRepository.Delete(commentID)
+}
+
+func (cs *CommentService) DeleteCommentReactionRequest(userID, reactionID uint) (models.Reaction, error) {
 	reaction, err := cs.GetCommentReaction(reactionID)
 	if err != nil {
 		return models.Reaction{}, err
@@ -53,9 +67,14 @@ func (cs *CommentService) DeleteCommentReaction(userID, reactionID uint) (models
 		return models.Reaction{}, errors.New("forbidden")
 	}
 
-	if err := cs.db.CommentReactionRepository.HardDelete(reaction.ID); err != nil {
+	err = cs.DeleteCommentReaction(reaction.ID)
+	if err != nil {
 		return models.Reaction{}, err
 	}
 
 	return reaction, nil
+}
+
+func (cs *CommentService) DeleteCommentReaction(reactionID uint) error {
+	return cs.db.CommentReactionRepository.HardDelete(reactionID)
 }

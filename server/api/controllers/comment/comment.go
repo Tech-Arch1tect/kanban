@@ -136,7 +136,7 @@ func (cc *CommentController) DeleteComment(c *gin.Context) {
 		return
 	}
 
-	comment, err := cc.cs.DeleteComment(user.ID, request.ID)
+	comment, err := cc.cs.DeleteCommentRequest(user.ID, request.ID)
 	if err != nil {
 		status := http.StatusInternalServerError
 		if err.Error() == "forbidden" {
@@ -180,7 +180,7 @@ func (cc *CommentController) DeleteCommentReaction(c *gin.Context) {
 		return
 	}
 
-	reaction, err := cc.cs.DeleteCommentReaction(user.ID, request.ReactionID)
+	reaction, err := cc.cs.DeleteCommentReactionRequest(user.ID, request.ReactionID)
 	if err != nil {
 		status := http.StatusInternalServerError
 		if err.Error() == "forbidden" {
