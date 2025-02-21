@@ -39,7 +39,10 @@ func (bs *BoardService) DeleteBoard(id uint) error {
 	}
 
 	for _, swimlane := range swimlanes {
-		bs.ss.DeleteSwimlane(swimlane.ID)
+		err = bs.ss.DeleteSwimlane(swimlane.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	// delete columns
@@ -49,7 +52,10 @@ func (bs *BoardService) DeleteBoard(id uint) error {
 	}
 
 	for _, column := range columns {
-		bs.cs.DeleteColumn(column.ID)
+		err = bs.cs.DeleteColumn(column.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	// delete tasks
@@ -59,7 +65,10 @@ func (bs *BoardService) DeleteBoard(id uint) error {
 	}
 
 	for _, task := range tasks {
-		bs.ts.DeleteTask(task.ID)
+		err = bs.ts.DeleteTask(task.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	// delete board

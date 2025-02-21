@@ -43,7 +43,10 @@ func (ts *TaskService) DeleteTask(taskID uint) error {
 	}
 
 	for _, subtask := range subtasks {
-		ts.DeleteTask(subtask.ID)
+		err = ts.DeleteTask(subtask.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	comments, err := ts.db.CommentRepository.GetAll(repository.WithWhere("task_id = ?", task.ID))
@@ -52,7 +55,10 @@ func (ts *TaskService) DeleteTask(taskID uint) error {
 	}
 
 	for _, comment := range comments {
-		ts.cs.DeleteComment(comment.ID)
+		err = ts.cs.DeleteComment(comment.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	dstLinks, err := ts.db.TaskLinkRepository.GetAll(repository.WithWhere("dst_task_id = ?", task.ID))
@@ -61,7 +67,10 @@ func (ts *TaskService) DeleteTask(taskID uint) error {
 	}
 
 	for _, dstLink := range dstLinks {
-		ts.DeleteTaskLink(dstLink.ID)
+		err = ts.DeleteTaskLink(dstLink.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	srcLinks, err := ts.db.TaskLinkRepository.GetAll(repository.WithWhere("src_task_id = ?", task.ID))
@@ -70,7 +79,10 @@ func (ts *TaskService) DeleteTask(taskID uint) error {
 	}
 
 	for _, srcLink := range srcLinks {
-		ts.DeleteTaskLink(srcLink.ID)
+		err = ts.DeleteTaskLink(srcLink.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	externalLinks, err := ts.db.TaskExternalLinkRepository.GetAll(repository.WithWhere("task_id = ?", task.ID))
@@ -79,7 +91,10 @@ func (ts *TaskService) DeleteTask(taskID uint) error {
 	}
 
 	for _, externalLink := range externalLinks {
-		ts.DeleteTaskExternalLink(externalLink.ID)
+		err = ts.DeleteTaskExternalLink(externalLink.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	files, err := ts.db.FileRepository.GetAll(repository.WithWhere("task_id = ?", task.ID))
@@ -88,7 +103,10 @@ func (ts *TaskService) DeleteTask(taskID uint) error {
 	}
 
 	for _, file := range files {
-		ts.DeleteFile(file.ID)
+		err = ts.DeleteFile(file.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	return ts.db.TaskRepository.Delete(taskID)

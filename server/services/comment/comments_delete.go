@@ -37,7 +37,10 @@ func (cs *CommentService) DeleteComment(commentID uint) error {
 	}
 
 	for _, reaction := range reactions {
-		cs.DeleteCommentReaction(reaction.ID)
+		err = cs.DeleteCommentReaction(reaction.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	return cs.db.CommentRepository.Delete(commentID)
