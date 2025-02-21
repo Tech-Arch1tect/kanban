@@ -496,6 +496,11 @@ func (tc *TaskController) CreateTaskLink(c *gin.Context) {
 		return
 	}
 
+	if request.SrcTaskID == request.DstTaskID {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Source and destination task IDs cannot be the same"})
+		return
+	}
+
 	link, err := tc.ts.CreateTaskLink(user.ID, request.SrcTaskID, request.DstTaskID, request.LinkType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
