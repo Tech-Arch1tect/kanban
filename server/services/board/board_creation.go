@@ -84,5 +84,17 @@ func (bs *BoardService) DeleteBoard(id uint) error {
 		}
 	}
 
+	userBoardRoles, err := bs.db.UserBoardRoleRepository.GetAll(repository.WithWhere("board_id = ?", id))
+	if err != nil {
+		return err
+	}
+
+	for _, userBoardRole := range userBoardRoles {
+		err = bs.rs.RemoveRole(userBoardRole.UserID, userBoardRole.BoardID)
+		if err != nil {
+			return err
+		}
+	}
+
 	return bs.db.BoardRepository.Delete(id)
 }
