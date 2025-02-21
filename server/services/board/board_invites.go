@@ -36,6 +36,10 @@ func (bs *BoardService) InviteUserToBoard(boardID uint, email string, roleName s
 	return nil
 }
 
+func (bs *BoardService) DeleteBoardInvite(boardInviteID uint) error {
+	return bs.db.BoardInviteRepository.Delete(boardInviteID)
+}
+
 func (bs *BoardService) GetPendingInvites(userID, boardID uint) ([]models.BoardInvite, error) {
 	can, err := bs.rs.CheckRole(userID, boardID, role.AdminRole)
 	if err != nil || !can {

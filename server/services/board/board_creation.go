@@ -71,6 +71,18 @@ func (bs *BoardService) DeleteBoard(id uint) error {
 		}
 	}
 
-	// delete board
+	// delete board invites
+	boardInvites, err := bs.db.BoardInviteRepository.GetAll(repository.WithWhere("board_id = ?", id))
+	if err != nil {
+		return err
+	}
+
+	for _, boardInvite := range boardInvites {
+		err = bs.DeleteBoardInvite(boardInvite.ID)
+		if err != nil {
+			return err
+		}
+	}
+
 	return bs.db.BoardRepository.Delete(id)
 }
