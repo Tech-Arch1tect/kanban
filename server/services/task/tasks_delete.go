@@ -2,6 +2,7 @@ package task
 
 import (
 	"errors"
+	"server/database/repository"
 	"server/models"
 	"server/services/role"
 
@@ -31,5 +32,64 @@ func (ts *TaskService) DeleteTaskRequest(userID, taskID uint) (models.Task, erro
 }
 
 func (ts *TaskService) DeleteTask(taskID uint) error {
+	task, err := ts.db.TaskRepository.GetByID(taskID)
+	if err != nil {
+		return err
+	}
+
+	subtasks, err := ts.db.TaskRepository.GetAll(repository.WithWhere("parent_task_id = ?", task.ID))
+	if err != nil {
+		return err
+	}
+
+	for _, subtask := range subtasks {
+		ts.DeleteTask(subtask.ID)
+	}
+
+	comments, err := ts.db.CommentRepository.GetAll(repository.WithWhere("task_id = ?", task.ID))
+	if err != nil {
+		return err
+	}
+
+	for _, comment := range comments {
+		ts.cs.DeleteComment(comment.ID)
+	}
+
+	dstLinks, err := ts.db.TaskLinkRepository.GetAll(repository.WithWhere("dst_task_id = ?", task.ID))
+	if err != nil {
+		return err
+	}
+
+	for _, dstLink := range dstLinks {
+		ts.DeleteTaskLink(dstLink.ID)
+	}
+
+	srcLinks, err := ts.db.TaskLinkRepository.GetAll(repository.WithWhere("src_task_id = ?", task.ID))
+	if err != nil {
+		return err
+	}
+
+	for _, srcLink := range srcLinks {
+		ts.DeleteTaskLink(srcLink.ID)
+	}
+
+	externalLinks, err := ts.db.TaskExternalLinkRepository.GetAll(repository.WithWhere("task_id = ?", task.ID))
+	if err != nil {
+		return err
+	}
+
+	for _, externalLink := range externalLinks {
+		ts.DeleteTaskExternalLink(externalLink.ID)
+	}
+
+	files, err := ts.db.FileRepository.GetAll(repository.WithWhere("task_id = ?", task.ID))
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		ts.DeleteFile(file.ID)
+	}
+
 	return ts.db.TaskRepository.Delete(taskID)
 }

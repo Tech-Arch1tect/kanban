@@ -3,6 +3,7 @@ package task
 import (
 	"server/config"
 	"server/database/repository"
+	"server/services/comment"
 	"server/services/role"
 )
 
@@ -10,6 +11,7 @@ type TaskService struct {
 	db     *repository.Database
 	rs     *role.RoleService
 	config *config.Config
+	cs     *comment.CommentService
 }
 
 type CreateTaskRequest struct {
@@ -23,6 +25,6 @@ type CreateTaskRequest struct {
 	AssigneeID   uint   `json:"assignee_id"`
 }
 
-func NewTaskService(db *repository.Database, rs *role.RoleService, config *config.Config) *TaskService {
-	return &TaskService{db: db, rs: rs, config: config}
+func NewTaskService(db *repository.Database, rs *role.RoleService, config *config.Config, cs *comment.CommentService) *TaskService {
+	return &TaskService{db: db, rs: rs, config: config, cs: cs}
 }

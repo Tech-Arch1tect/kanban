@@ -58,7 +58,7 @@ func (ts *TaskService) CreateTaskLink(userID uint, srcTaskID uint, dstTaskID uin
 	return link, nil
 }
 
-func (ts *TaskService) DeleteTaskLink(userID uint, linkID uint) (models.TaskLinks, error) {
+func (ts *TaskService) DeleteTaskLinkRequest(userID uint, linkID uint) (models.TaskLinks, error) {
 	link, err := ts.db.TaskLinkRepository.GetByID(linkID, repository.WithPreload("SrcTask"), repository.WithPreload("DstTask"), repository.WithPreload("SrcTask.Board"), repository.WithPreload("DstTask.Board"))
 	if err != nil {
 		return models.TaskLinks{}, err
@@ -71,8 +71,13 @@ func (ts *TaskService) DeleteTaskLink(userID uint, linkID uint) (models.TaskLink
 		return models.TaskLinks{}, errors.New("forbidden")
 	}
 
-	if err = ts.db.TaskLinkRepository.Delete(link.ID); err != nil {
+	err = ts.DeleteTaskLink(link.ID)
+	if err != nil {
 		return models.TaskLinks{}, err
 	}
 	return link, nil
+}
+
+func (ts *TaskService) DeleteTaskLink(linkID uint) error {
+	return ts.db.TaskLinkRepository.Delete(linkID)
 }

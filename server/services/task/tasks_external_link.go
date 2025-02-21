@@ -52,7 +52,7 @@ func (ts *TaskService) UpdateTaskExternalLink(userID uint, linkID uint, title st
 	return link, nil
 }
 
-func (ts *TaskService) DeleteTaskExternalLink(userID uint, linkID uint) (models.TaskExternalLink, error) {
+func (ts *TaskService) DeleteTaskExternalLinkRequest(userID uint, linkID uint) (models.TaskExternalLink, error) {
 	link, err := ts.db.TaskExternalLinkRepository.GetByID(linkID, repository.WithPreload("Task"))
 	if err != nil {
 		return models.TaskExternalLink{}, err
@@ -60,8 +60,14 @@ func (ts *TaskService) DeleteTaskExternalLink(userID uint, linkID uint) (models.
 	if can, _ := ts.rs.CheckRole(userID, link.Task.BoardID, role.MemberRole); !can {
 		return models.TaskExternalLink{}, errors.New("forbidden")
 	}
-	if err = ts.db.TaskExternalLinkRepository.Delete(link.ID); err != nil {
+
+	err = ts.DeleteTaskExternalLink(link.ID)
+	if err != nil {
 		return models.TaskExternalLink{}, err
 	}
 	return link, nil
+}
+
+func (ts *TaskService) DeleteTaskExternalLink(linkID uint) error {
+	return ts.db.TaskExternalLinkRepository.Delete(linkID)
 }

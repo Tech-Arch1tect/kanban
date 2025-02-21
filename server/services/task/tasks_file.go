@@ -80,7 +80,7 @@ func (ts *TaskService) GetFile(userID uint, fileID uint) (models.File, []byte, e
 	return file, content, nil
 }
 
-func (ts *TaskService) DeleteFile(userID uint, fileID uint) (models.File, error) {
+func (ts *TaskService) DeleteFileRequest(userID uint, fileID uint) (models.File, error) {
 	file, err := ts.db.FileRepository.GetByID(fileID, repository.WithPreload("Task"))
 	if err != nil {
 		return models.File{}, err
@@ -91,12 +91,22 @@ func (ts *TaskService) DeleteFile(userID uint, fileID uint) (models.File, error)
 		return models.File{}, errors.New("forbidden")
 	}
 
-	filePath := fmt.Sprintf("%s/tasks/%d/%s", ts.config.DataDir, file.Task.ID, file.Path)
-	if err = os.Remove(filePath); err != nil {
-		return models.File{}, err
-	}
-	if err = ts.db.FileRepository.Delete(file.ID); err != nil {
+	err = ts.DeleteFile(file.ID)
+	if err != nil {
 		return models.File{}, err
 	}
 	return file, nil
+}
+
+func (ts *TaskService) DeleteFile(fileID uint) error {
+	file, err := ts.db.FileRepository.GetByID(fileID)
+	if err != nil {
+		return err
+	}
+
+	filePath := fmt.Sprintf("%s/tasks/%d/%s", ts.config.DataDir, file.Task.ID, file.Path)
+	if err = os.Remove(filePath); err != nil {
+		return err
+	}
+	return ts.db.FileRepository.Delete(fileID)
 }

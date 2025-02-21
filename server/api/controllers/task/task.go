@@ -448,7 +448,7 @@ func (tc *TaskController) DeleteFile(c *gin.Context) {
 		return
 	}
 
-	file, err := tc.ts.DeleteFile(user.ID, request.FileID)
+	file, err := tc.ts.DeleteFileRequest(user.ID, request.FileID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -547,7 +547,7 @@ func (tc *TaskController) DeleteTaskLink(c *gin.Context) {
 		return
 	}
 
-	link, err := tc.ts.DeleteTaskLink(user.ID, request.LinkID)
+	link, err := tc.ts.DeleteTaskLinkRequest(user.ID, request.LinkID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -743,7 +743,7 @@ func (tc *TaskController) DeleteTaskExternalLink(c *gin.Context) {
 		return
 	}
 
-	link, err := tc.ts.DeleteTaskExternalLink(user.ID, request.ID)
+	link, err := tc.ts.DeleteTaskExternalLinkRequest(user.ID, request.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
