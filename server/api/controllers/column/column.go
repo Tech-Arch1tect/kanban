@@ -88,7 +88,7 @@ func (cc *ColumnController) DeleteColumn(c *gin.Context) {
 		return
 	}
 
-	column, err := cc.cs.DeleteColumn(user.ID, request.ID)
+	column, err := cc.cs.DeleteColumnRequest(user.ID, request.ID)
 	if err != nil {
 		if err.Error() == "forbidden" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})

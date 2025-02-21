@@ -109,7 +109,7 @@ func (tc *TaskController) DeleteTask(c *gin.Context) {
 		return
 	}
 
-	task, err := tc.ts.DeleteTask(user.ID, request.ID)
+	task, err := tc.ts.DeleteTaskRequest(user.ID, request.ID)
 	if err != nil {
 		if err.Error() == "forbidden" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})

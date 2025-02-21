@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (ts *TaskService) DeleteTask(userID, taskID uint) (models.Task, error) {
+func (ts *TaskService) DeleteTaskRequest(userID, taskID uint) (models.Task, error) {
 	task, err := ts.db.TaskRepository.GetByID(taskID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -22,9 +22,14 @@ func (ts *TaskService) DeleteTask(userID, taskID uint) (models.Task, error) {
 		return models.Task{}, errors.New("forbidden")
 	}
 
-	if err = ts.db.TaskRepository.Delete(task.ID); err != nil {
+	err = ts.DeleteTask(task.ID)
+	if err != nil {
 		return models.Task{}, err
 	}
 
 	return task, nil
+}
+
+func (ts *TaskService) DeleteTask(taskID uint) error {
+	return ts.db.TaskRepository.Delete(taskID)
 }

@@ -88,7 +88,7 @@ func (cc *SwimlaneController) DeleteSwimlane(c *gin.Context) {
 		return
 	}
 
-	swimlane, err := cc.cs.DeleteSwimlane(user.ID, request.ID)
+	swimlane, err := cc.cs.DeleteSwimlaneRequest(user.ID, request.ID)
 	if err != nil {
 		if err.Error() == "forbidden" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})

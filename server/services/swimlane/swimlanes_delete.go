@@ -6,7 +6,7 @@ import (
 	"server/services/role"
 )
 
-func (ss *SwimlaneService) DeleteSwimlane(userID uint, swimlaneID uint) (models.Swimlane, error) {
+func (ss *SwimlaneService) DeleteSwimlaneRequest(userID uint, swimlaneID uint) (models.Swimlane, error) {
 	swimlane, err := ss.db.SwimlaneRepository.GetByID(swimlaneID)
 	if err != nil {
 		return models.Swimlane{}, err
@@ -21,10 +21,14 @@ func (ss *SwimlaneService) DeleteSwimlane(userID uint, swimlaneID uint) (models.
 		return models.Swimlane{}, errors.New("forbidden")
 	}
 
-	err = ss.db.SwimlaneRepository.Delete(swimlane.ID)
+	err = ss.DeleteSwimlane(swimlane.ID)
 	if err != nil {
 		return models.Swimlane{}, err
 	}
 
 	return swimlane, nil
+}
+
+func (ss *SwimlaneService) DeleteSwimlane(swimlaneID uint) error {
+	return ss.db.SwimlaneRepository.Delete(swimlaneID)
 }

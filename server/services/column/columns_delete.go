@@ -6,7 +6,7 @@ import (
 	"server/services/role"
 )
 
-func (cs *ColumnService) DeleteColumn(userID uint, columnID uint) (models.Column, error) {
+func (cs *ColumnService) DeleteColumnRequest(userID uint, columnID uint) (models.Column, error) {
 	column, err := cs.db.ColumnRepository.GetByID(columnID)
 	if err != nil {
 		return models.Column{}, err
@@ -21,10 +21,14 @@ func (cs *ColumnService) DeleteColumn(userID uint, columnID uint) (models.Column
 		return models.Column{}, errors.New("forbidden")
 	}
 
-	err = cs.db.ColumnRepository.Delete(column.ID)
+	err = cs.DeleteColumn(column.ID)
 	if err != nil {
 		return models.Column{}, err
 	}
 
 	return column, nil
+}
+
+func (cs *ColumnService) DeleteColumn(columnID uint) error {
+	return cs.db.ColumnRepository.Delete(columnID)
 }

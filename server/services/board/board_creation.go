@@ -1,6 +1,9 @@
 package board
 
-import "server/models"
+import (
+	"server/database/repository"
+	"server/models"
+)
 
 func (bs *BoardService) CreateBoard(name, slug string, swimlaneNames, columnNames []string) (models.Board, error) {
 	swimlanes := make([]models.Swimlane, len(swimlaneNames))
@@ -29,5 +32,36 @@ func (bs *BoardService) CreateBoard(name, slug string, swimlaneNames, columnName
 }
 
 func (bs *BoardService) DeleteBoard(id uint) error {
+	// delete swimlanes
+	swimlanes, err := bs.db.SwimlaneRepository.GetAll(repository.WithWhere("board_id = ?", id))
+	if err != nil {
+		return err
+	}
+
+	for _, swimlane := range swimlanes {
+		bs.ss.DeleteSwimlane(swimlane.ID)
+	}
+
+	// delete columns
+	columns, err := bs.db.ColumnRepository.GetAll(repository.WithWhere("board_id = ?", id))
+	if err != nil {
+		return err
+	}
+
+	for _, column := range columns {
+		bs.cs.DeleteColumn(column.ID)
+	}
+
+	// delete tasks
+	tasks, err := bs.db.TaskRepository.GetAll(repository.WithWhere("board_id = ?", id))
+	if err != nil {
+		return err
+	}
+
+	for _, task := range tasks {
+		bs.ts.DeleteTask(task.ID)
+	}
+
+	// delete board
 	return bs.db.BoardRepository.Delete(id)
 }
