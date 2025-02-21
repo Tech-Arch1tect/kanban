@@ -38,5 +38,5 @@ func (rs *RoleService) RemoveRole(userID, boardID uint) error {
 		return err
 	}
 
-	return rs.db.UserBoardRoleRepository.Delete(userBoardRole.ID)
+	return rs.db.UserBoardRoleRepository.HardDelete(userBoardRole.ID)
 }
