@@ -1,6 +1,6 @@
-import React from "react";
 import { useGetPendingInvites } from "../../../hooks/boards/useGetPendingInvites";
 import { ModelsBoardInvite } from "../../../typescript-fetch-client/models/ModelsBoardInvite";
+import { BoardPendingInviteItem } from "./BoardPendingInviteItem";
 
 export const BoardPendingInvites = ({ boardId }: { boardId: number }) => {
   const { data, isLoading, error } = useGetPendingInvites({ id: boardId });
@@ -36,22 +36,8 @@ export const BoardPendingInvites = ({ boardId }: { boardId: number }) => {
       </h3>
 
       <ul className="space-y-2">
-        {data.invites.map((invite: ModelsBoardInvite, index: number) => (
-          <li
-            key={index}
-            className="border border-gray-200 dark:border-gray-700 p-4 rounded shadow-sm bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-          >
-            <div className="text-gray-700 dark:text-gray-300">
-              <span className="font-medium">Email:</span> {invite.email}
-            </div>
-            <div className="text-gray-700 dark:text-gray-300">
-              <span className="font-medium">Sent At:</span>{" "}
-              {new Date(invite.createdAt || "").toLocaleString()}
-            </div>
-            <div className="text-gray-700 dark:text-gray-300">
-              <span className="font-medium">Role:</span> {invite.roleName}
-            </div>
-          </li>
+        {data.invites.map((invite: ModelsBoardInvite) => (
+          <BoardPendingInviteItem key={invite.id} invite={invite} />
         ))}
       </ul>
     </div>
