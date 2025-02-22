@@ -1,18 +1,12 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useAuth } from "../../hooks/auth/useAuth";
-import { useDropdown } from "../../hooks/useDropdown";
-import BoardsSelect from "./BoardsSelect";
-import { ToastContainer } from "react-toastify";
-import {
-  MoonIcon,
-  SunIcon,
-  ChevronDownIcon,
-  Bars3Icon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
 import { useServerSettings } from "../../context/ServerSettingsContext";
+import DesktopMenu from "./DesktopMenu";
+import MobileMenu from "./MobileMenu";
 
 const Navbar = () => {
   const { settings, updateSettings } = useServerSettings();
@@ -23,12 +17,6 @@ const Navbar = () => {
 
   const { profile, error } = useUserProfile();
   const { handleLogout, isAdmin } = useAuth(profile);
-
-  const profileDropdown = useDropdown();
-  const adminDropdown = useDropdown();
-
-  const profileDropdownRef = useRef(null);
-  const adminDropdownRef = useRef(null);
 
   useEffect(() => {
     document.body.classList.toggle("dark", settings?.theme === "dark");
@@ -42,49 +30,14 @@ const Navbar = () => {
     ) {
       navigate({ to: "/login" });
     }
-  }, [error, navigate]);
+  }, [error, navigate, location.pathname]);
 
   if (["/login", "/register", "/password-reset"].includes(location.pathname)) {
     return null;
   }
 
-  useEffect(() => {
-    const handleClickOutsideProfile = (event: MouseEvent) => {
-      if (
-        profileDropdownRef.current &&
-        !(profileDropdownRef.current as HTMLElement).contains(
-          event.target as Node
-        )
-      ) {
-        profileDropdown.closeDropdown();
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutsideProfile);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutsideProfile);
-    };
-  }, [profileDropdown]);
-
-  useEffect(() => {
-    const handleClickOutsideAdmin = (event: MouseEvent) => {
-      if (
-        adminDropdownRef.current &&
-        !(adminDropdownRef.current as HTMLElement).contains(
-          event.target as Node
-        )
-      ) {
-        adminDropdown.closeDropdown();
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutsideAdmin);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutsideAdmin);
-    };
-  }, [adminDropdown]);
-
-  const toggleTheme = () => {
+  const toggleTheme = () =>
     updateSettings({ theme: settings?.theme === "dark" ? "light" : "dark" });
-  };
 
   return (
     <>
@@ -105,132 +58,19 @@ const Navbar = () => {
               Home
             </Link>
           </div>
-
-          {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-4">
-            <Link
-              to="/about"
-              className="text-gray-200 dark:text-gray-400 hover:text-white dark:hover:text-gray-100 text-lg"
-            >
-              About
-            </Link>
-            <BoardsSelect />
-          </div>
-
-          {/* Right Actions */}
-          <div className="hidden lg:flex items-center space-x-4">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-blue-700 dark:hover:bg-gray-700 transition-all"
-              aria-label="Toggle Dark Mode"
-            >
-              {settings?.theme === "dark" ? (
-                <SunIcon className="h-6 w-6 text-yellow-300 dark:text-yellow-400" />
-              ) : (
-                <MoonIcon className="h-6 w-6 text-gray-200 dark:text-gray-400" />
-              )}
-            </button>
-
-            {/* Profile Dropdown */}
-            <div className="relative" ref={profileDropdownRef}>
-              <button
-                onClick={profileDropdown.toggleDropdown}
-                className="text-white dark:text-gray-100 text-lg flex items-center space-x-2"
-              >
-                Settings <ChevronDownIcon className="h-5 w-5" />
-              </button>
-              {profileDropdown.isOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-xl rounded-lg p-2">
-                  <Link
-                    to="/profile/profile"
-                    onClick={profileDropdown.closeDropdown}
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to="/profile/2fa"
-                    onClick={profileDropdown.closeDropdown}
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
-                  >
-                    Manage 2FA
-                  </Link>
-                  <Link
-                    to="/profile/notifications"
-                    onClick={profileDropdown.closeDropdown}
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
-                  >
-                    Manage Notifications
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Admin Dropdown */}
-            {isAdmin && (
-              <div className="relative" ref={adminDropdownRef}>
-                <button
-                  onClick={adminDropdown.toggleDropdown}
-                  className="text-white dark:text-gray-100 text-lg flex items-center space-x-2"
-                >
-                  Admin <ChevronDownIcon className="h-5 w-5" />
-                </button>
-                {adminDropdown.isOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-xl rounded-lg p-2">
-                    <Link
-                      to="/admin/users"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
-                    >
-                      Users
-                    </Link>
-                    <Link
-                      to="/admin/boards"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-100"
-                    >
-                      Boards
-                    </Link>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <button
-              onClick={handleLogout}
-              className="text-white dark:text-gray-100 text-lg"
-            >
-              Logout
-            </button>
-          </div>
+          <DesktopMenu
+            toggleTheme={toggleTheme}
+            settings={settings ?? null}
+            isAdmin={isAdmin}
+            handleLogout={handleLogout}
+          />
         </div>
-
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden bg-blue-900 dark:bg-gray-800 p-4 space-y-4">
-            <Link
-              to="/about"
-              className="block text-gray-200 dark:text-gray-400 hover:text-white"
-            >
-              About
-            </Link>
-            <BoardsSelect />
-            <button
-              onClick={toggleTheme}
-              className="flex items-center space-x-2 text-white dark:text-gray-100"
-            >
-              {settings?.theme === "dark" ? (
-                <SunIcon className="h-6 w-6 text-yellow-300 dark:text-yellow-400" />
-              ) : (
-                <MoonIcon className="h-6 w-6 text-gray-200 dark:text-gray-400" />
-              )}
-              <span>Toggle Theme</span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className="text-white dark:text-gray-100"
-            >
-              Logout
-            </button>
-          </div>
+          <MobileMenu
+            toggleTheme={toggleTheme}
+            settings={settings ?? null}
+            handleLogout={handleLogout}
+          />
         )}
       </nav>
 
