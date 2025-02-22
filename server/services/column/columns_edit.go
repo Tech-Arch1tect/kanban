@@ -6,7 +6,7 @@ import (
 	"server/services/role"
 )
 
-func (cs *ColumnService) EditColumn(userID uint, columnID uint, name string) (models.Column, error) {
+func (cs *ColumnService) RenameColumn(userID uint, columnID uint, name string) (models.Column, error) {
 	column, err := cs.db.ColumnRepository.GetByID(columnID)
 	if err != nil {
 		return models.Column{}, err

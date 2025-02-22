@@ -11,7 +11,7 @@ func (r *router) RegisterColumnRoutes(router *gin.RouterGroup) {
 	{
 		column.POST("/create", r.cr.ColumnController.CreateColumn)
 		column.POST("/move", r.cr.ColumnController.MoveColumn)
-		column.POST("/edit", r.cr.ColumnController.EditColumn)
+		column.POST("/rename", r.cr.ColumnController.RenameColumn)
 		column.POST("/delete", r.cr.ColumnController.DeleteColumn)
 	}
 }

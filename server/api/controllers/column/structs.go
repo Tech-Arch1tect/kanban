@@ -19,12 +19,12 @@ type DeleteColumnResponse struct {
 	Column models.Column `json:"column"`
 }
 
-type EditColumnRequest struct {
+type RenameColumnRequest struct {
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
 
-type EditColumnResponse struct {
+type RenameColumnResponse struct {
 	Column models.Column `json:"column"`
 }
 

@@ -108,15 +108,15 @@ func (cc *ColumnController) DeleteColumn(c *gin.Context) {
 // @Security csrf
 // @Accept json
 // @Produce json
-// @Param request body EditColumnRequest true "Column details"
-// @Success 200 {object} EditColumnResponse
+// @Param request body RenameColumnRequest true "Column details"
+// @Success 200 {object} RenameColumnResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/columns/edit [post]
-func (cc *ColumnController) EditColumn(c *gin.Context) {
-	var request EditColumnRequest
+// @Router /api/v1/columns/rename [post]
+func (cc *ColumnController) RenameColumn(c *gin.Context) {
+	var request RenameColumnRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -128,7 +128,7 @@ func (cc *ColumnController) EditColumn(c *gin.Context) {
 		return
 	}
 
-	column, err := cc.cs.EditColumn(user.ID, request.ID, request.Name)
+	column, err := cc.cs.RenameColumn(user.ID, request.ID, request.Name)
 	if err != nil {
 		if err.Error() == "forbidden" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
@@ -138,7 +138,7 @@ func (cc *ColumnController) EditColumn(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, EditColumnResponse{Column: column})
+	c.JSON(http.StatusOK, RenameColumnResponse{Column: column})
 }
 
 // @Summary Move a column
