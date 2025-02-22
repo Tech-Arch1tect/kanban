@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useAuth } from "../../hooks/auth/useAuth";
 import { useDropdown } from "../../hooks/useDropdown";
@@ -27,6 +27,9 @@ const Navbar = () => {
   const profileDropdown = useDropdown();
   const adminDropdown = useDropdown();
 
+  const profileDropdownRef = useRef(null);
+  const adminDropdownRef = useRef(null);
+
   useEffect(() => {
     document.body.classList.toggle("dark", settings?.theme === "dark");
   }, [settings?.theme]);
@@ -44,6 +47,40 @@ const Navbar = () => {
   if (["/login", "/register", "/password-reset"].includes(location.pathname)) {
     return null;
   }
+
+  useEffect(() => {
+    const handleClickOutsideProfile = (event: MouseEvent) => {
+      if (
+        profileDropdownRef.current &&
+        !(profileDropdownRef.current as HTMLElement).contains(
+          event.target as Node
+        )
+      ) {
+        profileDropdown.closeDropdown();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutsideProfile);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideProfile);
+    };
+  }, [profileDropdown]);
+
+  useEffect(() => {
+    const handleClickOutsideAdmin = (event: MouseEvent) => {
+      if (
+        adminDropdownRef.current &&
+        !(adminDropdownRef.current as HTMLElement).contains(
+          event.target as Node
+        )
+      ) {
+        adminDropdown.closeDropdown();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutsideAdmin);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideAdmin);
+    };
+  }, [adminDropdown]);
 
   const toggleTheme = () => {
     updateSettings({ theme: settings?.theme === "dark" ? "light" : "dark" });
@@ -95,7 +132,7 @@ const Navbar = () => {
             </button>
 
             {/* Profile Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={profileDropdownRef}>
               <button
                 onClick={profileDropdown.toggleDropdown}
                 className="text-white dark:text-gray-100 text-lg flex items-center space-x-2"
@@ -131,7 +168,7 @@ const Navbar = () => {
 
             {/* Admin Dropdown */}
             {isAdmin && (
-              <div className="relative">
+              <div className="relative" ref={adminDropdownRef}>
                 <button
                   onClick={adminDropdown.toggleDropdown}
                   className="text-white dark:text-gray-100 text-lg flex items-center space-x-2"
