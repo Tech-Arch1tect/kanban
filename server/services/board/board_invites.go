@@ -37,7 +37,7 @@ func (bs *BoardService) InviteUserToBoard(boardID uint, email string, roleName s
 }
 
 func (bs *BoardService) DeleteBoardInvite(boardInviteID uint) error {
-	return bs.db.BoardInviteRepository.Delete(boardInviteID)
+	return bs.db.BoardInviteRepository.HardDelete(boardInviteID)
 }
 
 func (bs *BoardService) GetPendingInvites(userID, boardID uint) ([]models.BoardInvite, error) {
@@ -47,4 +47,18 @@ func (bs *BoardService) GetPendingInvites(userID, boardID uint) ([]models.BoardI
 	}
 
 	return bs.db.BoardInviteRepository.GetAll(repository.WithWhere("board_id = ?", boardID))
+}
+
+func (bs *BoardService) RemovePendingInviteRequest(userID, inviteID uint) (models.BoardInvite, error) {
+	invite, err := bs.db.BoardInviteRepository.GetByID(inviteID)
+	if err != nil {
+		return models.BoardInvite{}, err
+	}
+
+	can, err := bs.rs.CheckRole(userID, invite.BoardID, role.AdminRole)
+	if err != nil || !can {
+		return models.BoardInvite{}, errors.New("forbidden")
+	}
+
+	return invite, bs.DeleteBoardInvite(inviteID)
 }

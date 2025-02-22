@@ -324,6 +324,51 @@ func (bc *BoardController) GetPendingInvites(c *gin.Context) {
 	c.JSON(http.StatusOK, GetPendingInvitesResponse{Invites: invites})
 }
 
+type RemovePendingInviteRequest struct {
+	InviteID uint `uri:"invite_id" binding:"required"`
+}
+
+type RemovePendingInviteResponse struct {
+	Invite  models.BoardInvite `json:"invite"`
+	Message string             `json:"message"`
+}
+
+// @Summary Remove a pending invite
+// @Description Remove a pending invite
+// @Tags boards
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param invite_id path uint true "Invite ID"
+// @Success 200 {object} RemovePendingInviteResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/boards/remove-pending-invite/{invite_id} [post]
+func (bc *BoardController) RemovePendingInvite(c *gin.Context) {
+	var req RemovePendingInviteRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := bc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	invite, err := bc.bs.RemovePendingInviteRequest(user.ID, req.InviteID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, RemovePendingInviteResponse{Invite: invite, Message: "Invite removed"})
+}
+
 type RemoveUserFromBoardRequest struct {
 	BoardID uint `json:"board_id" binding:"required"`
 	UserID  uint `json:"user_id" binding:"required"`
