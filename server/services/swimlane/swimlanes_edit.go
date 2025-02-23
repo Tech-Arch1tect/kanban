@@ -6,7 +6,7 @@ import (
 	"server/services/role"
 )
 
-func (ss *SwimlaneService) EditSwimlane(userID uint, swimlaneID uint, name string) (models.Swimlane, error) {
+func (ss *SwimlaneService) RenameSwimlane(userID uint, swimlaneID uint, name string) (models.Swimlane, error) {
 	swimlane, err := ss.db.SwimlaneRepository.GetByID(swimlaneID)
 	if err != nil {
 		return models.Swimlane{}, err

@@ -101,22 +101,22 @@ func (cc *SwimlaneController) DeleteSwimlane(c *gin.Context) {
 	c.JSON(http.StatusOK, DeleteSwimlaneResponse{Swimlane: swimlane})
 }
 
-// @Summary Edit a swimlane
-// @Description Edit a swimlane by ID
+// @Summary Rename a swimlane
+// @Description Rename a swimlane by ID
 // @Tags swimlanes
 // @Security cookieAuth
 // @Security csrf
 // @Accept json
 // @Produce json
-// @Param request body EditSwimlaneRequest true "Swimlane details"
-// @Success 200 {object} EditSwimlaneResponse
+// @Param request body RenameSwimlaneRequest true "Swimlane details"
+// @Success 200 {object} RenameSwimlaneResponse
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 401 {object} models.ErrorResponse
 // @Failure 403 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
-// @Router /api/v1/swimlanes/edit [post]
-func (cc *SwimlaneController) EditSwimlane(c *gin.Context) {
-	var request EditSwimlaneRequest
+// @Router /api/v1/swimlanes/rename [post]
+func (cc *SwimlaneController) RenameSwimlane(c *gin.Context) {
+	var request RenameSwimlaneRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -128,7 +128,7 @@ func (cc *SwimlaneController) EditSwimlane(c *gin.Context) {
 		return
 	}
 
-	swimlane, err := cc.cs.EditSwimlane(user.ID, request.ID, request.Name)
+	swimlane, err := cc.cs.RenameSwimlane(user.ID, request.ID, request.Name)
 	if err != nil {
 		if err.Error() == "forbidden" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
@@ -138,7 +138,7 @@ func (cc *SwimlaneController) EditSwimlane(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, EditSwimlaneResponse{Swimlane: swimlane})
+	c.JSON(http.StatusOK, RenameSwimlaneResponse{Swimlane: swimlane})
 }
 
 // @Summary Move a swimlane

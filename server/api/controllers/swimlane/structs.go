@@ -19,12 +19,12 @@ type DeleteSwimlaneResponse struct {
 	Swimlane models.Swimlane `json:"swimlane"`
 }
 
-type EditSwimlaneRequest struct {
+type RenameSwimlaneRequest struct {
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
 
-type EditSwimlaneResponse struct {
+type RenameSwimlaneResponse struct {
 	Swimlane models.Swimlane `json:"swimlane"`
 }
 
