@@ -24,6 +24,26 @@ type DeleteBoardResponse struct {
 	Message string `json:"message"`
 }
 
+type RenameBoardRequest struct {
+	ID   uint   `json:"id" binding:"required"`
+	Name string `json:"name" binding:"required"`
+}
+
+type RenameBoardResponse struct {
+	Message string       `json:"message"`
+	Board   models.Board `json:"board"`
+}
+
+type UpdateBoardSlugRequest struct {
+	ID   uint   `json:"id" binding:"required"`
+	Slug string `json:"slug" binding:"required"`
+}
+
+type UpdateBoardSlugResponse struct {
+	Message string       `json:"message"`
+	Board   models.Board `json:"board"`
+}
+
 type GetBoardRequest struct {
 	ID uint `uri:"id" binding:"required"`
 }

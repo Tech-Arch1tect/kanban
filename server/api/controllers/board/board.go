@@ -87,6 +87,76 @@ func (bc *BoardController) DeleteBoard(c *gin.Context) {
 	c.JSON(http.StatusOK, DeleteBoardResponse{Message: "Board deleted"})
 }
 
+// RenameBoard godoc
+// @Summary Rename a board
+// @Description Rename a board by ID
+// @Tags boards
+// @Security cookieAuth
+// @Security csrf
+// @Param request body RenameBoardRequest true "Rename board request"
+// @Success 200 {object} RenameBoardResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/boards/rename [post]
+func (bc *BoardController) RenameBoard(c *gin.Context) {
+	var req RenameBoardRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := bc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	board, err := bc.bs.RenameBoard(user.ID, req.ID, req.Name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, RenameBoardResponse{Message: "Board renamed", Board: board})
+}
+
+// UpdateBoardSlug godoc
+// @Summary Update a board slug
+// @Description Update a board slug by ID
+// @Tags boards
+// @Security cookieAuth
+// @Security csrf
+// @Param request body UpdateBoardSlugRequest true "Update board slug request"
+// @Success 200 {object} UpdateBoardSlugResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/boards/update-slug [post]
+func (bc *BoardController) UpdateBoardSlug(c *gin.Context) {
+	var req UpdateBoardSlugRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := bc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	board, err := bc.bs.UpdateBoardSlug(user.ID, req.ID, req.Slug)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, UpdateBoardSlugResponse{Message: "Board slug updated", Board: board})
+}
+
 // GetBoard godoc
 // @Summary Get a board
 // @Description Get a board by ID

@@ -21,5 +21,7 @@ func (r *router) RegisterBoardRoutes(router *gin.RouterGroup) {
 		board.POST("/remove-pending-invite/:invite_id", r.mw.CSRFTokenRequired(), r.cr.BoardController.RemovePendingInvite)
 		board.POST("/remove-user", r.mw.CSRFTokenRequired(), r.cr.BoardController.RemoveUserFromBoard)
 		board.POST("/change-role", r.mw.CSRFTokenRequired(), r.cr.BoardController.ChangeBoardRole)
+		board.POST("/rename", r.mw.CSRFTokenRequired(), r.cr.BoardController.RenameBoard)
+		board.POST("/update-slug", r.mw.CSRFTokenRequired(), r.cr.BoardController.UpdateBoardSlug)
 	}
 }
