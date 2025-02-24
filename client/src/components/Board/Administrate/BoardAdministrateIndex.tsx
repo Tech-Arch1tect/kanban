@@ -9,6 +9,7 @@ import { BoardSampleDataInsert } from "./BoardSampleDataInsert";
 import { BoardAddOrInvite } from "./BoardAddOrInvite";
 import { BoardPendingInvites } from "./BoardPendingInvites";
 import { BoardUsers } from "./BoardUsers";
+import BoardRenameAndSlugUpdate from "./BoardRenameAndSlugUpdate";
 
 export default function BoardAdministrateIndex() {
   const { boardId } = useParams({ from: "/boards/administrate/$boardId" });
@@ -35,10 +36,18 @@ export default function BoardAdministrateIndex() {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
-      <div className="max-w-4xl mx-auto p-4 space-y-8 ">
+      <div className="max-w-4xl mx-auto p-4 space-y-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
           {board.name} - Administration
         </h1>
+
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm dark:shadow-md space-y-4">
+          <BoardRenameAndSlugUpdate
+            boardId={Number(boardId)}
+            currentName={board.name || ""}
+            currentSlug={board.slug || ""}
+          />
+        </div>
 
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm dark:shadow-md space-y-4">
           <BoardSampleDataInsert boardId={boardId} />
