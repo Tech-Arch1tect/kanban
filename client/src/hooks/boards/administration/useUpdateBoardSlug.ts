@@ -15,6 +15,9 @@ export const useUpdateBoardSlug = () => {
           queryClient.invalidateQueries({
             queryKey: ["boardData", String(response?.board?.id)],
           });
+          queryClient.invalidateQueries({
+            queryKey: ["boards"],
+          });
         }),
     onSuccess: () => {
       toast.success("Board slug updated successfully!");

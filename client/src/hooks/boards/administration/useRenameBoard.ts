@@ -15,6 +15,9 @@ export const useRenameBoard = () => {
           queryClient.invalidateQueries({
             queryKey: ["boardData", String(response?.board?.id)],
           });
+          queryClient.invalidateQueries({
+            queryKey: ["boards"],
+          });
         }),
     onSuccess: () => {
       toast.success("Board renamed successfully!");
