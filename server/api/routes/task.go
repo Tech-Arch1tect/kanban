@@ -27,5 +27,6 @@ func (r *router) RegisterTaskRoutes(router *gin.RouterGroup) {
 		task.POST("/update-external-link", r.mw.CSRFTokenRequired(), r.cr.TaskController.UpdateTaskExternalLink)
 		task.POST("/delete-external-link", r.mw.CSRFTokenRequired(), r.cr.TaskController.DeleteTaskExternalLink)
 		task.POST("/create-external-link", r.mw.CSRFTokenRequired(), r.cr.TaskController.CreateTaskExternalLink)
+		task.POST("/update-due-date", r.mw.CSRFTokenRequired(), r.cr.TaskController.UpdateTaskDueDate)
 	}
 }

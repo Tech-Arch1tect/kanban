@@ -67,6 +67,7 @@ func (tc *TaskController) CreateTask(c *gin.Context) {
 		ColumnID:     request.ColumnID,
 		Status:       request.Status,
 		AssigneeID:   request.AssigneeID,
+		DueDate:      request.DueDate,
 	})
 	if err != nil {
 		if err.Error() == "forbidden" {

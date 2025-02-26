@@ -3,6 +3,7 @@ package task
 import (
 	"net/http"
 	"server/models"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -193,4 +194,51 @@ func (tc *TaskController) UpdateTaskAssignee(c *gin.Context) {
 	tc.te.Publish("task.updated.assignee", task, user)
 
 	c.JSON(http.StatusOK, UpdateTaskAssigneeResponse{Task: task})
+}
+
+type UpdateTaskDueDateRequest struct {
+	TaskID  uint       `json:"task_id" binding:"required"`
+	DueDate *time.Time `json:"due_date" binding:"omitempty"`
+}
+
+type UpdateTaskDueDateResponse struct {
+	Task models.Task `json:"task"`
+}
+
+// @Summary Update a task due date
+// @Description Update a task due date
+// @Tags tasks
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body UpdateTaskDueDateRequest true "Update task due date request"
+// @Success 200 {object} UpdateTaskDueDateResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/update-due-date [post]
+func (tc *TaskController) UpdateTaskDueDate(c *gin.Context) {
+	var request UpdateTaskDueDateRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	task, err := tc.ts.UpdateTaskDueDate(user.ID, request.TaskID, request.DueDate)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	tc.te.Publish("task.updated.due-date", task, user)
+
+	c.JSON(http.StatusOK, UpdateTaskDueDateResponse{Task: task})
 }

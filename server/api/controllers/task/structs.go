@@ -1,16 +1,20 @@
 package task
 
-import "server/models"
+import (
+	"server/models"
+	"time"
+)
 
 type CreateTaskRequest struct {
-	ParentTaskID *uint  `json:"parent_task_id"`
-	BoardID      uint   `json:"board_id"`
-	Title        string `json:"title"`
-	Description  string `json:"description"`
-	SwimlaneID   uint   `json:"swimlane_id"`
-	ColumnID     uint   `json:"column_id"`
-	Status       string `json:"status"`
-	AssigneeID   uint   `json:"assignee_id"`
+	ParentTaskID *uint      `json:"parent_task_id"`
+	BoardID      uint       `json:"board_id"`
+	Title        string     `json:"title"`
+	Description  string     `json:"description"`
+	SwimlaneID   uint       `json:"swimlane_id"`
+	ColumnID     uint       `json:"column_id"`
+	Status       string     `json:"status"`
+	AssigneeID   uint       `json:"assignee_id"`
+	DueDate      *time.Time `json:"due_date"`
 }
 
 type CreateTaskResponse struct {
