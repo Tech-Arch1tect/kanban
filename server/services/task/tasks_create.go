@@ -5,6 +5,7 @@ import (
 	"server/database/repository"
 	"server/models"
 	"server/services/role"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -38,6 +39,12 @@ func (ts *TaskService) CreateTask(userID uint, request CreateTaskRequest) (model
 		}
 	}
 
+	dueDate := request.DueDate
+	if dueDate != nil {
+		t := time.Time(*dueDate)
+		dueDate = &t
+	}
+
 	task := models.Task{
 		ParentTaskID: request.ParentTaskID,
 		BoardID:      request.BoardID,
@@ -49,6 +56,7 @@ func (ts *TaskService) CreateTask(userID uint, request CreateTaskRequest) (model
 		Position:     taskPosition.Position + 1,
 		CreatorID:    userID,
 		AssigneeID:   assignee.ID,
+		DueDate:      dueDate,
 	}
 
 	if err = task.Validate(); err != nil {

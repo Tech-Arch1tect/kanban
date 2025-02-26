@@ -4,6 +4,7 @@ import (
 	"errors"
 	"server/models"
 	"server/services/role"
+	"time"
 )
 
 func (ts *TaskService) UpdateTaskTitle(userID uint, taskID uint, title string) (models.Task, error) {
@@ -88,6 +89,27 @@ func (ts *TaskService) UpdateTaskAssignee(userID uint, taskID uint, assigneeID u
 	}
 
 	task.AssigneeID = assigneeID
+	if err = task.Validate(); err != nil {
+		return models.Task{}, err
+	}
+	if err = ts.db.TaskRepository.Update(&task); err != nil {
+		return models.Task{}, err
+	}
+	return task, nil
+}
+
+func (ts *TaskService) UpdateTaskDueDate(userID uint, taskID uint, dueDate *time.Time) (models.Task, error) {
+	task, err := ts.db.TaskRepository.GetByID(taskID)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
+	if !can {
+		return models.Task{}, errors.New("forbidden")
+	}
+
+	task.DueDate = dueDate
 	if err = task.Validate(); err != nil {
 		return models.Task{}, err
 	}

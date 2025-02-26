@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"slices"
+	"time"
 )
 
 type Task struct {
@@ -29,6 +30,7 @@ type Task struct {
 	DstLinks      []TaskLinks        `gorm:"foreignKey:DstTaskID" json:"dst_links"`
 	SrcLinks      []TaskLinks        `gorm:"foreignKey:SrcTaskID" json:"src_links"`
 	ExternalLinks []TaskExternalLink `gorm:"foreignKey:TaskID" json:"external_links"`
+	DueDate       *time.Time         `json:"due_date"`
 }
 
 var allowedStatuses = []string{"open", "closed"}
