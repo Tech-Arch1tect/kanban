@@ -4,6 +4,7 @@ export const friendlyEventNames: Record<string, string> = {
   "task.updated.description": "Task description updated",
   "task.updated.status": "Task status updated",
   "task.updated.assignee": "Task assignee updated",
+  "task.updated.due-date": "Task due date updated",
   "task.deleted": "Task deleted",
   "task.moved": "Task moved",
   "comment.created": "Comment created",
