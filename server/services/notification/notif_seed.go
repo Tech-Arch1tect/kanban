@@ -14,6 +14,7 @@ var taskEvents = []string{
 	"task.updated.description",
 	"task.updated.status",
 	"task.updated.assignee",
+	"task.updated.due-date",
 	"task.deleted",
 	"task.moved",
 }

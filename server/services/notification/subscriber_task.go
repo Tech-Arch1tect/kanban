@@ -71,6 +71,15 @@ func (ns *NotificationSubscriber) GetTaskGenericTemplate(event string, task mode
 		)
 		return subject, template.HTML(body)
 
+	case "task.updated.due-date":
+		subject := "Task Updated: Due Date Modified"
+		body += fmt.Sprintf(
+			"has updated the due date of task (ID: %d).<br><p><strong>Title:</strong> %s</p>"+
+				"<p><strong>New Due Date:</strong> %s</p>",
+			task.ID, task.Title, task.DueDate,
+		)
+		return subject, template.HTML(body)
+
 	case "task.deleted":
 		subject := fmt.Sprintf("Task Deleted: %s", task.Title)
 		body += "has deleted the following task:<br><br>"
