@@ -1,5 +1,6 @@
 import { ModelsTask } from "../../../typescript-fetch-client";
 import { TaskAssignee } from "./TaskAssignee";
+import { TaskDueDate } from "./TaskDueDate";
 import { TaskStatus } from "./TaskStatus";
 import { TaskTitle } from "./TaskTitle";
 
@@ -54,6 +55,7 @@ export function TaskHeading({ task }: { task: ModelsTask }) {
             {task?.column?.name || "None"}
           </span>
         </div>
+        <TaskDueDate task={task} />
       </div>
     </div>
   );
