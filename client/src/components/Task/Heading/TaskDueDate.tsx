@@ -63,15 +63,12 @@ export function TaskDueDate({ task }: { task: ModelsTask }) {
       <span className="font-medium text-gray-600 dark:text-gray-400 w-24">
         Due Date:
       </span>
-      <span className="text-gray-800 dark:text-gray-200 mr-2">
+      <span
+        className="text-gray-800 dark:text-gray-200 mr-2 cursor-pointer"
+        onClick={() => setIsEditing(true)}
+      >
         {task?.dueDate ? new Date(task?.dueDate).toLocaleString() : "None"}
       </span>
-      <button
-        onClick={() => setIsEditing(true)}
-        className="px-2 py-1 bg-green-500 text-white rounded"
-      >
-        Edit
-      </button>
     </div>
   );
 }
