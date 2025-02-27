@@ -47,3 +47,8 @@ swagger-client:
 
 # Generates both Swagger server documentation and TypeScript client.
 swagger: swagger-server swagger-client
+
+# Releases the project
+[working-directory: "."]
+release args='':
+  @standard-version {{args}}
