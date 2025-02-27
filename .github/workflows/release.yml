@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Generate Release Files
+        run: |
+          git config user.name "Release CI"
+          git config user.email "release-ci@ci.local"
+          npx standard-version --config .versionrc.json
+
+      - name: Extract Latest Release Notes
+        run: |
+          awk 'BEGIN {found=0} 
+               /^###[[:space:]]*\[?[0-9]+\.[0-9]+\.[0-9]+\]?/ {
+                 if (found==1) exit; 
+                 found=1
+               }
+               found { print }' CHANGELOG.md > RELEASE_BODY.md
+          echo "Extracted release notes:"
+          cat RELEASE_BODY.md
+
+      - name: Push Release Commits and Tags
+        id: publish_tag
+        run: |
+          git push
+          git push --tags
+          VERSION=$(jq -r .version version.json)
+          echo "::set-output name=tag_name::v$VERSION"
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.publish_tag.outputs.tag_name }}
+          release_name: Release ${{ steps.publish_tag.outputs.tag_name }}
+          body_path: RELEASE_BODY.md
