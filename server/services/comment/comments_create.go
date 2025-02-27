@@ -31,7 +31,7 @@ func (cs *CommentService) CreateComment(userID, taskID uint, text string) (model
 		return models.Comment{}, err
 	}
 
-	return comment, nil
+	return cs.GetComment(comment.ID)
 }
 
 func (cs *CommentService) CreateCommentReaction(userID, commentID uint, reactionStr string) (models.Reaction, error) {

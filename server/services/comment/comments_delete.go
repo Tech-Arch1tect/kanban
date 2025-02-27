@@ -8,7 +8,7 @@ import (
 )
 
 func (cs *CommentService) DeleteCommentRequest(userID, commentID uint) (models.Comment, error) {
-	comment, err := cs.db.CommentRepository.GetByID(commentID, repository.WithPreload("Task"))
+	comment, err := cs.GetComment(commentID)
 	if err != nil {
 		return models.Comment{}, err
 	}

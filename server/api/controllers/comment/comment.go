@@ -62,7 +62,7 @@ func (cc *CommentController) CreateComment(c *gin.Context) {
 		return
 	}
 
-	cc.ce.Publish("comment.created", comment, user)
+	cc.ce.Publish("comment.created", models.Comment{}, comment, user)
 
 	c.JSON(http.StatusOK, CreateCommentResponse{Comment: comment})
 }
@@ -104,7 +104,7 @@ func (cc *CommentController) CreateCommentReaction(c *gin.Context) {
 		return
 	}
 
-	cc.cre.Publish("reaction.created", reaction, user)
+	cc.cre.Publish("reaction.created", models.Reaction{}, reaction, user)
 
 	c.JSON(http.StatusOK, CreateCommentReactionResponse{Reaction: reaction})
 }
@@ -148,7 +148,7 @@ func (cc *CommentController) DeleteComment(c *gin.Context) {
 		return
 	}
 
-	cc.ce.Publish("comment.deleted", comment, user)
+	cc.ce.Publish("comment.deleted", comment, models.Comment{}, user)
 
 	c.JSON(http.StatusOK, DeleteCommentResponse{Comment: comment})
 }
@@ -190,7 +190,7 @@ func (cc *CommentController) DeleteCommentReaction(c *gin.Context) {
 		return
 	}
 
-	cc.cre.Publish("reaction.deleted", reaction, user)
+	cc.cre.Publish("reaction.deleted", reaction, models.Reaction{}, user)
 
 	c.JSON(http.StatusOK, DeleteCommentReactionResponse{Reaction: reaction})
 }
@@ -222,7 +222,7 @@ func (cc *CommentController) EditComment(c *gin.Context) {
 		return
 	}
 
-	comment, err := cc.cs.EditComment(&user, request.ID, request.Text)
+	comment, oldComment, err := cc.cs.EditComment(&user, request.ID, request.Text)
 	if err != nil {
 		status := http.StatusInternalServerError
 		if err.Error() == "forbidden" {
@@ -234,7 +234,7 @@ func (cc *CommentController) EditComment(c *gin.Context) {
 		return
 	}
 
-	cc.ce.Publish("comment.updated", comment, user)
+	cc.ce.Publish("comment.updated", oldComment, comment, user)
 
 	c.JSON(http.StatusOK, EditCommentResponse{Comment: comment})
 }
