@@ -41,22 +41,22 @@ func NewNotificationSubscriber(te *eventBus.EventBus[models.Task], ce *eventBus.
 }
 
 func (ns *NotificationSubscriber) Subscribe() {
-	ns.ce.SubscribeGlobal(func(event string, comment models.Comment, user models.User) {
-		ns.HandleCommentEvent(event, comment, user)
+	ns.ce.SubscribeGlobal(func(event string, change eventBus.Change[models.Comment], user models.User) {
+		ns.HandleCommentEvent(event, change, user)
 	})
-	ns.te.SubscribeGlobal(func(event string, task models.Task, user models.User) {
-		ns.HandleTaskEvent(event, task, user)
+	ns.te.SubscribeGlobal(func(event string, change eventBus.Change[models.Task], user models.User) {
+		ns.HandleTaskEvent(event, change, user)
 	})
-	ns.fe.SubscribeGlobal(func(event string, file models.File, user models.User) {
-		ns.HandleFileEvent(event, file, user)
+	ns.fe.SubscribeGlobal(func(event string, change eventBus.Change[models.File], user models.User) {
+		ns.HandleFileEvent(event, change, user)
 	})
-	ns.le.SubscribeGlobal(func(event string, link models.TaskLinks, user models.User) {
-		ns.HandleLinkEvent(event, link, user)
+	ns.le.SubscribeGlobal(func(event string, change eventBus.Change[models.TaskLinks], user models.User) {
+		ns.HandleLinkEvent(event, change, user)
 	})
-	ns.lee.SubscribeGlobal(func(event string, link models.TaskExternalLink, user models.User) {
-		ns.HandleExternalLinkEvent(event, link, user)
+	ns.lee.SubscribeGlobal(func(event string, change eventBus.Change[models.TaskExternalLink], user models.User) {
+		ns.HandleExternalLinkEvent(event, change, user)
 	})
-	ns.cre.SubscribeGlobal(func(event string, reaction models.Reaction, user models.User) {
-		ns.HandleCommentReactionEvent(event, reaction, user)
+	ns.cre.SubscribeGlobal(func(event string, change eventBus.Change[models.Reaction], user models.User) {
+		ns.HandleCommentReactionEvent(event, change, user)
 	})
 }
