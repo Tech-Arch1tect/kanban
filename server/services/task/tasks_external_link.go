@@ -32,24 +32,30 @@ func (ts *TaskService) CreateTaskExternalLink(userID uint, taskID uint, title st
 	if err = ts.db.TaskExternalLinkRepository.Create(&link); err != nil {
 		return models.TaskExternalLink{}, err
 	}
-	return link, nil
+	return ts.GetTaskExternalLink(link.ID)
 }
 
-func (ts *TaskService) UpdateTaskExternalLink(userID uint, linkID uint, title string, url string) (models.TaskExternalLink, error) {
+func (ts *TaskService) UpdateTaskExternalLink(userID uint, linkID uint, title string, url string) (models.TaskExternalLink, models.TaskExternalLink, error) {
 	link, err := ts.db.TaskExternalLinkRepository.GetByID(linkID, repository.WithPreload("Task"))
+	oldLink := link
 	if err != nil {
-		return models.TaskExternalLink{}, err
+		return models.TaskExternalLink{}, models.TaskExternalLink{}, err
 	}
 	if can, _ := ts.rs.CheckRole(userID, link.Task.BoardID, role.MemberRole); !can {
-		return models.TaskExternalLink{}, errors.New("forbidden")
+		return models.TaskExternalLink{}, models.TaskExternalLink{}, errors.New("forbidden")
 	}
 
 	link.URL = url
 	link.Title = title
 	if err = ts.db.TaskExternalLinkRepository.Update(&link); err != nil {
-		return models.TaskExternalLink{}, err
+		return models.TaskExternalLink{}, models.TaskExternalLink{}, err
 	}
-	return link, nil
+
+	link, err = ts.GetTaskExternalLink(linkID)
+	if err != nil {
+		return models.TaskExternalLink{}, models.TaskExternalLink{}, err
+	}
+	return link, oldLink, nil
 }
 
 func (ts *TaskService) DeleteTaskExternalLinkRequest(userID uint, linkID uint) (models.TaskExternalLink, error) {

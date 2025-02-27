@@ -50,7 +50,8 @@ func (ts *TaskService) UploadFile(userID uint, taskID uint, file []byte, name st
 	if err = ts.db.FileRepository.Create(&fileRecord); err != nil {
 		return models.File{}, fmt.Errorf("failed to create file record: %w", err)
 	}
-	return fileRecord, nil
+	f, _, err := ts.GetFile(fileRecord.ID)
+	return f, err
 }
 
 func saveFileToStorage(path string, data []byte) error {
@@ -61,8 +62,8 @@ func saveFileToStorage(path string, data []byte) error {
 	return os.WriteFile(path, data, os.ModePerm)
 }
 
-func (ts *TaskService) GetFile(userID uint, fileID uint) (models.File, []byte, error) {
-	file, err := ts.db.FileRepository.GetByID(fileID, repository.WithPreload("Task"), repository.WithPreload("UploadedByUser"), repository.WithPreload("Task.Board"))
+func (ts *TaskService) GetFileRequest(userID uint, fileID uint) (models.File, []byte, error) {
+	file, content, err := ts.GetFile(fileID)
 	if err != nil {
 		return models.File{}, nil, err
 	}
@@ -71,7 +72,14 @@ func (ts *TaskService) GetFile(userID uint, fileID uint) (models.File, []byte, e
 	if !can {
 		return models.File{}, nil, errors.New("forbidden")
 	}
+	return file, content, nil
+}
 
+func (ts *TaskService) GetFile(fileID uint) (models.File, []byte, error) {
+	file, err := ts.db.FileRepository.GetByID(fileID, repository.WithPreload("Task"), repository.WithPreload("UploadedByUser"), repository.WithPreload("Task.Board"))
+	if err != nil {
+		return models.File{}, nil, err
+	}
 	filePath := fmt.Sprintf("%s/tasks/%d/%s", ts.config.DataDir, file.Task.ID, file.Path)
 	content, err := os.ReadFile(filePath)
 	if err != nil {
@@ -99,7 +107,7 @@ func (ts *TaskService) DeleteFileRequest(userID uint, fileID uint) (models.File,
 }
 
 func (ts *TaskService) DeleteFile(fileID uint) error {
-	file, err := ts.db.FileRepository.GetByID(fileID)
+	file, _, err := ts.GetFile(fileID)
 	if err != nil {
 		return err
 	}

@@ -55,7 +55,7 @@ func (ts *TaskService) CreateTaskLink(userID uint, srcTaskID uint, dstTaskID uin
 	if err = ts.db.TaskLinkRepository.Create(&link); err != nil {
 		return models.TaskLinks{}, err
 	}
-	return link, nil
+	return ts.GetTaskLink(link.ID)
 }
 
 func (ts *TaskService) DeleteTaskLinkRequest(userID uint, linkID uint) (models.TaskLinks, error) {

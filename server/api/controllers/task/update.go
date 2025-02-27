@@ -44,13 +44,13 @@ func (tc *TaskController) UpdateTaskTitle(c *gin.Context) {
 		return
 	}
 
-	task, err := tc.ts.UpdateTaskTitle(user.ID, request.TaskID, request.Title)
+	task, oldTask, err := tc.ts.UpdateTaskTitle(user.ID, request.TaskID, request.Title)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	tc.te.Publish("task.updated.title", task, user)
+	tc.te.Publish("task.updated.title", oldTask, task, user)
 
 	c.JSON(http.StatusOK, UpdateTaskTitleResponse{Task: task})
 }
@@ -91,13 +91,13 @@ func (tc *TaskController) UpdateTaskDescription(c *gin.Context) {
 		return
 	}
 
-	task, err := tc.ts.UpdateTaskDescription(user.ID, request.TaskID, request.Description)
+	task, oldTask, err := tc.ts.UpdateTaskDescription(user.ID, request.TaskID, request.Description)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	tc.te.Publish("task.updated.description", task, user)
+	tc.te.Publish("task.updated.description", oldTask, task, user)
 
 	c.JSON(http.StatusOK, UpdateTaskDescriptionResponse{Task: task})
 }
@@ -138,13 +138,13 @@ func (tc *TaskController) UpdateTaskStatus(c *gin.Context) {
 		return
 	}
 
-	task, err := tc.ts.UpdateTaskStatus(user.ID, request.TaskID, request.Status)
+	task, oldTask, err := tc.ts.UpdateTaskStatus(user.ID, request.TaskID, request.Status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	tc.te.Publish("task.updated.status", task, user)
+	tc.te.Publish("task.updated.status", oldTask, task, user)
 
 	c.JSON(http.StatusOK, UpdateTaskStatusResponse{Task: task})
 }
@@ -185,13 +185,13 @@ func (tc *TaskController) UpdateTaskAssignee(c *gin.Context) {
 		return
 	}
 
-	task, err := tc.ts.UpdateTaskAssignee(user.ID, request.TaskID, request.AssigneeID)
+	task, oldTask, err := tc.ts.UpdateTaskAssignee(user.ID, request.TaskID, request.AssigneeID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	tc.te.Publish("task.updated.assignee", task, user)
+	tc.te.Publish("task.updated.assignee", oldTask, task, user)
 
 	c.JSON(http.StatusOK, UpdateTaskAssigneeResponse{Task: task})
 }
@@ -232,13 +232,13 @@ func (tc *TaskController) UpdateTaskDueDate(c *gin.Context) {
 		return
 	}
 
-	task, err := tc.ts.UpdateTaskDueDate(user.ID, request.TaskID, request.DueDate)
+	task, oldTask, err := tc.ts.UpdateTaskDueDate(user.ID, request.TaskID, request.DueDate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	tc.te.Publish("task.updated.due-date", task, user)
+	tc.te.Publish("task.updated.due-date", oldTask, task, user)
 
 	c.JSON(http.StatusOK, UpdateTaskDueDateResponse{Task: task})
 }

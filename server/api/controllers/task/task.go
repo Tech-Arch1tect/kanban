@@ -78,7 +78,7 @@ func (tc *TaskController) CreateTask(c *gin.Context) {
 		return
 	}
 
-	tc.te.Publish("task.created", task, user)
+	tc.te.Publish("task.created", models.Task{}, task, user)
 
 	c.JSON(http.StatusOK, CreateTaskResponse{Task: task})
 }
@@ -122,7 +122,7 @@ func (tc *TaskController) DeleteTask(c *gin.Context) {
 		return
 	}
 
-	tc.te.Publish("task.deleted", task, user)
+	tc.te.Publish("task.deleted", task, models.Task{}, user)
 
 	c.JSON(http.StatusOK, DeleteTaskResponse{Task: task})
 }
@@ -195,7 +195,7 @@ func (tc *TaskController) MoveTask(c *gin.Context) {
 		return
 	}
 
-	task, err := tc.ts.MoveTask(user.ID, task.MoveTaskRequest{
+	task, oldTask, err := tc.ts.MoveTask(user.ID, task.MoveTaskRequest{
 		TaskID:     request.TaskID,
 		ColumnID:   request.ColumnID,
 		SwimlaneID: request.SwimlaneID,
@@ -212,7 +212,7 @@ func (tc *TaskController) MoveTask(c *gin.Context) {
 		return
 	}
 
-	tc.te.Publish("task.moved", task, user)
+	tc.te.Publish("task.moved", oldTask, task, user)
 
 	c.JSON(http.StatusOK, MoveTaskResponse{Task: task})
 }
@@ -296,7 +296,7 @@ func (tc *TaskController) UploadFile(c *gin.Context) {
 		return
 	}
 
-	tc.fe.Publish("file.created", file, user)
+	tc.fe.Publish("file.created", models.File{}, file, user)
 
 	c.JSON(http.StatusOK, UploadFileResponse{File: file})
 }
@@ -336,7 +336,7 @@ func (tc *TaskController) GetImage(c *gin.Context) {
 		return
 	}
 
-	file, content, err := tc.ts.GetFile(user.ID, request.FileID)
+	file, content, err := tc.ts.GetFileRequest(user.ID, request.FileID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -405,7 +405,7 @@ func (tc *TaskController) DownloadFile(c *gin.Context) {
 		return
 	}
 
-	file, content, err := tc.ts.GetFile(user.ID, request.FileID)
+	file, content, err := tc.ts.GetFileRequest(user.ID, request.FileID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -455,7 +455,7 @@ func (tc *TaskController) DeleteFile(c *gin.Context) {
 		return
 	}
 
-	tc.fe.Publish("file.deleted", file, user)
+	tc.fe.Publish("file.deleted", file, models.File{}, user)
 
 	c.JSON(http.StatusOK, DeleteFileResponse{File: file})
 }
@@ -508,7 +508,7 @@ func (tc *TaskController) CreateTaskLink(c *gin.Context) {
 		return
 	}
 
-	tc.le.Publish("link.created", link, user)
+	tc.le.Publish("link.created", models.TaskLinks{}, link, user)
 
 	c.JSON(http.StatusOK, CreateTaskLinkResponse{Link: link})
 }
@@ -554,7 +554,7 @@ func (tc *TaskController) DeleteTaskLink(c *gin.Context) {
 		return
 	}
 
-	tc.le.Publish("link.deleted", link, user)
+	tc.le.Publish("link.deleted", link, models.TaskLinks{}, user)
 
 	c.JSON(http.StatusOK, DeleteTaskLinkResponse{Link: link})
 }
@@ -655,7 +655,7 @@ func (tc *TaskController) CreateTaskExternalLink(c *gin.Context) {
 		return
 	}
 
-	tc.lee.Publish("externallink.created", link, user)
+	tc.lee.Publish("externallink.created", link, models.TaskExternalLink{}, user)
 
 	c.JSON(http.StatusOK, CreateTaskExternalLinkResponse{Link: link})
 }
@@ -697,13 +697,13 @@ func (tc *TaskController) UpdateTaskExternalLink(c *gin.Context) {
 		return
 	}
 
-	link, err := tc.ts.UpdateTaskExternalLink(user.ID, request.ID, request.Title, request.URL)
+	link, oldLink, err := tc.ts.UpdateTaskExternalLink(user.ID, request.ID, request.Title, request.URL)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	tc.lee.Publish("externallink.updated", link, user)
+	tc.lee.Publish("externallink.updated", oldLink, link, user)
 
 	c.JSON(http.StatusOK, UpdateTaskExternalLinkResponse{Link: link})
 }
@@ -750,7 +750,7 @@ func (tc *TaskController) DeleteTaskExternalLink(c *gin.Context) {
 		return
 	}
 
-	tc.lee.Publish("externallink.deleted", link, user)
+	tc.lee.Publish("externallink.deleted", link, models.TaskExternalLink{}, user)
 
 	c.JSON(http.StatusOK, DeleteTaskExternalLinkResponse{TaskID: link.TaskID, Message: "deleted"})
 }

@@ -14,22 +14,22 @@ type MoveTaskRequest struct {
 	Position   float64 `json:"position"`
 }
 
-func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Task, error) {
+func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Task, models.Task, error) {
 	task, err := ts.GetTask(userID, request.TaskID)
 	if err != nil {
-		return models.Task{}, err
+		return models.Task{}, models.Task{}, err
 	}
 
 	column, err := ts.db.ColumnRepository.GetByID(request.ColumnID)
 	if err != nil {
-		return models.Task{}, err
+		return models.Task{}, models.Task{}, err
 	}
 	swimlane, err := ts.db.SwimlaneRepository.GetByID(request.SwimlaneID)
 	if err != nil {
-		return models.Task{}, err
+		return models.Task{}, models.Task{}, err
 	}
 	if column.BoardID != swimlane.BoardID || column.BoardID != task.BoardID {
-		return models.Task{}, errors.New("column, swimlane and task must belong to the same board")
+		return models.Task{}, models.Task{}, errors.New("column, swimlane and task must belong to the same board")
 	}
 
 	tasks, err := ts.db.TaskRepository.GetAll(
@@ -37,7 +37,7 @@ func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Ta
 		repository.WithOrder("position ASC"),
 	)
 	if err != nil {
-		return models.Task{}, err
+		return models.Task{}, models.Task{}, err
 	}
 
 	var filtered []models.Task
@@ -68,13 +68,19 @@ func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Ta
 		}
 	}
 
+	oldTask := task
 	task.Position = newPos
 	task.ColumnID = request.ColumnID
 	task.SwimlaneID = request.SwimlaneID
 
 	if err = ts.db.TaskRepository.Update(&task); err != nil {
-		return models.Task{}, err
+		return models.Task{}, models.Task{}, err
 	}
 
-	return task, nil
+	task, err = ts.GetTask(userID, request.TaskID)
+	if err != nil {
+		return models.Task{}, models.Task{}, err
+	}
+
+	return task, oldTask, nil
 }
