@@ -11,8 +11,21 @@ jobs:
     name: Build and push Docker images
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
+      - name: Check out the repo with full history
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine release tag
+        id: get_tag
+        run: |
+          TAG=$(git tag --points-at ${{ github.event.workflow_run.head_sha }})
+          if [ -z "$TAG" ]; then
+            echo "No tag found on commit, defaulting to branch name"
+            TAG=${{ github.event.workflow_run.head_branch }}
+          fi
+          echo "Found tag: $TAG"
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -74,7 +87,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/kanban-server:${{ github.event.workflow_run.head_branch }}
+            ${{ secrets.DOCKER_USERNAME }}/kanban-server:${{ env.TAG }}
             ${{ secrets.DOCKER_USERNAME }}/kanban-server:latest
 
       - name: Client - Build and push Docker image
@@ -85,5 +98,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/kanban-client:${{ github.event.workflow_run.head_branch }}
+            ${{ secrets.DOCKER_USERNAME }}/kanban-client:${{ env.TAG }}
             ${{ secrets.DOCKER_USERNAME }}/kanban-client:latest
