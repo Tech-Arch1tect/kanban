@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.5](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.4...v0.3.5) (2025-03-01)
+
+
+### Bug Fixes
+
+* **CI:** Change docker-build workflow to be triggered by the release workflow ([022d9ce](https://github.com/Tech-Arch1tect/kanban/commit/022d9ce1aee9a5969257f9c08fa7d47b55ea6c5d))
+* **client:** Change default page title to "Kanban" from "Tanstack Router" ([ca16b9c](https://github.com/Tech-Arch1tect/kanban/commit/ca16b9c1b9507672ac78d220e45e1837e75f2ebd))
+
 ### [0.3.4](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.3...v0.3.4) (2025-02-28)
 
 ### 0.3.3 (2025-02-27)
