@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.6](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.5...v0.3.6) (2025-03-01)
+
+
+### Bug Fixes
+
+* **ci:** docker build and push: Attempt to determine the tag from the checked out commit ([7ef2b1e](https://github.com/Tech-Arch1tect/kanban/commit/7ef2b1e328460761f7336ae565c2025141a3e4d6))
+
 ### [0.3.5](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.4...v0.3.5) (2025-03-01)
 
 
