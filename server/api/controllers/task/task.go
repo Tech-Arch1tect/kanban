@@ -655,7 +655,7 @@ func (tc *TaskController) CreateTaskExternalLink(c *gin.Context) {
 		return
 	}
 
-	tc.lee.Publish("externallink.created", link, models.TaskExternalLink{}, user)
+	tc.lee.Publish("externallink.created", models.TaskExternalLink{}, link, user)
 
 	c.JSON(http.StatusOK, CreateTaskExternalLinkResponse{Link: link})
 }
