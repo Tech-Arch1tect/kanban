@@ -19,9 +19,9 @@ jobs:
       - name: Determine release tag
         id: get_tag
         run: |
-          TAG=$(git tag --points-at ${{ github.event.workflow_run.head_sha }})
+          TAG=$(git describe --tags --abbrev=0)
           if [ -z "$TAG" ]; then
-            echo "No tag found on commit, defaulting to branch name"
+            echo "No tag found, defaulting to branch name"
             TAG=${{ github.event.workflow_run.head_branch }}
           fi
           echo "Found tag: $TAG"
