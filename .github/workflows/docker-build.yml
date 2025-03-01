@@ -1,15 +1,15 @@
 name: Docker Image Build and Push CI
 
 on:
-  push:
-    tags:
-      - "*"
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
 
 jobs:
   build_and_push:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Build and push Docker images
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/kanban-server:${{ github.ref_name }}
+            ${{ secrets.DOCKER_USERNAME }}/kanban-server:${{ github.event.workflow_run.head_branch }}
             ${{ secrets.DOCKER_USERNAME }}/kanban-server:latest
 
       - name: Client - Build and push Docker image
@@ -85,5 +85,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/kanban-client:${{ github.ref_name }}
+            ${{ secrets.DOCKER_USERNAME }}/kanban-client:${{ github.event.workflow_run.head_branch }}
             ${{ secrets.DOCKER_USERNAME }}/kanban-client:latest
