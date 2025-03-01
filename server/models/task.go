@@ -31,6 +31,18 @@ type Task struct {
 	SrcLinks      []TaskLinks        `gorm:"foreignKey:SrcTaskID" json:"src_links"`
 	ExternalLinks []TaskExternalLink `gorm:"foreignKey:TaskID" json:"external_links"`
 	DueDate       *time.Time         `json:"due_date"`
+	Activity      []TaskActivity     `gorm:"foreignKey:TaskID" json:"activity"`
+}
+
+type TaskActivity struct {
+	Model
+	TaskID  uint   `json:"task_id"`
+	Task    Task   `gorm:"foreignKey:TaskID" json:"task"`
+	Event   string `json:"event"`
+	UserID  uint   `json:"user_id"`
+	User    User   `gorm:"foreignKey:UserID" json:"user"`
+	OldData string `json:"old_data"`
+	NewData string `json:"new_data"`
 }
 
 var allowedStatuses = []string{"open", "closed"}

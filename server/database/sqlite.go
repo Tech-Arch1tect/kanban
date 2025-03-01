@@ -33,5 +33,6 @@ func newSQLiteDB(cfg *config.Config) (*repository.Database, error) {
 		NotificationEventRepository:         repository.NewNotificationEventRepository(gormDB),
 		NotificationLogRepository:           repository.NewNotificationLogRepository(gormDB),
 		CommentReactionRepository:           repository.NewCommentReactionRepository(gormDB),
+		TaskActivityRepository:              repository.NewTaskActivityRepository(gormDB),
 	}, nil
 }
