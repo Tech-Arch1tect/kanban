@@ -10,6 +10,7 @@ import { ViewFiles } from "./Files/ViewFiles";
 import { TaskLinks } from "./TaskLinks";
 import { TaskExternalLinks } from "./TaskExternalLinks";
 import { TaskSubTasks } from "./TaskSubTasks";
+import TaskActivities from "./TaskActivities";
 
 export default function TaskView() {
   const { id } = useParams({ from: "/task/$id" });
@@ -44,6 +45,8 @@ export default function TaskView() {
         <TaskLinks task={data?.task as ModelsTask} />
 
         <TaskExternalLinks task={data?.task as ModelsTask} />
+
+        <TaskActivities task={data?.task as ModelsTask} />
 
         <TaskComments task={data?.task as ModelsTask} />
       </div>
