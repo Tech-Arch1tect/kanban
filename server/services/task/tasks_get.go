@@ -134,3 +134,21 @@ func parseQuery(q string) (statuses []string, assignee string, searchTerm string
 	}
 	return statuses, assignee, searchTerm
 }
+
+func (ts *TaskService) GetTaskActivities(userID uint, taskID uint, page, pageSize int) (taskActivities []models.TaskActivity, totalRecords int, totalPages int, err error) {
+	task, err := ts.db.TaskRepository.GetFirst(repository.WithWhere("id = ?", taskID))
+	if err != nil {
+		return nil, 0, 0, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
+	if !can {
+		return nil, 0, 0, errors.New("forbidden")
+	}
+
+	taskActivities, totalRecords, totalPages, err = ts.tas.GetPaginatedTaskActivities(page, pageSize)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	return taskActivities, totalRecords, totalPages, nil
+}

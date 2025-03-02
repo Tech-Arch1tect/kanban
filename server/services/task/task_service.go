@@ -5,6 +5,7 @@ import (
 	"server/database/repository"
 	"server/services/comment"
 	"server/services/role"
+	"server/services/taskActivity"
 	"time"
 )
 
@@ -13,6 +14,7 @@ type TaskService struct {
 	rs     *role.RoleService
 	config *config.Config
 	cs     *comment.CommentService
+	tas    *taskActivity.TaskActivityService
 }
 
 type CreateTaskRequest struct {
@@ -27,6 +29,6 @@ type CreateTaskRequest struct {
 	DueDate      *time.Time `json:"due_date"`
 }
 
-func NewTaskService(db *repository.Database, rs *role.RoleService, config *config.Config, cs *comment.CommentService) *TaskService {
-	return &TaskService{db: db, rs: rs, config: config, cs: cs}
+func NewTaskService(db *repository.Database, rs *role.RoleService, config *config.Config, cs *comment.CommentService, tas *taskActivity.TaskActivityService) *TaskService {
+	return &TaskService{db: db, rs: rs, config: config, cs: cs, tas: tas}
 }
