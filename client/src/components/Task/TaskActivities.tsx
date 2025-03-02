@@ -65,7 +65,7 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
                     {data.taskActivities.map((activity: ModelsTaskActivity) => (
                       <div
                         key={activity.id}
-                        className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
+                        className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-700 shadow-sm hover:shadow-md transition-shadow"
                       >
                         <div className="mb-2 text-gray-800 dark:text-gray-200">
                           {activity.user && (
