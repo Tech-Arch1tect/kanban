@@ -1,7 +1,6 @@
-import * as React from "react";
-import { Link, Outlet, createRootRoute } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import Navbar from "../components/layout/navbar";
+import { Outlet, createRootRoute } from "@tanstack/react-router";
+import React from "react";
+const Navbar = React.lazy(() => import("../components/layout/navbar"));
 
 export const Route = createRootRoute({
   component: RootComponent,

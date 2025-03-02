@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ModelsRole } from "../../typescript-fetch-client";
 import {
@@ -7,7 +7,7 @@ import {
 } from "../../typescript-fetch-client/index.js";
 import { adminApi } from "../../lib/api";
 
-export const Route = createFileRoute("/admin/users")({
+export const Route = createLazyFileRoute("/admin/users")({
   component: () => <AdminUsers />,
 });
 

@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { authApi, miscApi } from "../../lib/api";
 import { QRCodeSVG } from "qrcode.react";
 
-export const Route = createFileRoute("/profile/2fa")({
+export const Route = createLazyFileRoute("/profile/2fa")({
   component: () => <TwoFAComponent />,
 });
 

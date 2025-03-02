@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import BoardAdministrateIndex from "../../../components/Board/Administrate/BoardAdministrateIndex";
 
-export const Route = createFileRoute("/boards/administrate/$boardId")({
+export const Route = createLazyFileRoute("/boards/administrate/$boardId")({
   component: () => <BoardAdministrateIndex />,
 });

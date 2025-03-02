@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { useBoards } from "../../hooks/boards/useBoards";
 import { useState } from "react";
 import { useCreateBoard } from "../../hooks/boards/useCreateBoard";
 
-export const Route = createFileRoute("/admin/boards")({
+export const Route = createLazyFileRoute("/admin/boards")({
   component: () => <AdminBoards />,
 });
 
