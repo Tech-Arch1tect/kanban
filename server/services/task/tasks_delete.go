@@ -109,5 +109,21 @@ func (ts *TaskService) DeleteTask(taskID uint) error {
 		}
 	}
 
+	activities, err := ts.db.TaskActivityRepository.GetAll(repository.WithWhere("task_id = ?", task.ID))
+	if err != nil {
+		return err
+	}
+
+	for _, activity := range activities {
+		err = ts.DeleteTaskActivity(activity.ID)
+		if err != nil {
+			return err
+		}
+	}
+
 	return ts.db.TaskRepository.Delete(taskID)
+}
+
+func (ts *TaskService) DeleteTaskActivity(activityID uint) error {
+	return ts.db.TaskActivityRepository.Delete(activityID)
 }
