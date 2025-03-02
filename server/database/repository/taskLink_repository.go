@@ -2,9 +2,6 @@ package repository
 
 import (
 	"log"
-	"server/models"
-
-	"gorm.io/gorm"
 )
 
 type linkType string
@@ -51,22 +48,4 @@ func (t linkType) GetInverse() string {
 		log.Println("couldnt_find_inverse_for_" + string(t))
 		return "couldnt_find_inverse_for_" + string(t)
 	}
-}
-
-type TaskLinkRepository interface {
-	Repository[models.TaskLinks]
-}
-
-type GormTaskLinkRepository struct {
-	*GormRepository[models.TaskLinks]
-}
-
-func NewTaskLinkRepository(db *gorm.DB) TaskLinkRepository {
-	return &GormTaskLinkRepository{
-		GormRepository: NewGormRepository[models.TaskLinks](db),
-	}
-}
-
-func (r *GormTaskLinkRepository) Migrate() error {
-	return r.db.AutoMigrate(&models.TaskLinks{})
 }

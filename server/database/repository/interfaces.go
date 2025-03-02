@@ -1,6 +1,10 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"server/models"
+
+	"gorm.io/gorm"
+)
 
 type QueryOption func(*gorm.DB) *gorm.DB
 
@@ -18,24 +22,24 @@ type Repository[T any] interface {
 }
 
 type Database struct {
-	UserRepository                      UserRepository
-	BoardRepository                     BoardRepository
-	BoardRoleRepository                 BoardRoleRepository
-	SwimlaneRepository                  SwimlaneRepository
-	TaskRepository                      TaskRepository
-	UserBoardRoleRepository             UserBoardRoleRepository
-	CommentRepository                   CommentRepository
-	ColumnRepository                    ColumnRepository
-	FileRepository                      FileRepository
-	BoardInviteRepository               BoardInviteRepository
-	TaskLinkRepository                  TaskLinkRepository
-	TaskExternalLinkRepository          TaskExternalLinkRepository
-	SettingsRepository                  SettingsRepository
+	UserRepository                      *GormRepository[models.User]
+	BoardRepository                     *GormRepository[models.Board]
+	BoardRoleRepository                 *GormRepository[models.BoardRole]
+	SwimlaneRepository                  *GormRepository[models.Swimlane]
+	TaskRepository                      *GormRepository[models.Task]
+	UserBoardRoleRepository             *GormRepository[models.UserBoardRole]
+	CommentRepository                   *GormRepository[models.Comment]
+	ColumnRepository                    *GormRepository[models.Column]
+	FileRepository                      *GormRepository[models.File]
+	BoardInviteRepository               *GormRepository[models.BoardInvite]
+	TaskLinkRepository                  *GormRepository[models.TaskLinks]
+	TaskExternalLinkRepository          *GormRepository[models.TaskExternalLink]
+	SettingsRepository                  *GormRepository[models.Settings]
 	NotificationConfigurationRepository NotificationConfigurationRepository
-	NotificationEventRepository         NotificationEventRepository
-	NotificationLogRepository           NotificationLogRepository
-	CommentReactionRepository           CommentReactionRepository
-	TaskActivityRepository              TaskActivityRepository
+	NotificationEventRepository         *GormRepository[models.NotificationEvent]
+	NotificationLogRepository           *GormRepository[models.NotificationLog]
+	CommentReactionRepository           *GormRepository[models.Reaction]
+	TaskActivityRepository              *GormRepository[models.TaskActivity]
 }
 
 func (db *Database) Migrate() error {

@@ -141,3 +141,7 @@ func WithJoin(join string) QueryOption {
 		return db.Joins(join)
 	}
 }
+
+func (r *GormRepository[T]) Migrate() error {
+	return r.db.AutoMigrate(new(T))
+}

@@ -3,6 +3,7 @@ package database
 import (
 	"server/config"
 	"server/database/repository"
+	"server/models"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -16,23 +17,23 @@ func newSQLiteDB(cfg *config.Config) (*repository.Database, error) {
 	}
 
 	return &repository.Database{
-		UserRepository:                      repository.NewUserRepository(gormDB),
-		BoardRepository:                     repository.NewBoardRepository(gormDB),
-		BoardRoleRepository:                 repository.NewBoardRoleRepository(gormDB),
-		SwimlaneRepository:                  repository.NewSwimlaneRepository(gormDB),
-		TaskRepository:                      repository.NewTaskRepository(gormDB),
-		UserBoardRoleRepository:             repository.NewUserBoardRoleRepository(gormDB),
-		CommentRepository:                   repository.NewCommentRepository(gormDB),
-		ColumnRepository:                    repository.NewColumnRepository(gormDB),
-		FileRepository:                      repository.NewFileRepository(gormDB),
-		BoardInviteRepository:               repository.NewBoardInviteRepository(gormDB),
-		TaskLinkRepository:                  repository.NewTaskLinkRepository(gormDB),
-		TaskExternalLinkRepository:          repository.NewTaskExternalLinkRepository(gormDB),
-		SettingsRepository:                  repository.NewSettingsRepository(gormDB),
+		UserRepository:                      repository.NewGormRepository[models.User](gormDB),
+		BoardRepository:                     repository.NewGormRepository[models.Board](gormDB),
+		BoardRoleRepository:                 repository.NewGormRepository[models.BoardRole](gormDB),
+		SwimlaneRepository:                  repository.NewGormRepository[models.Swimlane](gormDB),
+		TaskRepository:                      repository.NewGormRepository[models.Task](gormDB),
+		UserBoardRoleRepository:             repository.NewGormRepository[models.UserBoardRole](gormDB),
+		CommentRepository:                   repository.NewGormRepository[models.Comment](gormDB),
+		ColumnRepository:                    repository.NewGormRepository[models.Column](gormDB),
+		FileRepository:                      repository.NewGormRepository[models.File](gormDB),
+		BoardInviteRepository:               repository.NewGormRepository[models.BoardInvite](gormDB),
+		TaskLinkRepository:                  repository.NewGormRepository[models.TaskLinks](gormDB),
+		TaskExternalLinkRepository:          repository.NewGormRepository[models.TaskExternalLink](gormDB),
+		SettingsRepository:                  repository.NewGormRepository[models.Settings](gormDB),
 		NotificationConfigurationRepository: repository.NewNotificationConfigurationRepository(gormDB),
-		NotificationEventRepository:         repository.NewNotificationEventRepository(gormDB),
-		NotificationLogRepository:           repository.NewNotificationLogRepository(gormDB),
-		CommentReactionRepository:           repository.NewCommentReactionRepository(gormDB),
-		TaskActivityRepository:              repository.NewTaskActivityRepository(gormDB),
+		NotificationEventRepository:         repository.NewGormRepository[models.NotificationEvent](gormDB),
+		NotificationLogRepository:           repository.NewGormRepository[models.NotificationLog](gormDB),
+		CommentReactionRepository:           repository.NewGormRepository[models.Reaction](gormDB),
+		TaskActivityRepository:              repository.NewGormRepository[models.TaskActivity](gormDB),
 	}, nil
 }
