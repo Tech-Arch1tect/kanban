@@ -754,3 +754,50 @@ func (tc *TaskController) DeleteTaskExternalLink(c *gin.Context) {
 
 	c.JSON(http.StatusOK, DeleteTaskExternalLinkResponse{TaskID: link.TaskID, Message: "deleted"})
 }
+
+type GetTaskActivitiesRequest struct {
+	TaskID   uint `json:"task_id" binding:"required"`
+	Page     int  `json:"page" binding:"required"`
+	PageSize int  `json:"page_size" binding:"required"`
+}
+
+type GetTaskActivitiesResponse struct {
+	TaskActivities []models.TaskActivity `json:"task_activities"`
+	TotalRecords   int                   `json:"total_records"`
+	TotalPages     int                   `json:"total_pages"`
+}
+
+// @Summary Get task activities
+// @Description Get task activities
+// @Tags tasks
+// @Security cookieAuth
+// @Accept json
+// @Produce json
+// @Param request body GetTaskActivitiesRequest true "Get task activities request"
+// @Success 200 {object} GetTaskActivitiesResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/get-activities [post]
+func (tc *TaskController) GetTaskActivities(c *gin.Context) {
+	var request GetTaskActivitiesRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	taskActivities, totalRecords, totalPages, err := tc.ts.GetTaskActivities(user.ID, request.TaskID, request.Page, request.PageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, GetTaskActivitiesResponse{TaskActivities: taskActivities, TotalRecords: totalRecords, TotalPages: totalPages})
+}
