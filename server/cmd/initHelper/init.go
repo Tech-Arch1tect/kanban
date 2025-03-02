@@ -24,6 +24,7 @@ import (
 	"server/services/settings"
 	"server/services/swimlane"
 	"server/services/task"
+	"server/services/taskActivity"
 	testdata "server/services/testData"
 	"time"
 
@@ -57,6 +58,7 @@ type Params struct {
 	ExternalLinkEventBus    *eventBus.EventBus[models.TaskExternalLink]
 	CommentReactionEventBus *eventBus.EventBus[models.Reaction]
 	NotifSubscriber         *notification.NotificationSubscriber
+	TaskActivityService     *taskActivity.TaskActivityService
 }
 
 func NewRouter(p Params) (*gin.Engine, error) {
@@ -162,10 +164,12 @@ func SetupRouter() (*gin.Engine, *config.Config, func()) {
 			notification.NewNotificationSubscriber,
 			testdata.NewTestdataService,
 			NewRouter,
+			taskActivity.NewTaskActivityService,
 		),
 		fx.Populate(&router, &cfg),
-		fx.Invoke(func(ns *notification.NotificationSubscriber, tds *testdata.TestdataService) {
+		fx.Invoke(func(ns *notification.NotificationSubscriber, tds *testdata.TestdataService, tas *taskActivity.TaskActivityService) {
 			go ns.Subscribe()
+			go tas.Subscribe()
 			err := tds.Init()
 			if err != nil {
 				panic(err)
