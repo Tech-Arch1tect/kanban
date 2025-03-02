@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.8](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.7...v0.3.8) (2025-03-02)
+
+
+### Features
+
+* **TaskActivity:** Add functionality to Task service to retrieve paginated Task activities ([26ce6a8](https://github.com/Tech-Arch1tect/kanban/commit/26ce6a80273243b3a9ca739ad0e46e115b2a713b))
+* **TaskActivity:** client: Add component for displaying Task Activities ([bd248f0](https://github.com/Tech-Arch1tect/kanban/commit/bd248f003786d4338a4bed53d2e493bd417eec3b))
+* **TaskActivity:** client: Add hook to retrieve Task Activities by task ID (with pagination) ([2c48a39](https://github.com/Tech-Arch1tect/kanban/commit/2c48a392cbbc18d87bbc2e0bfdfa29facf3b3bb8))
+* **TaskActivity:** server: Add GetTaskActivities route ([05a2027](https://github.com/Tech-Arch1tect/kanban/commit/05a2027fb650e2101a34dcd86a98d56a971ad993))
+* **TaskActivity:** server: Add TaskActivity Model and DB repository ([04d7c1e](https://github.com/Tech-Arch1tect/kanban/commit/04d7c1ed09d0b5bbc2969da6ca80c8121ae440f5))
+* **TaskActivity:** server: Implement TaskActivityService ([b33caa4](https://github.com/Tech-Arch1tect/kanban/commit/b33caa4d701534e125785809909a14a2bba96249))
+
+
+### Bug Fixes
+
+* **events:** server: correctly set new/old data in externallink.created event ([675e502](https://github.com/Tech-Arch1tect/kanban/commit/675e502ac5db9d79798344643e86e91a348eb9fa))
+* **TaskActivity:** client: Correct task activity background colour ([6a6f1a2](https://github.com/Tech-Arch1tect/kanban/commit/6a6f1a26d6bb016cba46f2c173f1027cc064170d))
+* **TaskActivity:** Delete task activity when task is deleted ([2e0156a](https://github.com/Tech-Arch1tect/kanban/commit/2e0156af392bb9932418719df34e414f4f94747c))
+
+
+### Performance Improvements
+
+* **react:** client: Switch to lazy loading for better production bundle splitting ([62af830](https://github.com/Tech-Arch1tect/kanban/commit/62af830afaec28643d94b1b769e17a8c1bdd1110))
+
+
+### Code Refactoring
+
+* **PaginatedSearch:** Add a generic PaginatedSearch method for db repositories and remove old implementation on users repo ([ac34dec](https://github.com/Tech-Arch1tect/kanban/commit/ac34dec44db730e635a2101413527a253de54cbb))
+
 ### [0.3.7](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.6...v0.3.7) (2025-03-01)
 
 ### [0.3.6](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.5...v0.3.6) (2025-03-01)
