@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -63,6 +65,36 @@ func (r *GormRepository[T]) Count(opts ...QueryOption) (int64, error) {
 	db := r.applyOptions(opts...)
 	err := db.Model(new(T)).Count(&count).Error
 	return count, err
+}
+
+func (r *GormRepository[T]) PaginatedSearch(page, pageSize int, search string, searchField string, orderBy string, opts ...QueryOption) ([]T, int64, error) {
+	var (
+		entities []T
+		total    int64
+	)
+
+	db := r.applyOptions(opts...)
+	if search != "" && searchField != "" {
+		db = db.Where(fmt.Sprintf("%s LIKE ?", searchField), "%"+search+"%")
+	}
+
+	if err := db.Model(new(T)).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if orderBy != "" {
+		db = db.Order(orderBy)
+	}
+
+	if page > 0 && pageSize > 0 {
+		offset := (page - 1) * pageSize
+		db = db.Offset(offset).Limit(pageSize)
+	}
+
+	if err := db.Find(&entities).Error; err != nil {
+		return nil, 0, err
+	}
+	return entities, total, nil
 }
 
 func WithPreload(relations ...string) QueryOption {

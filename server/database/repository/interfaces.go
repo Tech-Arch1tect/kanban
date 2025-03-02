@@ -14,6 +14,7 @@ type Repository[T any] interface {
 	Delete(id uint) error
 	HardDelete(id uint) error
 	Count(opts ...QueryOption) (int64, error)
+	PaginatedSearch(page, pageSize int, search string, searchField string, orderBy string, opts ...QueryOption) ([]T, int64, error)
 }
 
 type Database struct {

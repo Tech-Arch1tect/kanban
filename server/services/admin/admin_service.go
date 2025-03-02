@@ -25,7 +25,7 @@ func (s *AdminService) RemoveUser(userID uint) error {
 }
 
 func (s *AdminService) ListUsers(page, pageSize int, search string) (AdminPaginationResult, error) {
-	users, totalRecords, err := s.db.UserRepository.PaginatedSearch(page, pageSize, search)
+	users, totalRecords, err := s.db.UserRepository.PaginatedSearch(page, pageSize, search, "email", "created_at DESC")
 	if err != nil {
 		return AdminPaginationResult{}, err
 	}
