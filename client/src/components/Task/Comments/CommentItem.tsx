@@ -105,6 +105,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
         </form>
       ) : (
         <div>
+          <div className="relative">
+            {isHovered && (
+              <ReactionPicker
+                commentId={comment.id as number}
+                taskId={comment.taskId as number}
+              />
+            )}
+          </div>
           <div className="text-gray-800 dark:text-gray-200">
             <RenderMarkdown markdown={comment.text || ""} />
           </div>
@@ -114,14 +122,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
               {comment.user?.username || "Unknown User"}
             </span>
             <div className="flex items-center space-x-3 relative">
-              <div className="relative">
-                {isHovered && (
-                  <ReactionPicker
-                    commentId={comment.id as number}
-                    taskId={comment.taskId as number}
-                  />
-                )}
-              </div>
               <div className="text-gray-600 dark:text-gray-300 text-sm">
                 <span className="block">
                   Created:{" "}

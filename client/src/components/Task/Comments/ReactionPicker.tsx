@@ -17,7 +17,7 @@ const ReactionPicker: React.FC<ReactionPickerProps> = ({
   };
 
   return (
-    <div className="absolute right-0 mt-2 z-10">
+    <div className="absolute right-0 z-10">
       <Picker
         onEmojiClick={handleReaction}
         suggestedEmojisMode={SuggestionMode.RECENT}
