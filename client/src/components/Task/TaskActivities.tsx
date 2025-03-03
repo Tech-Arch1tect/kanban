@@ -61,6 +61,50 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
             <div className="space-y-3">
               {data?.taskActivities && data.taskActivities.length > 0 ? (
                 <>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <button
+                        disabled={page === 1}
+                        onClick={() => setPage(page - 1)}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        disabled={page >= totalPages}
+                        onClick={() => setPage(page + 1)}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      >
+                        Next
+                      </button>
+                      <div className="flex items-center gap-2">
+                        <label
+                          htmlFor="pageSizeSelect"
+                          className="text-gray-700 dark:text-gray-300 text-xs"
+                        >
+                          Entries per page:
+                        </label>
+                        <select
+                          id="pageSizeSelect"
+                          value={pageSize}
+                          onChange={(e) => {
+                            setPageSize(Number(e.target.value));
+                            setPage(1);
+                          }}
+                          className="p-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-xs"
+                        >
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={20}>20</option>
+                          <option value={50}>50</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-300 text-xs">
+                      Page {page} of {totalPages}
+                    </div>
+                  </div>
+
                   <div className="flex flex-col">
                     {data.taskActivities.map((activity: ModelsTaskActivity) => (
                       <div
@@ -100,51 +144,6 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
                         </div>
                       </div>
                     ))}
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3">
-                    <div className="flex items-center gap-2">
-                      <button
-                        disabled={page === 1}
-                        onClick={() => setPage(page - 1)}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      >
-                        Previous
-                      </button>
-                      <button
-                        disabled={page >= totalPages}
-                        onClick={() => setPage(page + 1)}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      >
-                        Next
-                      </button>
-                    </div>
-                    <div className="text-gray-700 dark:text-gray-300 text-xs">
-                      Page {page} of {totalPages}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 mt-3">
-                    <label
-                      htmlFor="pageSizeSelect"
-                      className="text-gray-700 dark:text-gray-300 text-xs"
-                    >
-                      Entries per page:
-                    </label>
-                    <select
-                      id="pageSizeSelect"
-                      value={pageSize}
-                      onChange={(e) => {
-                        setPageSize(Number(e.target.value));
-                        setPage(1);
-                      }}
-                      className="p-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-xs"
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={20}>20</option>
-                      <option value={50}>50</option>
-                    </select>
                   </div>
                 </>
               ) : (
