@@ -85,18 +85,19 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
                               : "Unknown"}
                           </span>
                         </div>
-                        {activity.oldData && activity.newData && (
-                          <div className="text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
-                            <div>
-                              <span className="font-medium">Changed from:</span>{" "}
-                              "{activity.oldData}"
+
+                        <div className="text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2 space-y-2">
+                          {activity.oldData && (
+                            <div className="p-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-lg">
+                              {activity.oldData}
                             </div>
-                            <div>
-                              <span className="font-medium">To:</span> "
-                              {activity.newData}"
+                          )}
+                          {activity.newData && (
+                            <div className="p-2 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded-lg">
+                              {activity.newData}
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
