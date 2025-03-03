@@ -42,14 +42,14 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
       {showActivities && (
         <>
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-2">
               {Array.from({ length: pageSize }).map((_, index) => (
                 <div
                   key={index}
-                  className="animate-pulse p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-200 dark:bg-gray-700"
+                  className="animate-pulse p-2 border-b border-gray-300 dark:border-gray-600 last:border-b-0 bg-gray-200 dark:bg-gray-700"
                 >
-                  <div className="h-4 bg-gray-300 dark:bg-gray-500 rounded w-1/2 mb-2"></div>
-                  <div className="h-3 bg-gray-300 dark:bg-gray-500 rounded w-1/3"></div>
+                  <div className="h-3 bg-gray-300 dark:bg-gray-500 rounded w-1/2 mb-1"></div>
+                  <div className="h-2 bg-gray-300 dark:bg-gray-500 rounded w-1/3"></div>
                 </div>
               ))}
             </div>
@@ -58,16 +58,16 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
               Error loading activities.
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-3">
               {data?.taskActivities && data.taskActivities.length > 0 ? (
                 <>
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col">
                     {data.taskActivities.map((activity: ModelsTaskActivity) => (
                       <div
                         key={activity.id}
-                        className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-700 shadow-sm hover:shadow-md transition-shadow"
+                        className="pb-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
                       >
-                        <div className="mb-2 text-gray-800 dark:text-gray-200">
+                        <div className="text-gray-800 dark:text-gray-200 text-sm">
                           {activity.user && (
                             <span className="font-semibold">
                               @{activity.user.username}:{" "}
@@ -78,7 +78,7 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
                               activity.event as keyof typeof friendlyEventNames
                             ] || activity.event}
                           </span>{" "}
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             on{" "}
                             {activity.createdAt
                               ? new Date(activity.createdAt).toLocaleString()
@@ -86,14 +86,14 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
                           </span>
                         </div>
 
-                        <div className="text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2 space-y-2">
+                        <div className="mt-1 text-xs text-gray-600 dark:text-gray-400 flex flex-col gap-1">
                           {activity.oldData && (
-                            <div className="p-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-lg">
+                            <div className="p-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded">
                               {activity.oldData}
                             </div>
                           )}
                           {activity.newData && (
-                            <div className="p-2 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded-lg">
+                            <div className="p-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded">
                               {activity.newData}
                             </div>
                           )}
@@ -102,8 +102,8 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
                     ))}
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
-                    <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3">
+                    <div className="flex items-center gap-2">
                       <button
                         disabled={page === 1}
                         onClick={() => setPage(page - 1)}
@@ -119,15 +119,15 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
                         Next
                       </button>
                     </div>
-                    <div className="text-gray-700 dark:text-gray-300 text-sm">
+                    <div className="text-gray-700 dark:text-gray-300 text-xs">
                       Page {page} of {totalPages}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 mt-4">
+                  <div className="flex items-center gap-2 mt-3">
                     <label
                       htmlFor="pageSizeSelect"
-                      className="text-gray-700 dark:text-gray-300 text-sm"
+                      className="text-gray-700 dark:text-gray-300 text-xs"
                     >
                       Entries per page:
                     </label>
@@ -138,7 +138,7 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
                         setPageSize(Number(e.target.value));
                         setPage(1);
                       }}
-                      className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="p-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-xs"
                     >
                       <option value={5}>5</option>
                       <option value={10}>10</option>
@@ -148,7 +148,7 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
                   </div>
                 </>
               ) : (
-                <div className="text-center text-gray-500 dark:text-gray-400">
+                <div className="text-center text-gray-500 dark:text-gray-400 text-xs">
                   No activities found for this task.
                 </div>
               )}
