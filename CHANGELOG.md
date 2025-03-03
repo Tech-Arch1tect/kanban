@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.9](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.8...v0.3.9) (2025-03-03)
+
+
+### Bug Fixes
+
+* **CommentItem:** Fix erroneous scrolling on comment hovering:  Move Reaction picker to the top of the comment ([51161c1](https://github.com/Tech-Arch1tect/kanban/commit/51161c181748f50b63403d724d28656184da230f))
+
+
+### Chores
+
+* **cleanup:** server: Correct NotificationEventRepository file name ([a8e31c1](https://github.com/Tech-Arch1tect/kanban/commit/a8e31c17b2d18bedc3832468e96ed4b52790a24f))
+
+
+### Code Refactoring
+
+* **database:** server: move Migrate() to the generic repository definition ([9403d76](https://github.com/Tech-Arch1tect/kanban/commit/9403d76e562e7db47cbe10622687e257ebcbf6a0))
+
+
+### Styles
+
+* **TaskActivity:** Compact the layout of task activities ([9da3713](https://github.com/Tech-Arch1tect/kanban/commit/9da37136be4bae7a46c2a86affb4edce0b1af69c))
+* **TaskActivity:** Improve styling of data changes ([1c791d0](https://github.com/Tech-Arch1tect/kanban/commit/1c791d038cbd797270d06c642094026cfb8d8296))
+* **TaskActivity:** Move pagination to the top of the task activities component ([e7311a4](https://github.com/Tech-Arch1tect/kanban/commit/e7311a4ee7cd82d3b6bb2df3ca0639ed9d615952))
+* **TaskActivity:** remove padding to bring title in-line with other titles ([1b58795](https://github.com/Tech-Arch1tect/kanban/commit/1b58795b6323383f7bd50abc2b2cfc3281feab0c))
+* **TaskActivity:** Render markdown for change data ([bc75f96](https://github.com/Tech-Arch1tect/kanban/commit/bc75f96554a9dc86f1776f5eb277a14e91984ebd))
+
 ### [0.3.8](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.7...v0.3.8) (2025-03-02)
 
 
