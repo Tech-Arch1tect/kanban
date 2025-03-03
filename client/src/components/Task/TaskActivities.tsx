@@ -18,7 +18,7 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
   const totalPages = data?.totalPages || 1;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-2">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 flex items-center space-x-2">
           <span>Activity Log</span>
