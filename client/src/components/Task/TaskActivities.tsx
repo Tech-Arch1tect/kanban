@@ -3,6 +3,7 @@ import { ModelsTask, ModelsTaskActivity } from "../../typescript-fetch-client";
 import { useTaskActivities } from "../../hooks/tasks/useTaskActivities";
 import { friendlyEventNames } from "../profile/notifs/friendlyEventNames";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import RenderMarkdown from "../Utility/RenderMarkdown";
 
 export default function TaskActivities({ task }: { task: ModelsTask }) {
   const [showActivities, setShowActivities] = useState(false);
@@ -133,12 +134,12 @@ export default function TaskActivities({ task }: { task: ModelsTask }) {
                         <div className="mt-1 text-xs text-gray-600 dark:text-gray-400 flex flex-col gap-1">
                           {activity.oldData && (
                             <div className="p-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded">
-                              {activity.oldData}
+                              <RenderMarkdown markdown={activity.oldData} />
                             </div>
                           )}
                           {activity.newData && (
                             <div className="p-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded">
-                              {activity.newData}
+                              <RenderMarkdown markdown={activity.newData} />
                             </div>
                           )}
                         </div>
