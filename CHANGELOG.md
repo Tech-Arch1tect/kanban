@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.10](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.9...v0.3.10) (2025-03-04)
+
+
+### Features
+
+* **Mentions:** Add 'mentioned' event friendly name for client side ([f32d779](https://github.com/Tech-Arch1tect/kanban/commit/f32d77945382238472e6be7282d50607cb676ffb))
+* **Mentions:** Add 'mentioned' event to seeded events ([25f6bd2](https://github.com/Tech-Arch1tect/kanban/commit/25f6bd2f17371186041809bbd179de4390a95f01))
+* **Mentions:** Add notification subscriber for mention event ([8dcdcf6](https://github.com/Tech-Arch1tect/kanban/commit/8dcdcf6799e3c40e353054f767dc3240b26e75be))
+* **Mentions:** Create event bus for task or comment changes + subscribe to comment & task events to detect and publish mention events ([c7ecfb9](https://github.com/Tech-Arch1tect/kanban/commit/c7ecfb969509309593fe464ecd7e85395978fc79))
+
 ### [0.3.9](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.8...v0.3.9) (2025-03-03)
 
 
