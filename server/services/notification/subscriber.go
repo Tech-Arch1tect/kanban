@@ -67,4 +67,7 @@ func (ns *NotificationSubscriber) Subscribe() {
 	ns.cre.SubscribeGlobal(func(event string, change eventBus.Change[models.Reaction], user models.User) {
 		ns.HandleCommentReactionEvent(event, change, user)
 	})
+	ns.me.SubscribeGlobal(func(event string, change eventBus.Change[eventBus.TaskOrComment], user models.User) {
+		ns.HandleMentionEvent(event, change, user)
+	})
 }
