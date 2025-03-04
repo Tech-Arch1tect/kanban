@@ -57,6 +57,7 @@ type Params struct {
 	LinkEventBus            *eventBus.EventBus[models.TaskLinks]
 	ExternalLinkEventBus    *eventBus.EventBus[models.TaskExternalLink]
 	CommentReactionEventBus *eventBus.EventBus[models.Reaction]
+	TaskOrCommentEventBus   *eventBus.EventBus[eventBus.TaskOrComment]
 	NotifSubscriber         *notification.NotificationSubscriber
 	TaskActivityService     *taskActivity.TaskActivityService
 }
@@ -165,6 +166,7 @@ func SetupRouter() (*gin.Engine, *config.Config, func()) {
 			testdata.NewTestdataService,
 			NewRouter,
 			taskActivity.NewTaskActivityService,
+			eventBus.NewTaskOrCommentEventBus,
 		),
 		fx.Populate(&router, &cfg),
 		fx.Invoke(func(ns *notification.NotificationSubscriber, tds *testdata.TestdataService, tas *taskActivity.TaskActivityService) {
