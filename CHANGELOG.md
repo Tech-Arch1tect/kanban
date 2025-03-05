@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.11](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.10...v0.3.11) (2025-03-05)
+
+
+### Chores
+
+* **dependencies:** client: npm update ([52fe96c](https://github.com/Tech-Arch1tect/kanban/commit/52fe96cc8228eb432bd27ce1aaa35bda6bca243e))
+* **Dependencies:** Switch from 'github.com/gin-gonic/contrib/sessions' to 'github.com/gin-contrib/sessions"' ([874b738](https://github.com/Tech-Arch1tect/kanban/commit/874b738eceb136598f2152e03889d6b444cad15e))
+* **Dependencies:** switch from sessions.NewCookieStore -> cookie.NewStore ([7caeec7](https://github.com/Tech-Arch1tect/kanban/commit/7caeec729516c2da9c52bb0f7677bfcd3edc6bf7))
+* **Dependencies:** Update go deps ([e76bacc](https://github.com/Tech-Arch1tect/kanban/commit/e76baccecf829a6bb05a0e4502b8be97c44d04cd))
+* **react:** Upgrade client to react 19.x ([e025c65](https://github.com/Tech-Arch1tect/kanban/commit/e025c6551292dded60418ce0abb0da4783f389a7))
+
+
+### Code Refactoring
+
+* **Images:** Client: Cache images for 10 mins ([a11ae67](https://github.com/Tech-Arch1tect/kanban/commit/a11ae67d8321c1f9b962c070ecdaa23bd36318fd))
+* **logging:** Move Gin over to Zap for logging ([b8858f2](https://github.com/Tech-Arch1tect/kanban/commit/b8858f2c49f6e5e1651faa6bfa1b38f572050700))
+* **logging:** Move most "log" usage over to "zap" logger ([c9d6b8e](https://github.com/Tech-Arch1tect/kanban/commit/c9d6b8e6ed9c264478e314b1addc1a48b565fb52))
+
 ### [0.3.10](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.9...v0.3.10) (2025-03-04)
 
 
