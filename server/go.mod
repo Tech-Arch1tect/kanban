@@ -4,12 +4,14 @@ go 1.24
 
 require (
 	github.com/gin-contrib/sessions v1.0.2
+	github.com/gin-contrib/zap v1.1.4
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.4
 	go.uber.org/fx v1.23.0
+	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.36.0
 	gorm.io/driver/mysql v1.5.7
 )
@@ -49,7 +51,6 @@ require (
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.uber.org/dig v1.18.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/arch v0.15.0 // indirect
 	golang.org/x/net v0.36.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect

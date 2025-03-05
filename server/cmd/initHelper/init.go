@@ -19,6 +19,7 @@ import (
 	"server/services/column"
 	"server/services/comment"
 	"server/services/eventBus"
+	"server/services/logger"
 	"server/services/notification"
 	"server/services/role"
 	"server/services/settings"
@@ -30,8 +31,10 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
+	"go.uber.org/zap"
 )
 
 type Params struct {
@@ -61,6 +64,7 @@ type Params struct {
 	TaskOrCommentEventBus   *eventBus.EventBus[eventBus.TaskOrComment]
 	NotifSubscriber         *notification.NotificationSubscriber
 	TaskActivityService     *taskActivity.TaskActivityService
+	Logger                  *zap.Logger
 }
 
 func NewRouter(p Params) (*gin.Engine, error) {
@@ -71,7 +75,10 @@ func NewRouter(p Params) (*gin.Engine, error) {
 		log.Println("Warning: gin mode is set to debug mode. Please use APP_ENVIRONMENT=production environment variable to run in production mode")
 		gin.SetMode(gin.DebugMode)
 	}
-	router := gin.Default()
+	router := gin.New()
+
+	router.Use(ginzap.Ginzap(p.Logger, time.RFC3339, true))
+	router.Use(ginzap.RecoveryWithZap(p.Logger, true))
 
 	corsMiddleware := middleware.Cors(p.Config)
 	var rateLimitMiddleware gin.HandlerFunc
@@ -168,6 +175,7 @@ func SetupRouter() (*gin.Engine, *config.Config, func()) {
 			NewRouter,
 			taskActivity.NewTaskActivityService,
 			eventBus.NewTaskOrCommentEventBus,
+			logger.NewLogger,
 		),
 		fx.Populate(&router, &cfg),
 		fx.Invoke(func(ns *notification.NotificationSubscriber, tds *testdata.TestdataService, tas *taskActivity.TaskActivityService) {
