@@ -10,17 +10,13 @@ export const ImageThumbnail = ({
   onClick: () => void;
 }) => {
   const [thumbnailSrc, setThumbnailSrc] = useState<string | null>(null);
-  const { mutate: getImage } = useGetImage();
+  const { data: image } = useGetImage(file.id as number);
 
   useEffect(() => {
-    getImage(file.id as number, {
-      onSuccess: (data) => {
-        if (data.content) {
-          setThumbnailSrc(data.content);
-        }
-      },
-    });
-  }, [file.id, getImage]);
+    if (image) {
+      setThumbnailSrc(image.content || null);
+    }
+  }, [image]);
 
   return (
     <div

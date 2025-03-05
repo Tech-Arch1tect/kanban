@@ -1,18 +1,18 @@
-import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { tasksApi } from "../../../lib/api";
 import { toast } from "react-toastify";
 
-export const useGetImage = () => {
-  const { mutate, error, isError, isSuccess, data, isPending } = useMutation({
-    mutationFn: async (id: number) => {
-      return await tasksApi.apiV1TasksGetImageFileIdGet({
-        fileId: id,
-      });
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to download image.");
-    },
+export const useGetImage = (id: number) => {
+  const q = useQuery({
+    queryKey: ["image", id],
+    queryFn: () => tasksApi.apiV1TasksGetImageFileIdGet({ fileId: id }),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
   });
 
-  return { mutate, error, isError, isSuccess, data, isPending };
+  if (q.error) {
+    toast.error(q.error.message || "Failed to download image.");
+  }
+
+  return q;
 };

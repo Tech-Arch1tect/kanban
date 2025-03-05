@@ -4,7 +4,6 @@ import { UploadFile } from "./UploadFile";
 import { useDeleteFile } from "../../../hooks/tasks/Files/useDeleteFile";
 import { useDownloadFile } from "../../../hooks/tasks/Files/useDownloadFile";
 import { useGetImage } from "../../../hooks/tasks/Files/useGetImage";
-import { toast } from "react-toastify";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -18,13 +17,13 @@ import { ImageThumbnail } from "./ImageThumbnail";
 
 export const ViewFiles = ({ task }: { task: ModelsTask }) => {
   const [showFiles, setShowFiles] = useState(false);
-
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
   const [currentImageSrc, setCurrentImageSrc] = useState<string | null>(null);
+  const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
 
   const { mutate: deleteFile, isPending: isDeleting } = useDeleteFile();
   const { mutate: downloadFile, isPending: isDownloading } = useDownloadFile();
-  const { mutate: getImage } = useGetImage();
+  const { data, isSuccess } = useGetImage(selectedImageId as number);
 
   const imageFiles = task.files?.filter((file) => file.type === "image") || [];
   const nonImageFiles =
@@ -42,16 +41,8 @@ export const ViewFiles = ({ task }: { task: ModelsTask }) => {
 
   const openGallery = (index: number) => {
     const file = imageFiles[index];
-    getImage(file.id as number, {
-      onSuccess: (data) => {
-        if (data.content) {
-          setCurrentImageSrc(data.content);
-          setGalleryIndex(index);
-        } else {
-          toast.error("File is not an image.");
-        }
-      },
-    });
+    setGalleryIndex(index);
+    setSelectedImageId(file.id as number);
   };
 
   const navigateGallery = (newIndex: number) => {
@@ -59,6 +50,12 @@ export const ViewFiles = ({ task }: { task: ModelsTask }) => {
       openGallery(newIndex);
     }
   };
+
+  useEffect(() => {
+    if (isSuccess && data?.content) {
+      setCurrentImageSrc(data.content);
+    }
+  }, [isSuccess, data]);
 
   useEffect(() => {
     if (currentImageSrc !== null && galleryIndex !== null) {
@@ -73,6 +70,7 @@ export const ViewFiles = ({ task }: { task: ModelsTask }) => {
         } else if (e.key === "Escape") {
           setCurrentImageSrc(null);
           setGalleryIndex(null);
+          setSelectedImageId(null);
         }
       };
       window.addEventListener("keydown", handleKeyDown);
@@ -175,6 +173,7 @@ export const ViewFiles = ({ task }: { task: ModelsTask }) => {
               onClick={() => {
                 setCurrentImageSrc(null);
                 setGalleryIndex(null);
+                setSelectedImageId(null);
               }}
               className="absolute top-2 right-2 text-white"
               title="Close"
