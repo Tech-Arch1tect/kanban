@@ -8,6 +8,8 @@ import (
 	"server/services/comment"
 	"server/services/eventBus"
 	"server/services/task"
+
+	"go.uber.org/zap"
 )
 
 type NotificationSubscriber struct {
@@ -23,9 +25,10 @@ type NotificationSubscriber struct {
 	cfg            *config.Config
 	CommentService *comment.CommentService
 	TaskService    *task.TaskService
+	logger         *zap.Logger
 }
 
-func NewNotificationSubscriber(te *eventBus.EventBus[models.Task], ce *eventBus.EventBus[models.Comment], fe *eventBus.EventBus[models.File], le *eventBus.EventBus[models.TaskLinks], lee *eventBus.EventBus[models.TaskExternalLink], cre *eventBus.EventBus[models.Reaction], me *eventBus.EventBus[eventBus.TaskOrComment], db *repository.Database, email *email.EmailService, cfg *config.Config, commentService *comment.CommentService, taskService *task.TaskService) *NotificationSubscriber {
+func NewNotificationSubscriber(te *eventBus.EventBus[models.Task], ce *eventBus.EventBus[models.Comment], fe *eventBus.EventBus[models.File], le *eventBus.EventBus[models.TaskLinks], lee *eventBus.EventBus[models.TaskExternalLink], cre *eventBus.EventBus[models.Reaction], me *eventBus.EventBus[eventBus.TaskOrComment], db *repository.Database, email *email.EmailService, cfg *config.Config, commentService *comment.CommentService, taskService *task.TaskService, logger *zap.Logger) *NotificationSubscriber {
 	return &NotificationSubscriber{
 		te:             te,
 		ce:             ce,
@@ -39,6 +42,7 @@ func NewNotificationSubscriber(te *eventBus.EventBus[models.Task], ce *eventBus.
 		cfg:            cfg,
 		CommentService: commentService,
 		TaskService:    taskService,
+		logger:         logger,
 	}
 }
 

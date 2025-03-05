@@ -4,16 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"log"
 	"server/database/repository"
 	"server/models"
 	"server/services/eventBus"
+
+	"go.uber.org/zap"
 )
 
 func (ns *NotificationSubscriber) HandleCommentReactionEvent(event string, change eventBus.Change[models.Reaction], user models.User) {
 	sendErr := ns.SendCommentReactionNotifications(change, event, user)
 	if sendErr != nil {
-		log.Println("Error dispatching comment reaction notifications:", sendErr)
+		ns.logger.Error("Error dispatching comment reaction notifications", zap.Error(sendErr))
 	}
 }
 
@@ -79,11 +80,11 @@ func (ns *NotificationSubscriber) SendCommentReactionNotifications(change eventB
 	var errRes []error
 	configs, err := ns.GatherCommentReactionNotificationConfigurations(change, event)
 	if err != nil {
-		log.Println("Error gathering notification configurations:", err)
+		ns.logger.Error("Error gathering notification configurations", zap.Error(err))
 		return err
 	}
 	if len(configs) == 0 {
-		log.Println("No notification configurations found for reaction:", change.New.ID, "in board:", change.New.Comment.Task.BoardID)
+		ns.logger.Info("No notification configurations found for reaction", zap.Uint("id", change.New.ID), zap.Uint("board_id", change.New.Comment.Task.BoardID))
 		return nil
 	}
 	for _, config := range configs {
@@ -121,7 +122,7 @@ func (ns *NotificationSubscriber) SendCommentReactionNotifications(change eventB
 		}
 		err := ns.SendNotification(event, subject, tmplData, config)
 		if err != nil {
-			log.Println("Error dispatching notification:", err)
+			ns.logger.Error("Error dispatching notification", zap.Error(err))
 			errRes = append(errRes, err)
 		}
 	}

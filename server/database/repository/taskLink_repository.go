@@ -1,9 +1,5 @@
 package repository
 
-import (
-	"log"
-)
-
 type linkType string
 
 const (
@@ -45,7 +41,6 @@ func (t linkType) GetInverse() string {
 	case LinkTypeDependedOnBy:
 		return string(LinkTypeDepends)
 	default:
-		log.Println("couldnt_find_inverse_for_" + string(t))
 		return "couldnt_find_inverse_for_" + string(t)
 	}
 }

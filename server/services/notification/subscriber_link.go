@@ -4,16 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"log"
 	"server/database/repository"
 	"server/models"
 	"server/services/eventBus"
+
+	"go.uber.org/zap"
 )
 
 func (ns *NotificationSubscriber) HandleLinkEvent(event string, change eventBus.Change[models.TaskLinks], user models.User) {
 	err := ns.SendLinkNotifications(change, event, user)
 	if err != nil {
-		log.Println("Error sending link notifications:", err)
+		ns.logger.Error("Error sending link notifications", zap.Error(err))
 	}
 }
 
@@ -126,11 +127,11 @@ func (ns *NotificationSubscriber) SendLinkNotifications(change eventBus.Change[m
 	var errRes []error
 	configs, err := ns.GatherLinkNotificationConfigurations(change, event)
 	if err != nil {
-		log.Println("Error gathering link notification configurations:", err)
+		ns.logger.Error("Error gathering link notification configurations", zap.Error(err))
 		return err
 	}
 	if len(configs) == 0 {
-		log.Println("No notification configurations found for link:", change.New.ID, "in boards:", change.New.SrcTask.BoardID, change.New.DstTask.BoardID)
+		ns.logger.Info("No notification configurations found for link", zap.Uint("id", change.New.ID), zap.Uint("src_board_id", change.New.SrcTask.BoardID), zap.Uint("dst_board_id", change.New.DstTask.BoardID))
 		return nil
 	}
 	for _, config := range configs {
@@ -154,7 +155,7 @@ func (ns *NotificationSubscriber) SendLinkNotifications(change eventBus.Change[m
 		}
 		err := ns.SendNotification(event, subject, tmplData, config)
 		if err != nil {
-			log.Println("Error sending notification:", err)
+			ns.logger.Error("Error sending notification", zap.Error(err))
 			errRes = append(errRes, err)
 		}
 	}

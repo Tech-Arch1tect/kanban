@@ -1,10 +1,11 @@
 package taskActivity
 
 import (
-	"log"
 	"server/models"
 	"server/services/eventBus"
 	"strconv"
+
+	"go.uber.org/zap"
 )
 
 func (s *TaskActivityService) Subscribe() {
@@ -38,7 +39,7 @@ func (s *TaskActivityService) Subscribe() {
 			err = s.CreateTaskActivity(change.New.ID, user.ID, event, oldData, newData)
 		}
 		if err != nil {
-			log.Println("error creating task activity", err)
+			s.logger.Error("error creating task activity", zap.Error(err))
 		}
 	})
 	s.ce.SubscribeGlobal(func(event string, change eventBus.Change[models.Comment], user models.User) {
@@ -52,7 +53,7 @@ func (s *TaskActivityService) Subscribe() {
 			err = s.CreateTaskActivity(change.Old.TaskID, user.ID, event, change.Old.Text, "")
 		}
 		if err != nil {
-			log.Println("error creating task activity", err)
+			s.logger.Error("error creating task activity", zap.Error(err))
 		}
 	})
 	s.cre.SubscribeGlobal(func(event string, change eventBus.Change[models.Reaction], user models.User) {
@@ -64,7 +65,7 @@ func (s *TaskActivityService) Subscribe() {
 			err = s.CreateTaskActivity(change.Old.Comment.TaskID, user.ID, event, change.Old.Reaction, "")
 		}
 		if err != nil {
-			log.Println("error creating task activity", err)
+			s.logger.Error("error creating task activity", zap.Error(err))
 		}
 	})
 	s.fe.SubscribeGlobal(func(event string, change eventBus.Change[models.File], user models.User) {
@@ -78,7 +79,7 @@ func (s *TaskActivityService) Subscribe() {
 			err = s.CreateTaskActivity(change.Old.TaskID, user.ID, event, change.Old.Name, "")
 		}
 		if err != nil {
-			log.Println("error creating task activity", err)
+			s.logger.Error("error creating task activity", zap.Error(err))
 		}
 	})
 	s.le.SubscribeGlobal(func(event string, change eventBus.Change[models.TaskLinks], user models.User) {
@@ -92,7 +93,7 @@ func (s *TaskActivityService) Subscribe() {
 			// todo inverse link
 		}
 		if err != nil {
-			log.Println("error creating task activity", err)
+			s.logger.Error("error creating task activity", zap.Error(err))
 		}
 	})
 	s.lee.SubscribeGlobal(func(event string, change eventBus.Change[models.TaskExternalLink], user models.User) {
@@ -106,7 +107,7 @@ func (s *TaskActivityService) Subscribe() {
 			err = s.CreateTaskActivity(change.Old.TaskID, user.ID, event, change.Old.Title+" -> "+change.Old.URL, "")
 		}
 		if err != nil {
-			log.Println("error creating task activity", err)
+			s.logger.Error("error creating task activity", zap.Error(err))
 		}
 	})
 }

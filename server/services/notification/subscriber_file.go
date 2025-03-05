@@ -4,16 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"log"
 	"server/database/repository"
 	"server/models"
 	"server/services/eventBus"
+
+	"go.uber.org/zap"
 )
 
 func (ns *NotificationSubscriber) HandleFileEvent(event string, change eventBus.Change[models.File], user models.User) {
 	err := ns.SendFileNotifications(change, event, user)
 	if err != nil {
-		log.Println("Error sending file notifications:", err)
+		ns.logger.Error("Error sending file notifications", zap.Error(err))
 	}
 }
 
@@ -83,11 +84,11 @@ func (ns *NotificationSubscriber) SendFileNotifications(change eventBus.Change[m
 	var errRes []error
 	configs, err := ns.GatherFileNotificationConfigurations(change, event)
 	if err != nil {
-		log.Println("Error gathering file notification configurations:", err)
+		ns.logger.Error("Error gathering file notification configurations", zap.Error(err))
 		return err
 	}
 	if len(configs) == 0 {
-		log.Println("No notification configurations found for file:", change.Old.ID, "in board:", change.Old.Task.BoardID)
+		ns.logger.Info("No notification configurations found for file", zap.Uint("id", change.Old.ID), zap.Uint("board_id", change.Old.Task.BoardID))
 		return nil
 	}
 	for _, config := range configs {
@@ -116,7 +117,7 @@ func (ns *NotificationSubscriber) SendFileNotifications(change eventBus.Change[m
 		}
 		err := ns.SendNotification(event, subject, tmplData, config)
 		if err != nil {
-			log.Println("Error sending notification:", err)
+			ns.logger.Error("Error sending notification", zap.Error(err))
 			errRes = append(errRes, err)
 		}
 	}

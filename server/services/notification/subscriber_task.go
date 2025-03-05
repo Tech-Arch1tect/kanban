@@ -4,16 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"log"
 	"server/database/repository"
 	"server/models"
 	"server/services/eventBus"
+
+	"go.uber.org/zap"
 )
 
 func (ns *NotificationSubscriber) HandleTaskEvent(event string, change eventBus.Change[models.Task], user models.User) {
 	err := ns.SendTaskNotifications(change, event, user)
 	if err != nil {
-		log.Println("Error sending task notifications:", err)
+		ns.logger.Error("Error sending task notifications", zap.Error(err))
 	}
 }
 
@@ -134,11 +135,11 @@ func (ns *NotificationSubscriber) SendTaskNotifications(change eventBus.Change[m
 	var errRes []error
 	configs, err := ns.GatherTaskNotificationConfigurations(change, event)
 	if err != nil {
-		log.Println("Error gathering task notification configurations:", err)
+		ns.logger.Error("Error gathering task notification configurations", zap.Error(err))
 		return err
 	}
 	if len(configs) == 0 {
-		log.Println("No notification configurations found for task:", change.New.ID, "in board:", change.New.BoardID)
+		ns.logger.Info("No notification configurations found for task", zap.Uint("id", change.New.ID), zap.Uint("board_id", change.New.BoardID))
 		return nil
 	}
 	for _, config := range configs {
@@ -167,7 +168,7 @@ func (ns *NotificationSubscriber) SendTaskNotifications(change eventBus.Change[m
 		}
 		err := ns.SendNotification(event, subject, tmplData, config)
 		if err != nil {
-			log.Println("Error sending notification:", err)
+			ns.logger.Error("Error sending notification", zap.Error(err))
 			errRes = append(errRes, err)
 		}
 	}

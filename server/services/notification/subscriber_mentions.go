@@ -4,16 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"log"
 	"server/database/repository"
 	"server/models"
 	"server/services/eventBus"
+
+	"go.uber.org/zap"
 )
 
 func (ns *NotificationSubscriber) HandleMentionEvent(event string, change eventBus.Change[eventBus.TaskOrComment], user models.User) {
 	err := ns.SendMentionNotifications(change, user)
 	if err != nil {
-		log.Println("Error sending mention notifications:", err)
+		ns.logger.Error("Error sending mention notifications", zap.Error(err))
 	}
 }
 
@@ -31,7 +32,7 @@ func (ns *NotificationSubscriber) GetMentionGenericTemplate(change eventBus.Chan
 	var body string
 	board, err := ns.GetBoardFromTaskOrComment(change)
 	if err != nil {
-		log.Println("Error getting board from task or comment:", err)
+		ns.logger.Error("Error getting board from task or comment", zap.Error(err))
 	}
 	if board.Name != "" {
 		body += "<p><strong>Board:</strong> " + board.Name + "</p>"
@@ -66,7 +67,7 @@ func (ns *NotificationSubscriber) GetMentionGenericTemplate(change eventBus.Chan
 func (ns *NotificationSubscriber) GatherMentionNotificationConfigurations(change eventBus.Change[eventBus.TaskOrComment]) ([]models.NotificationConfiguration, error) {
 	board, err := ns.GetBoardFromTaskOrComment(change)
 	if err != nil {
-		log.Println("Error getting board from task or comment:", err)
+		ns.logger.Error("Error getting board from task or comment", zap.Error(err))
 	}
 	return ns.db.NotificationConfigurationRepository.GetAll(
 		repository.WithJoin("JOIN notification_configuration_boards ON notification_configuration_boards.notification_configuration_id = notification_configurations.id"),
@@ -80,7 +81,7 @@ func (ns *NotificationSubscriber) SendMentionNotifications(change eventBus.Chang
 	var errRes []error
 	configs, err := ns.GatherMentionNotificationConfigurations(change)
 	if err != nil {
-		log.Println("Error gathering mention notification configurations:", err)
+		ns.logger.Error("Error gathering mention notification configurations", zap.Error(err))
 		return err
 	}
 	if len(configs) == 0 {
@@ -112,7 +113,7 @@ func (ns *NotificationSubscriber) SendMentionNotifications(change eventBus.Chang
 		}
 		err := ns.SendNotification("mentioned", subject, tmplData, config)
 		if err != nil {
-			log.Println("Error sending notification:", err)
+			ns.logger.Error("Error sending notification", zap.Error(err))
 			errRes = append(errRes, err)
 		}
 	}

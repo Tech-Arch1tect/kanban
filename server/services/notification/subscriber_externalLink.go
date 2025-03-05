@@ -4,16 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"log"
 	"server/database/repository"
 	"server/models"
 	"server/services/eventBus"
+
+	"go.uber.org/zap"
 )
 
 func (ns *NotificationSubscriber) HandleExternalLinkEvent(event string, change eventBus.Change[models.TaskExternalLink], user models.User) {
 	err := ns.SendExternalLinkNotifications(change, event, user)
 	if err != nil {
-		log.Println("Error sending link notifications:", err)
+		ns.logger.Error("Error sending link notifications", zap.Error(err))
 	}
 }
 
@@ -95,11 +96,11 @@ func (ns *NotificationSubscriber) SendExternalLinkNotifications(change eventBus.
 	var errRes []error
 	configs, err := ns.GatherExternalLinkNotificationConfigurations(change, event)
 	if err != nil {
-		log.Println("Error gathering external link notification configurations:", err)
+		ns.logger.Error("Error gathering external link notification configurations", zap.Error(err))
 		return err
 	}
 	if len(configs) == 0 {
-		log.Println("No notification configurations found for external link:", change.New.ID, "in boards:", change.New.Task.BoardID)
+		ns.logger.Info("No notification configurations found for external link", zap.Uint("id", change.New.ID), zap.Uint("board_id", change.New.Task.BoardID))
 		return nil
 	}
 	for _, config := range configs {
@@ -131,7 +132,7 @@ func (ns *NotificationSubscriber) SendExternalLinkNotifications(change eventBus.
 		}
 		err := ns.SendNotification(event, subject, tmplData, config)
 		if err != nil {
-			log.Println("Error sending notification:", err)
+			ns.logger.Error("Error sending notification", zap.Error(err))
 			errRes = append(errRes, err)
 		}
 	}

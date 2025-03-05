@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"embed"
 	"html/template"
-	"log"
 	"strconv"
 
 	"github.com/wneessen/go-mail"
+	"go.uber.org/zap"
 
 	"server/config"
 )
@@ -20,19 +20,20 @@ var tplFS embed.FS
 type EmailService struct {
 	client *mail.Client
 	cfg    *config.Config
+	logger *zap.Logger
 }
 
-func NewEmailService(cfg *config.Config) *EmailService {
+func NewEmailService(cfg *config.Config, logger *zap.Logger) *EmailService {
 
-	emailService, err := Init(cfg)
+	emailService, err := Init(cfg, logger)
 	if err != nil {
-		log.Fatalf("failed to create email service: %s", err)
+		logger.Error("failed to create email service", zap.Error(err))
 	}
 
 	return emailService
 }
 
-func Init(cfg *config.Config) (*EmailService, error) {
+func Init(cfg *config.Config, logger *zap.Logger) (*EmailService, error) {
 	var auth mail.SMTPAuthType
 	switch cfg.SMTP.Auth {
 	case "plain":
@@ -45,7 +46,7 @@ func Init(cfg *config.Config) (*EmailService, error) {
 
 	port, err := strconv.Atoi(cfg.SMTP.Port)
 	if err != nil {
-		log.Fatalf("failed to convert smtp port to int: %s", err)
+		logger.Error("failed to convert smtp port to int", zap.Error(err))
 	}
 
 	tlspolicy := mail.TLSMandatory
@@ -62,10 +63,10 @@ func Init(cfg *config.Config) (*EmailService, error) {
 		mail.WithTLSPolicy(tlspolicy),
 	)
 	if err != nil {
-		log.Fatalf("failed to create mail client: %s", err)
+		logger.Error("failed to create mail client", zap.Error(err))
 	}
 
-	return &EmailService{client: client, cfg: cfg}, nil
+	return &EmailService{client: client, cfg: cfg, logger: logger}, nil
 }
 
 func (s *EmailService) SendPlainText(to, subject, body string) error {
@@ -81,7 +82,7 @@ func (s *EmailService) SendPlainText(to, subject, body string) error {
 
 	msg.SetBodyString(mail.TypeTextPlain, body)
 
-	log.Println("Sending plain text email to", to)
+	s.logger.Info("Sending plain text email to", zap.String("to", to))
 	if s.cfg.Environment != "testing" {
 		return s.client.DialAndSend(msg)
 	}
@@ -111,7 +112,7 @@ func (s *EmailService) SendHTMLTemplate(to, subject, tplName string, data interf
 
 	msg.SetBodyString(mail.TypeTextHTML, bodyBuffer.String())
 
-	log.Println("Sending HTML email to", to, "using template:", tplName)
+	s.logger.Info("Sending HTML email to", zap.String("to", to), zap.String("template", tplName))
 	if s.cfg.Environment != "testing" {
 		return s.client.DialAndSend(msg)
 	}

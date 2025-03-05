@@ -3,7 +3,6 @@ package initHelper
 import (
 	"context"
 	"fmt"
-	"log"
 	"server/api/controllers"
 	"server/api/middleware"
 	"server/api/routes"
@@ -69,10 +68,10 @@ type Params struct {
 
 func NewRouter(p Params) (*gin.Engine, error) {
 	if p.Config.Environment == "production" {
-		log.Println("setting gin mode to release mode")
+		p.Logger.Info("setting gin mode to release mode")
 		gin.SetMode(gin.ReleaseMode)
 	} else {
-		log.Println("Warning: gin mode is set to debug mode. Please use APP_ENVIRONMENT=production environment variable to run in production mode")
+		p.Logger.Warn("Warning: gin mode is set to debug mode. Please use APP_ENVIRONMENT=production environment variable to run in production mode")
 		gin.SetMode(gin.DebugMode)
 	}
 	router := gin.New()
@@ -83,7 +82,7 @@ func NewRouter(p Params) (*gin.Engine, error) {
 	corsMiddleware := middleware.Cors(p.Config)
 	var rateLimitMiddleware gin.HandlerFunc
 	if p.Config.RateLimit.Enabled {
-		log.Printf("Rate limit enabled: limit %d, window %d", p.Config.RateLimit.Limit, p.Config.RateLimit.Window)
+		p.Logger.Info("Rate limit enabled", zap.Int("limit", p.Config.RateLimit.Limit), zap.Int("window", p.Config.RateLimit.Window))
 		rateLimitMiddleware = middleware.RateLimit(
 			p.Config.RateLimit.Limit,
 			time.Duration(p.Config.RateLimit.Window)*time.Minute,
@@ -150,6 +149,7 @@ func SetupRouter() (*gin.Engine, *config.Config, func()) {
 	app := fx.New(
 		fx.Provide(
 			config.LoadConfig,
+			logger.NewLogger,
 			database.Init,
 			email.NewEmailService,
 			helpers.NewHelperService,
@@ -175,7 +175,6 @@ func SetupRouter() (*gin.Engine, *config.Config, func()) {
 			NewRouter,
 			taskActivity.NewTaskActivityService,
 			eventBus.NewTaskOrCommentEventBus,
-			logger.NewLogger,
 		),
 		fx.Populate(&router, &cfg),
 		fx.Invoke(func(ns *notification.NotificationSubscriber, tds *testdata.TestdataService, tas *taskActivity.TaskActivityService) {
@@ -189,12 +188,12 @@ func SetupRouter() (*gin.Engine, *config.Config, func()) {
 	)
 
 	if err := app.Start(context.Background()); err != nil {
-		log.Fatalf("Failed to start fx app: %v", err)
+		panic(err)
 	}
 
 	cleanup := func() {
 		if err := app.Stop(context.Background()); err != nil {
-			log.Fatalf("Failed to stop fx app: %v", err)
+			panic(err)
 		}
 	}
 
