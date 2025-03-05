@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 )
@@ -82,7 +83,7 @@ func NewRouter(p Params) (*gin.Engine, error) {
 		)
 	}
 
-	sessionStore := sessions.NewCookieStore([]byte(p.Config.CookieSecret))
+	sessionStore := cookie.NewStore([]byte(p.Config.CookieSecret))
 	sessionStore.Options(sessions.Options{
 		Path:     "/",
 		MaxAge:   p.Config.CookieMaxAge,
