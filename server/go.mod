@@ -3,6 +3,7 @@ module server
 go 1.24
 
 require (
+	github.com/gin-contrib/gzip v1.2.2
 	github.com/gin-contrib/sessions v1.0.2
 	github.com/gin-contrib/zap v1.1.4
 	github.com/go-playground/validator/v10 v10.25.0

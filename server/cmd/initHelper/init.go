@@ -28,6 +28,7 @@ import (
 	testdata "server/services/testData"
 	"time"
 
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	ginzap "github.com/gin-contrib/zap"
@@ -103,6 +104,7 @@ func NewRouter(p Params) (*gin.Engine, error) {
 		router.Use(rateLimitMiddleware)
 	}
 	router.Use(sessionMiddleware)
+	router.Use(gzip.Gzip(gzip.DefaultCompression))
 	router.Use(p.MW.EnsureCSRFTokenExistsInSession())
 
 	ctrls := controllers.NewControllers(
