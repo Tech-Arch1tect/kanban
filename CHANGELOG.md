@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.12](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.11...v0.3.12) (2025-03-06)
+
+
+### Features
+
+* **taskColours:** Add 'TaskColourPicker' component ([f77e6ba](https://github.com/Tech-Arch1tect/kanban/commit/f77e6ba33991e4c3dbe525df2e3c3d4bc4313d61))
+* **taskColours:** Add client hook for updating task colour ([cc3384b](https://github.com/Tech-Arch1tect/kanban/commit/cc3384b3578447de558a5aacd6e3581ad7ae401f))
+* **taskColours:** Add colour property to task creation & add updateTaskColour route ([3f3a535](https://github.com/Tech-Arch1tect/kanban/commit/3f3a535c8d958d50260de840a3e4dcfbf38f8ccf))
+* **taskColours:** add service layer for setting task.colour property ([2825ad6](https://github.com/Tech-Arch1tect/kanban/commit/2825ad665fafdcf0bd97b4aea5050114093e5e56))
+* **taskColours:** Add task heading component for colour picking ([2271d4c](https://github.com/Tech-Arch1tect/kanban/commit/2271d4ca2345049bf9b8acb34231f88e837c40af))
+* **taskColours:** Add utility for translating a string colour to tailwind classes ([eab250a](https://github.com/Tech-Arch1tect/kanban/commit/eab250a3722cd35607c4f9e008eabd3202fb9916))
+* **taskColours:** Re-design Board Task Component - implementing a header which is coloured with task colour ([ec06fd4](https://github.com/Tech-Arch1tect/kanban/commit/ec06fd451358a1cd7190a0f04c1c9029665b7894))
+
+
+### Bug Fixes
+
+* **client:** Resolve "Cannot update a component (Lt) while rendering a different component (ViewFiles)" error when no file selected ([1825a4c](https://github.com/Tech-Arch1tect/kanban/commit/1825a4c3c12e94f2b5f68413f84d8ab3a2eb901e))
+* **client:** useDownloadFile.ts fix some typescript possibly undefined errors ([6309b7f](https://github.com/Tech-Arch1tect/kanban/commit/6309b7fdc8311954422affbafd0733fb82ccf93c))
+
+
+### Styles
+
+* **columns:** Add small margin to the bottom of column titles ([6505f12](https://github.com/Tech-Arch1tect/kanban/commit/6505f122a9652b47a5225fbe4740c34751a9b4cd))
+* **navbar:** Adjust navbar dark mode colour ([c3905c5](https://github.com/Tech-Arch1tect/kanban/commit/c3905c573376a7b1d9e24c6d44a305d144f4e8ed))
+
+
+### Chores
+
+* **client:** update ReactCompilerConfig target to 19 ([602b32e](https://github.com/Tech-Arch1tect/kanban/commit/602b32ebd4359f6c53a1431e10f2a84b599a3112))
+* **screenshots:** Add screenshots to the repository ([1d46738](https://github.com/Tech-Arch1tect/kanban/commit/1d46738773c1ca8811a5fec9498fa1bae240c458))
+* **taskColours:** Add tailwind bg classes to safelist ([a466121](https://github.com/Tech-Arch1tect/kanban/commit/a466121b39ce85b60c4469d8f4630f9fe5dfcf69))
+
 ### [0.3.11](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.10...v0.3.11) (2025-03-05)
 
 
