@@ -15,6 +15,7 @@ type CreateTaskRequest struct {
 	Status       string     `json:"status"`
 	AssigneeID   uint       `json:"assignee_id"`
 	DueDate      *time.Time `json:"due_date"`
+	Colour       string     `json:"colour" binding:"omitempty,oneof=slate gray zinc neutral stone red orange amber yellow lime green emerald teal cyan sky blue indigo violet purple fuchsia pink rose"`
 }
 
 type CreateTaskResponse struct {

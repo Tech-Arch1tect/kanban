@@ -242,3 +242,48 @@ func (tc *TaskController) UpdateTaskDueDate(c *gin.Context) {
 
 	c.JSON(http.StatusOK, UpdateTaskDueDateResponse{Task: task})
 }
+
+type UpdateTaskColourRequest struct {
+	TaskID uint   `json:"task_id" binding:"required"`
+	Colour string `json:"colour" binding:"oneof=slate gray zinc neutral stone red orange amber yellow lime green emerald teal cyan sky blue indigo violet purple fuchsia pink rose,required"`
+}
+
+type UpdateTaskColourResponse struct {
+	Task models.Task `json:"task"`
+}
+
+// @Summary Update a task colour
+// @Description Update a task colour
+// @Tags tasks
+// @Security cookieAuth
+// @Security csrf
+// @Accept json
+// @Produce json
+// @Param request body UpdateTaskColourRequest true "Update task colour request"
+// @Success 200 {object} UpdateTaskColourResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/tasks/update-colour [post]
+func (tc *TaskController) UpdateTaskColour(c *gin.Context) {
+	var request UpdateTaskColourRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := tc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	task, _, err := tc.ts.UpdateTaskColour(user.ID, request.TaskID, request.Colour)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, UpdateTaskColourResponse{Task: task})
+}
