@@ -27,6 +27,7 @@ type CreateTaskRequest struct {
 	Status       string     `json:"status"`
 	AssigneeID   uint       `json:"assignee_id"`
 	DueDate      *time.Time `json:"due_date"`
+	Colour       string     `json:"colour"`
 }
 
 func NewTaskService(db *repository.Database, rs *role.RoleService, config *config.Config, cs *comment.CommentService, tas *taskActivity.TaskActivityService) *TaskService {

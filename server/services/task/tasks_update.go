@@ -144,3 +144,29 @@ func (ts *TaskService) UpdateTaskDueDate(userID uint, taskID uint, dueDate *time
 	}
 	return task, oldTask, nil
 }
+
+func (ts *TaskService) UpdateTaskColour(userID uint, taskID uint, colour string) (models.Task, models.Task, error) {
+	task, err := ts.GetTask(userID, taskID)
+	if err != nil {
+		return models.Task{}, models.Task{}, err
+	}
+
+	can, _ := ts.rs.CheckRole(userID, task.BoardID, role.MemberRole)
+	if !can {
+		return models.Task{}, models.Task{}, errors.New("forbidden")
+	}
+	oldTask := task
+	task.Colour = colour
+	if err = task.Validate(); err != nil {
+		return models.Task{}, models.Task{}, err
+	}
+	if err = ts.db.TaskRepository.Update(&task); err != nil {
+		return models.Task{}, models.Task{}, err
+	}
+
+	task, err = ts.GetTask(userID, taskID)
+	if err != nil {
+		return models.Task{}, models.Task{}, err
+	}
+	return task, oldTask, nil
+}

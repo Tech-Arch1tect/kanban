@@ -32,6 +32,7 @@ type Task struct {
 	ExternalLinks []TaskExternalLink `gorm:"foreignKey:TaskID" json:"external_links"`
 	DueDate       *time.Time         `json:"due_date"`
 	Activity      []TaskActivity     `gorm:"foreignKey:TaskID" json:"activity"`
+	Colour        string             `json:"colour" gorm:"default: gray" binding:"omitempty,oneof=slate gray zinc neutral stone red orange amber yellow lime green emerald teal cyan sky blue indigo violet purple fuchsia pink rose"`
 }
 
 type TaskActivity struct {

@@ -57,6 +57,7 @@ func (ts *TaskService) CreateTask(userID uint, request CreateTaskRequest) (model
 		CreatorID:    userID,
 		AssigneeID:   assignee.ID,
 		DueDate:      dueDate,
+		Colour:       request.Colour,
 	}
 
 	if err = task.Validate(); err != nil {
