@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 export const useGetImage = (id: number) => {
   const q = useQuery({
+    enabled: !!id,
     queryKey: ["image", id],
     queryFn: () => tasksApi.apiV1TasksGetImageFileIdGet({ fileId: id }),
     staleTime: 10 * 60 * 1000, // 10 minutes
