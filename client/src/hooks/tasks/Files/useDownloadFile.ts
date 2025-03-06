@@ -10,6 +10,11 @@ export const useDownloadFile = () => {
       });
     },
     onSuccess: (data) => {
+      if (!data.content) {
+        toast.error("File not found.");
+        return;
+      }
+
       const binaryString = window.atob(data.content);
       const binaryLength = binaryString.length;
       const bytes = new Uint8Array(binaryLength);
@@ -18,11 +23,11 @@ export const useDownloadFile = () => {
         bytes[i] = binaryString.charCodeAt(i);
       }
 
-      const blob = new Blob([bytes], { type: data.file.mimeType });
+      const blob = new Blob([bytes], { type: data.file?.type });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = data.file.name;
+      a.download = data.file?.name || "file";
       a.click();
       window.URL.revokeObjectURL(url);
       toast.success("File downloaded successfully!");
