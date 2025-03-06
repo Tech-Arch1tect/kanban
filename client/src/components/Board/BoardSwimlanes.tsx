@@ -50,7 +50,7 @@ export default function BoardSwimlanes({
           >
             {columns.map((column) => (
               <div key={column.id} className="flex flex-col">
-                <div className="text-center font-semibold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-md">
+                <div className="text-center font-semibold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-md mb-1">
                   {column.name}
                 </div>
 
