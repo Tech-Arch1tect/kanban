@@ -1,12 +1,17 @@
 import { ModelsTask } from "../../../typescript-fetch-client";
 import { TaskAssignee } from "./TaskAssignee";
+import { TaskColour } from "./TaskColour";
 import { TaskDueDate } from "./TaskDueDate";
 import { TaskStatus } from "./TaskStatus";
 import { TaskTitle } from "./TaskTitle";
 
+import { colourToBorderClass } from "../../Utility/colourToClass";
+
 export function TaskHeading({ task }: { task: ModelsTask }) {
   return (
-    <div className="border-b border-gray-300 dark:border-gray-600 pb-4">
+    <div
+      className={`border border-2 p-4 ${colourToBorderClass[task.colour as keyof typeof colourToBorderClass]} rounded-lg`}
+    >
       <TaskTitle task={task} />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
         <TaskAssignee task={task} />
@@ -56,6 +61,7 @@ export function TaskHeading({ task }: { task: ModelsTask }) {
           </span>
         </div>
         <TaskDueDate task={task} />
+        <TaskColour task={task} />
       </div>
     </div>
   );
