@@ -41,7 +41,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-blue-800 dark:bg-gray-900 shadow-lg">
+      <nav className="bg-blue-800 dark:bg-gray-800 shadow-lg">
         <div className="container mx-auto px-6 py-3 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <button
