@@ -3,6 +3,10 @@ import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { ModelsTask } from "../../../typescript-fetch-client";
 import RenderMarkdown from "../../Utility/RenderMarkdown";
 import { useState } from "react";
+import {
+  colourToClass,
+  colourToBorderClass,
+} from "../../Utility/colourToClass";
 
 interface TaskProps {
   task: ModelsTask;
@@ -25,7 +29,7 @@ export function Task({
   const hovered = isHoveredTask(task.id);
   const subtaskCount = task.subtasks?.length || 0;
 
-  const visibleSubtasks = showMore ? task.subtasks : task.subtasks?.slice(0, 3); // Show up to 3 subtasks initially
+  const visibleSubtasks = showMore ? task.subtasks : task.subtasks?.slice(0, 3);
 
   return (
     <div
@@ -33,7 +37,7 @@ export function Task({
       data-position={task.position}
       data-task-id={task.id}
       onDragStart={(event) => handleDragStart(event, task.id ?? 0)}
-      className={`task bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm dark:shadow-md cursor-move transition-all duration-200
+      className={`task rounded-lg shadow-sm dark:shadow-md cursor-move transition-all duration-200 border-2 ${colourToBorderClass[task.colour as keyof typeof colourToBorderClass]}
         ${dragged ? "opacity-50" : ""}
         ${hovered ? "ring-2 ring-blue-500 dark:ring-blue-400" : ""}
         hover:shadow-md dark:hover:shadow-lg hover:border-blue-100 dark:hover:border-blue-800
@@ -42,24 +46,26 @@ export function Task({
       <Link
         //@ts-ignore
         to={`/task/${task.id}`}
-        className="block space-y-2"
+        className="block"
       >
-        {/* Assignee and Task ID */}
-        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
-          <span className="truncate">
-            {task.assignee?.username || "Unassigned"}
-          </span>
-          <span className="text-gray-400 dark:text-gray-400">{`#${task.id}`}</span>
+        {/* Task Header & Title */}
+        <div
+          className={`${colourToClass[task.colour as keyof typeof colourToClass] || "dark:text-white"}  p-4 rounded-t-lg`}
+        >
+          <div className="flex items-center justify-between text-base">
+            <span className="truncate">
+              {task.assignee?.username || "Unassigned"}
+            </span>
+            <span className="">{`#${task.id}`}</span>
+          </div>
+          <h3 className="text-lg font-semibold truncate">{task.title}</h3>
         </div>
 
-        {/* Task Title */}
-        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
-          {task.title}
-        </h3>
-
         {/* Task Description */}
-        <div className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-          <RenderMarkdown markdown={task.description || ""} />
+        <div className="p-4">
+          <div className="text-base leading-relaxed line-clamp-3">
+            <RenderMarkdown markdown={task.description || ""} />
+          </div>
         </div>
       </Link>
 
@@ -68,10 +74,10 @@ export function Task({
         <div className="mt-4">
           <button
             onClick={() => setSubtasksOpen(!isSubtasksOpen)}
-            className="flex items-center justify-between w-full text-sm text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+            className="flex items-center justify-between w-full text-base hover:text-blue-500 px-2 py-1"
             aria-expanded={isSubtasksOpen}
           >
-            <span className="flex items-center space-x-2">
+            <span className="flex items-center space-x-2 dark:text-white">
               <span>{subtaskCount} Subtasks</span>
               <ChevronDownIcon
                 className={`w-5 h-5 transition-transform ${
@@ -86,14 +92,14 @@ export function Task({
               isSubtasksOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
             }`}
           >
-            <div className="mt-2 space-y-2 bg-gray-50 dark:bg-gray-800 p-3 rounded-lg shadow-sm">
+            <div className="mt-2 space-y-2 bg-gray-50 dark:bg-gray-800 p-3 rounded-lg shadow-sm dark:text-white">
               {visibleSubtasks?.map((subtask) => (
                 <Link
                   key={subtask.id}
                   //@ts-ignore
                   to={`/task/${subtask.id}`}
-                  className={`block text-sm text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 truncate
-                    ${subtask.status === "open" ? "" : "line-through text-gray-500 dark:text-gray-400"}
+                  className={`block text-base leading-relaxed hover:text-blue-500 truncate
+                    ${subtask.status === "open" ? "" : "line-through"}
                   `}
                 >
                   {subtask.title} -{" "}
@@ -103,11 +109,10 @@ export function Task({
                 </Link>
               ))}
 
-              {/* Show More/Less Button */}
               {(task.subtasks?.length as number) > 3 && (
                 <button
                   onClick={() => setShowMore((prev) => !prev)}
-                  className="w-full text-sm text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 mt-2"
+                  className="w-full text-base hover:text-blue-500 mt-2 text-black dark:text-white text-left"
                 >
                   {showMore ? "Show Less Subtasks" : "Show More Subtasks"}
                 </button>
