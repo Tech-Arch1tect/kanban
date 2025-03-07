@@ -8,7 +8,8 @@
     "dev": "vite --port=3001 --host=0.0.0.0",
     "build": "tsc --noEmit && vite build",
     "serve": "vite preview",
-    "start": "vite"
+    "start": "vite",
+    "lint": "tsc --noEmit && eslint ."
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
