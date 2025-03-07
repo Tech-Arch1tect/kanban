@@ -3,6 +3,7 @@ package task
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -65,7 +66,7 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 		return nil, errors.New("forbidden")
 	}
 
-	statuses, assigneeUsername, searchTerm := parseQuery(query)
+	statuses, assigneeUsername, title, searchTerm := parseQuery(query)
 	var qopts []repository.QueryOption
 
 	qopts = append(qopts, repository.WithWhere("board_id = ?", boardID))
@@ -89,6 +90,10 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 			}
 			qopts = append(qopts, repository.WithWhere("assignee_id = ?", user.ID))
 		}
+	}
+	if title != "" {
+		titleLike := fmt.Sprintf("%%%s%%", strings.ToLower(title))
+		qopts = append(qopts, repository.WithWhere("LOWER(title) LIKE ?", titleLike))
 	}
 	if searchTerm != "" {
 		likeValue := fmt.Sprintf("%%%s%%", strings.ToLower(searchTerm))
@@ -114,26 +119,32 @@ func (ts *TaskService) SortTasks(tasks []models.Task) {
 }
 
 // parseQuery is a naive parser that extracts:
-//   - `status:open|closed` → []string{"open","closed"}
+//   - `status:open|closed` → []string{"open", "closed"}
 //   - `assignee:username`  → "username"
-//   - Everything else → appended into one search string
-func parseQuery(q string) (statuses []string, assignee string, searchTerm string) {
-	tokens := strings.Split(strings.TrimSpace(q), " ")
+//   - `title:"my title"`    → "my title"
+//   - Everything else is appended into one search string
+func parseQuery(q string) (statuses []string, assignee string, title string, searchTerm string) {
+	re := regexp.MustCompile(`\S+:"[^"]+"|\S+`)
+	tokens := re.FindAllString(q, -1)
 	var searchParts []string
 	for _, token := range tokens {
 		token = strings.TrimSpace(token)
 		if token == "" {
 			continue
 		}
+		lowerToken := strings.ToLower(token)
 		switch {
-		case strings.HasPrefix(strings.ToLower(token), "status:"):
+		case strings.HasPrefix(lowerToken, "status:"):
 			raw := token[len("status:"):]
+			raw = strings.Trim(raw, "\"")
 			rawStatuses := strings.Split(raw, "|")
 			for _, s := range rawStatuses {
-				statuses = append(statuses, strings.ToLower(s))
+				statuses = append(statuses, strings.ToLower(strings.TrimSpace(s)))
 			}
-		case strings.HasPrefix(strings.ToLower(token), "assignee:"):
-			assignee = strings.ToLower(token[len("assignee:"):])
+		case strings.HasPrefix(lowerToken, "assignee:"):
+			assignee = strings.Trim(token[len("assignee:"):], "\"")
+		case strings.HasPrefix(lowerToken, "title:"):
+			title = strings.Trim(token[len("title:"):], "\"")
 		default:
 			searchParts = append(searchParts, token)
 		}
@@ -141,7 +152,7 @@ func parseQuery(q string) (statuses []string, assignee string, searchTerm string
 	if len(searchParts) > 0 {
 		searchTerm = strings.Join(searchParts, " ")
 	}
-	return statuses, assignee, searchTerm
+	return statuses, assignee, title, searchTerm
 }
 
 func (ts *TaskService) GetTaskActivities(userID uint, taskID uint, page, pageSize int) (taskActivities []models.TaskActivity, totalRecords int, totalPages int, err error) {
