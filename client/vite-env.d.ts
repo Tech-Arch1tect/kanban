@@ -3,3 +3,5 @@
 interface ImportMetaEnv {
   readonly VITE_API_BASE_PATH: string;
 }
+
+export {};
