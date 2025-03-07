@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { tasksApi } from "../../lib/api";
-import { TaskMoveTaskRequest } from "../../typescript-fetch-client";
+import { ServerApiControllersTaskMoveTaskRequest } from "../../typescript-fetch-client";
 import { toast } from "react-toastify";
 export const useMoveTask = () => {
   const queryClient = useQueryClient();
 
   const { mutate, error, isError, isSuccess, data, isPending } = useMutation({
-    mutationFn: async (task: TaskMoveTaskRequest) => {
+    mutationFn: async (task: ServerApiControllersTaskMoveTaskRequest) => {
       return await tasksApi
         .apiV1TasksMovePost({
           request: {
