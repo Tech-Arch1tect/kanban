@@ -2,6 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { authApi, miscApi } from "../../lib/api";
 import { QRCodeSVG } from "qrcode.react";
+import { ModelsUser } from "../../typescript-fetch-client";
 
 export const Route = createLazyFileRoute("/profile/2fa")({
   component: () => <TwoFAComponent />,
@@ -13,7 +14,7 @@ const TwoFAComponent = () => {
   const [secret, setSecret] = useState("");
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<ModelsUser | undefined>(undefined);
 
   useEffect(() => {
     fetchAppName();
@@ -111,7 +112,7 @@ const TwoFAComponent = () => {
               </p>
               <div className="flex justify-center mb-4">
                 <QRCodeSVG
-                  value={`otpauth://totp/${appName}:${profile["email"]}?secret=${secret}&issuer=${appName}`}
+                  value={`otpauth://totp/${appName}:${profile?.email}?secret=${secret}&issuer=${appName}`}
                   size={200}
                 />
               </div>
