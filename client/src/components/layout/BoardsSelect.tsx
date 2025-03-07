@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import Select, { SingleValue } from "react-select";
+import Select, {
+  SingleValue,
+  StylesConfig,
+  CSSObjectWithLabel,
+} from "react-select";
 import { ModelsBoard } from "../../typescript-fetch-client";
 import { useNavigate } from "@tanstack/react-router";
 import { useBoards } from "../../hooks/boards/useBoards";
@@ -29,8 +33,8 @@ const BoardsSelect: React.FC = () => {
   if (isLoading) return <p>Loading boards...</p>;
   if (error) return <p>Error loading boards: {error.message}</p>;
 
-  const customStyles = {
-    option: (provided: any, state: any) => ({
+  const customStyles: StylesConfig<Option, false> = {
+    option: (provided: CSSObjectWithLabel) => ({
       ...provided,
       "&:hover": {
         backgroundColor: "#60a5fa",

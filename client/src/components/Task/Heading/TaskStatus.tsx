@@ -8,7 +8,7 @@ import {
 export function TaskStatus({ task }: { task: ModelsTask }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newStatus, setNewStatus] = useState(task?.status || "open");
-  const { mutate, isPending, isError, isSuccess } = useUpdateTaskStatus();
+  const { mutate, isPending } = useUpdateTaskStatus();
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedStatus = e.target.value;

@@ -121,7 +121,7 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
                   </div>
                 ) : (
                   <>
-                    {/* @ts-ignore */}
+                    {/* @ts-expect-error subtask.id is a number yet the type is $id? Requires further understanding TODO: fix */}
                     <Link to={`/task/${subtask.id as number}`}>
                       <div
                         className={`font-semibold ${

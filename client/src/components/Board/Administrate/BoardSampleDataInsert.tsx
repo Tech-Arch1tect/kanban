@@ -8,7 +8,7 @@ interface BoardSampleDataInsertProps {
 export function BoardSampleDataInsert({ boardId }: BoardSampleDataInsertProps) {
   const [numTasks, setNumTasks] = useState(100);
   const [numComments, setNumComments] = useState(1000);
-  const { mutate, isError, isSuccess, error, data, isPending } =
+  const { mutate, isError, isSuccess, error, isPending } =
     useInsertSampleData();
 
   const handleInsert = () => {

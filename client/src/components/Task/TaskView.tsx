@@ -1,11 +1,9 @@
 import { useParams } from "@tanstack/react-router";
 import { useTaskData } from "../../hooks/tasks/useTaskData";
-import RenderMarkdown from "../Utility/RenderMarkdown";
 import TaskComments from "./TaskComments";
 import { TaskHeading } from "./Heading/TaskHeading";
 import { ModelsTask } from "../../typescript-fetch-client";
 import { TaskDescription } from "./TaskDescription";
-import { UploadFile } from "./Files/UploadFile";
 import { ViewFiles } from "./Files/ViewFiles";
 import { TaskLinks } from "./TaskLinks";
 import { TaskExternalLinks } from "./TaskExternalLinks";

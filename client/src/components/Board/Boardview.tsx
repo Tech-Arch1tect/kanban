@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "@tanstack/react-router";
 import { ModelsSwimlane } from "../../typescript-fetch-client";
 import BoardSwimlanes from "./BoardSwimlanes";
@@ -77,7 +77,7 @@ export default function BoardView() {
             tasks for query
             <strong className="text-blue-600 dark:text-blue-400">
               {" "}
-              "{taskQuery}"
+              &quot;{taskQuery}&quot;
             </strong>
           </div>
         )}

@@ -1,4 +1,8 @@
-import Picker, { EmojiStyle, SuggestionMode } from "emoji-picker-react";
+import Picker, {
+  EmojiClickData,
+  EmojiStyle,
+  SuggestionMode,
+} from "emoji-picker-react";
 import { useCreateCommentReaction } from "../../../hooks/tasks/Comments/useCreateCommentReaction";
 
 interface ReactionPickerProps {
@@ -12,7 +16,7 @@ const ReactionPicker: React.FC<ReactionPickerProps> = ({
 }) => {
   const { mutate } = useCreateCommentReaction();
 
-  const handleReaction = (emojiData: any, event: MouseEvent) => {
+  const handleReaction = (emojiData: EmojiClickData) => {
     mutate({ commentId, reaction: emojiData.emoji, comment: { taskId } });
   };
 
