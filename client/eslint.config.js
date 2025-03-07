@@ -5,6 +5,13 @@ import pluginReact from "eslint-plugin-react";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
+  {
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+  },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
@@ -12,4 +19,10 @@ export default [
   pluginReact.configs.flat.recommended,
   { ignores: ["dist", "src/typescript-fetch-client/*"] },
   { rules: { "react/react-in-jsx-scope": "off" } },
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "react/prop-types": "off",
+    },
+  },
 ];
