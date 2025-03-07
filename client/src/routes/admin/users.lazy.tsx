@@ -42,7 +42,7 @@ const AdminUsers = () => {
   };
 
   const handleRoleChange = async (
-    userId: any,
+    userId: string,
     newRole: keyof typeof ModelsRole
   ) => {
     try {
@@ -124,7 +124,7 @@ const AdminUsers = () => {
                           }
                           console.log(e.target.value);
                           handleRoleChange(
-                            user.id,
+                            user.id.toString(),
                             e.target.value as
                               | "RoleUser"
                               | "RoleAdmin"
