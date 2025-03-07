@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import {
   ModelsColumn,
   ModelsSwimlane,
-  ModelsTask,
   ServerApiControllersTaskMoveTaskRequest,
 } from "../../typescript-fetch-client";
 import { UseMutateFunction } from "@tanstack/react-query";
