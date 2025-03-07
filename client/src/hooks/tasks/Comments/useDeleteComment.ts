@@ -23,7 +23,7 @@ export const useDeleteComment = () => {
     onSuccess: () => {
       toast.success("Comment deleted successfully!");
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       toast.error(err.message || "Failed to delete comment.");
     },
   });

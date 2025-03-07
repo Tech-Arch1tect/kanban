@@ -16,7 +16,7 @@ export const useDeleteSwimlane = () => {
       });
       toast.success("Swimlane deleted successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to delete swimlane.");
     },
   });

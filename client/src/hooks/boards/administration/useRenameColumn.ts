@@ -19,7 +19,7 @@ export const useRenameColumn = () => {
     onSuccess: () => {
       toast.success("Column renamed successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to rename column.");
     },
   });

@@ -16,7 +16,7 @@ export const useDeleteColumn = () => {
       });
       toast.success("Column deleted successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to delete column.");
     },
   });

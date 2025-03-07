@@ -24,7 +24,7 @@ export const useCreateTaskLink = () => {
     onSuccess: () => {
       toast.success("Task link created successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to create task link.");
     },
   });

@@ -29,7 +29,7 @@ export const useChangeUserRole = () => {
       });
       toast.success("User role changed successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to change user role.");
     },
   });

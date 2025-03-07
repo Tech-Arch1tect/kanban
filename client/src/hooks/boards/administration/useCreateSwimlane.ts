@@ -19,7 +19,7 @@ export const useCreateSwimlane = () => {
     onSuccess: () => {
       toast.success("Swimlane created successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to create swimlane.");
     },
   });

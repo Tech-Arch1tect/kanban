@@ -18,7 +18,7 @@ export const useUpdateUsername = () => {
     onSuccess: () => {
       toast.success("Username updated successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to update username.");
     },
   });

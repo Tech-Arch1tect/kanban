@@ -30,7 +30,7 @@ export const useAddOrInvite = () => {
       });
       toast.success("Invite sent successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to send invite.");
     },
   });

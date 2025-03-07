@@ -22,7 +22,7 @@ export const useRenameBoard = () => {
     onSuccess: () => {
       toast.success("Board renamed successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to rename board.");
     },
   });

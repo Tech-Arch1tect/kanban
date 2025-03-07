@@ -18,7 +18,7 @@ export const useDeleteTaskExternalLink = () => {
       queryClient.invalidateQueries({ queryKey: ["task", response.taskId] });
       toast.success("Task external link deleted successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to delete task external link.");
     },
   });

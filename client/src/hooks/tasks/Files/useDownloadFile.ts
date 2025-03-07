@@ -32,7 +32,7 @@ export const useDownloadFile = () => {
       window.URL.revokeObjectURL(url);
       toast.success("File downloaded successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to download file.");
     },
   });

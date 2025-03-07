@@ -18,7 +18,7 @@ export const useCreateBoard = () => {
       queryClient.invalidateQueries({ queryKey: ["boards"] });
       toast.success("Board created successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to create board.");
     },
   });

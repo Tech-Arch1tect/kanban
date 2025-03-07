@@ -16,7 +16,7 @@ export const useUpdateNotificationConfiguration = () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       toast.success("Notification configuration updated successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(
         error.message || "Failed to update notification configuration."
       );

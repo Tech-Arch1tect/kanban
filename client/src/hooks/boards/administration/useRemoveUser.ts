@@ -28,7 +28,7 @@ export const useRemoveUser = () => {
       });
       toast.success("User removed successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to remove user.");
     },
   });

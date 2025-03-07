@@ -19,7 +19,7 @@ export const useCreateColumn = () => {
     onSuccess: () => {
       toast.success("Column created successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to create column.");
     },
   });

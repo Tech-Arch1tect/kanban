@@ -22,7 +22,7 @@ export const useUpdateBoardSlug = () => {
     onSuccess: () => {
       toast.success("Board slug updated successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to update board slug.");
     },
   });

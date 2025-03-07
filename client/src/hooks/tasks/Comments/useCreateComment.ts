@@ -24,7 +24,7 @@ export const useCreateComment = () => {
     onSuccess: () => {
       toast.success("Comment added successfully!");
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       toast.error(err.message || "Failed to create comment.");
     },
   });

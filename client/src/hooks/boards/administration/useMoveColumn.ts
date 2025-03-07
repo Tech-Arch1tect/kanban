@@ -14,7 +14,7 @@ export const useMoveColumn = () => {
       });
       toast.success("Column moved successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to move column.");
     },
   });

@@ -15,7 +15,7 @@ export const useMoveSwimlane = () => {
       });
       toast.success("Swimlane moved successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to move swimlane.");
     },
   });

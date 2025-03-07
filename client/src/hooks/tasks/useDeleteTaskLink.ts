@@ -26,7 +26,7 @@ export const useDeleteTaskLink = () => {
     onSuccess: () => {
       toast.success("Task link deleted successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to delete task link.");
     },
   });

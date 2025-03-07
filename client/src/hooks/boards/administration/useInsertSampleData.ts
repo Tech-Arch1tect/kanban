@@ -26,7 +26,7 @@ export const useInsertSampleData = () => {
     onSuccess: () => {
       toast.success("Sample data inserted successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to insert sample data.");
     },
   });

@@ -24,7 +24,7 @@ export const useEditComment = () => {
     onSuccess: () => {
       toast.success("Comment updated successfully!");
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       toast.error(err.message || "Failed to update comment.");
     },
   });

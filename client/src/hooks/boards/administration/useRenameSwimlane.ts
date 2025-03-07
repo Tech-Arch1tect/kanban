@@ -16,7 +16,7 @@ export const useRenameSwimlane = () => {
       });
       toast.success("Swimlane renamed successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to rename swimlane.");
     },
   });

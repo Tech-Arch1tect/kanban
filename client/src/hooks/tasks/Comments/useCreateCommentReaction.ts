@@ -24,7 +24,7 @@ export const useCreateCommentReaction = () => {
     onSuccess: () => {
       toast.success("Reaction added successfully!");
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       toast.error(err.message || "Failed to create reaction.");
     },
   });

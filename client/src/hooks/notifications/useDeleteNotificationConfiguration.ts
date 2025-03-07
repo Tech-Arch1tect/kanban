@@ -17,7 +17,7 @@ export const useDeleteNotificationConfiguration = () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       toast.success("Notification configuration deleted successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(
         error.message || "Failed to delete notification configuration."
       );

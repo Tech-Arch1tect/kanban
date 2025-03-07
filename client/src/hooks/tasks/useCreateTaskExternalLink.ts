@@ -23,7 +23,7 @@ export const useCreateTaskExternalLink = () => {
     onSuccess: () => {
       toast.success("Task external link created successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to create task external link.");
     },
   });
