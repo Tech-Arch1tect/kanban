@@ -15,9 +15,19 @@ server-watch:
 
 # Lints the server code.
 [working-directory: "server"]
-lint:
+lint-server:
   @golangci-lint run
   @testifylint --enable-all ./...
+
+# Lints the client code.
+[working-directory: "client"]
+lint-client:
+  @npm run lint
+
+# Lints the server and client code.
+lint:
+  @just lint-server
+  @just lint-client
 
 # Tests the server code.
 [working-directory: "server"]
