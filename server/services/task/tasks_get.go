@@ -65,7 +65,7 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 		return nil, errors.New("forbidden")
 	}
 
-	statuses, assigneeEmail, searchTerm := parseQuery(query)
+	statuses, assigneeUsername, searchTerm := parseQuery(query)
 	var qopts []repository.QueryOption
 
 	qopts = append(qopts, repository.WithWhere("board_id = ?", boardID))
@@ -74,15 +74,19 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 	if len(statuses) > 0 {
 		qopts = append(qopts, repository.WithWhere("status IN ?", statuses))
 	}
-	if assigneeEmail != "" {
-		user, err := ts.db.UserRepository.GetFirst(repository.WithWhere("email = ?", assigneeEmail))
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return []models.Task{}, nil
+	if assigneeUsername != "" {
+		if assigneeUsername == "unassigned" {
+			qopts = append(qopts, repository.WithWhere("assignee_id = 0"))
+		} else {
+			user, err := ts.db.UserRepository.GetFirst(repository.WithWhere("username = ?", assigneeUsername))
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					return []models.Task{}, nil
+				}
+				return nil, err
 			}
-			return nil, err
+			qopts = append(qopts, repository.WithWhere("assignee_id = ?", user.ID))
 		}
-		qopts = append(qopts, repository.WithWhere("assignee_id = ?", user.ID))
 	}
 	if searchTerm != "" {
 		likeValue := fmt.Sprintf("%%%s%%", searchTerm)
@@ -109,7 +113,7 @@ func (ts *TaskService) SortTasks(tasks []models.Task) {
 
 // parseQuery is a naive parser that extracts:
 //   - `status:open|closed` → []string{"open","closed"}
-//   - `assignee:email`  → "email"
+//   - `assignee:username`  → "username"
 //   - Everything else → appended into one search string
 func parseQuery(q string) (statuses []string, assignee string, searchTerm string) {
 	tokens := strings.Split(strings.TrimSpace(q), " ")
