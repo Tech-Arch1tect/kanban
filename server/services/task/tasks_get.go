@@ -72,13 +72,15 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 	qopts = append(qopts, repository.WithWhere("parent_task_id IS NULL"))
 
 	if len(statuses) > 0 {
-		qopts = append(qopts, repository.WithWhere("status IN ?", statuses))
+		qopts = append(qopts, repository.WithWhere("LOWER(status) IN ?", statuses))
 	}
 	if assigneeUsername != "" {
 		if assigneeUsername == "unassigned" {
 			qopts = append(qopts, repository.WithWhere("assignee_id = 0"))
 		} else {
-			user, err := ts.db.UserRepository.GetFirst(repository.WithWhere("username = ?", assigneeUsername))
+			user, err := ts.db.UserRepository.GetFirst(
+				repository.WithWhere("LOWER(username) = ?", strings.ToLower(assigneeUsername)),
+			)
 			if err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					return []models.Task{}, nil
@@ -89,9 +91,9 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 		}
 	}
 	if searchTerm != "" {
-		likeValue := fmt.Sprintf("%%%s%%", searchTerm)
+		likeValue := fmt.Sprintf("%%%s%%", strings.ToLower(searchTerm))
 		qopts = append(qopts, repository.WithCustom(func(db *gorm.DB) *gorm.DB {
-			return db.Where("title LIKE ? OR description LIKE ?", likeValue, likeValue)
+			return db.Where("LOWER(title) LIKE ? OR LOWER(description) LIKE ?", likeValue, likeValue)
 		}))
 	}
 
@@ -124,11 +126,14 @@ func parseQuery(q string) (statuses []string, assignee string, searchTerm string
 			continue
 		}
 		switch {
-		case strings.HasPrefix(token, "status:"):
-			raw := strings.TrimPrefix(token, "status:")
-			statuses = strings.Split(raw, "|")
-		case strings.HasPrefix(token, "assignee:"):
-			assignee = strings.TrimPrefix(token, "assignee:")
+		case strings.HasPrefix(strings.ToLower(token), "status:"):
+			raw := token[len("status:"):]
+			rawStatuses := strings.Split(raw, "|")
+			for _, s := range rawStatuses {
+				statuses = append(statuses, strings.ToLower(s))
+			}
+		case strings.HasPrefix(strings.ToLower(token), "assignee:"):
+			assignee = strings.ToLower(token[len("assignee:"):])
 		default:
 			searchParts = append(searchParts, token)
 		}
