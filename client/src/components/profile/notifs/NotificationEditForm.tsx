@@ -3,9 +3,15 @@ import { useUpdateNotificationConfiguration } from "../../../hooks/notifications
 import { useBoards } from "../../../hooks/boards/useBoards";
 import { useEventData } from "../../../hooks/notifications/useEventData";
 import { friendlyEventNames } from "./friendlyEventNames";
+import {
+  ModelsBoard,
+  ModelsNotificationConfiguration,
+  ModelsNotificationEvent,
+  NotificationUpdateNotificationRequest,
+} from "../../../typescript-fetch-client";
 
 interface NotificationEditFormProps {
-  notification: any;
+  notification: ModelsNotificationConfiguration;
   onCancel: () => void;
   onUpdated: () => void;
 }
@@ -17,15 +23,24 @@ export const NotificationEditForm = ({
 }: NotificationEditFormProps) => {
   const [name, setName] = useState(notification.name);
   const [method, setMethod] = useState<"email" | "webhook">(
-    notification.method
+    notification.method as "email" | "webhook"
   );
   const [email, setEmail] = useState(notification.email || "");
   const [webhookUrl, setWebhookUrl] = useState(notification.webhookUrl || "");
   const [selectedBoards, setSelectedBoards] = useState<number[]>(
-    notification.boards ? notification.boards.map((b: any) => b.id) : []
+    notification.boards
+      ? notification.boards.map((b: ModelsBoard) => b.id as number)
+      : []
   );
   const [selectedEvents, setSelectedEvents] = useState<string[]>(
-    notification.events ? notification.events.map((e: any) => e.name || e) : []
+    notification.events
+      ? notification.events.map((e: ModelsNotificationEvent) => {
+          if (e.name) {
+            return e.name;
+          }
+          return "";
+        })
+      : []
   );
   const [onlyAssignee, setOnlyAssignee] = useState(notification.onlyAssignee);
 
@@ -71,7 +86,7 @@ export const NotificationEditForm = ({
       onlyAssignee,
     };
 
-    updateNotification(payload, {
+    updateNotification(payload as NotificationUpdateNotificationRequest, {
       onSuccess: () => {
         onUpdated();
       },
@@ -109,7 +124,7 @@ export const NotificationEditForm = ({
             </p>
           )}
           {boards &&
-            boards.boards?.map((board: any) => (
+            boards.boards?.map((board: ModelsBoard) => (
               <label
                 key={board.id}
                 className="inline-flex items-center mr-4 text-gray-700 dark:text-gray-300"
@@ -117,7 +132,7 @@ export const NotificationEditForm = ({
                 <input
                   type="checkbox"
                   value={board.id}
-                  checked={selectedBoards.includes(board.id)}
+                  checked={selectedBoards.includes(board.id as number)}
                   onChange={handleBoardChange}
                   className="form-checkbox text-blue-600"
                 />

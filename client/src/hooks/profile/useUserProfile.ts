@@ -15,7 +15,9 @@ export const useUserProfile = () => {
         return await authApi.apiV1AuthProfileGet();
       } catch (error) {
         toast.error("Failed to fetch user profile");
-        throw new Error("Failed to fetch user profile");
+        throw new Error(
+          (error as Error).message || "Failed to fetch user profile"
+        );
       }
     },
   });

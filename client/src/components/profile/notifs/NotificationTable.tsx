@@ -3,6 +3,11 @@ import { useNotificationConfigurationData } from "../../../hooks/notifications/u
 import { useDeleteNotificationConfiguration } from "../../../hooks/notifications/useDeleteNotificationConfiguration";
 import { NotificationEditForm } from "./NotificationEditForm";
 import { friendlyEventNames } from "./friendlyEventNames";
+import {
+  ModelsBoard,
+  ModelsNotificationConfiguration,
+  ModelsNotificationEvent,
+} from "../../../typescript-fetch-client";
 
 export const NotificationTable = () => {
   const {
@@ -13,9 +18,10 @@ export const NotificationTable = () => {
 
   const { mutate: deleteNotification, isPending: deleting } =
     useDeleteNotificationConfiguration();
-  const [editingNotification, setEditingNotification] = useState<any>(null);
+  const [editingNotification, setEditingNotification] =
+    useState<ModelsNotificationConfiguration | null>(null);
 
-  const handleEdit = (notification: any) => {
+  const handleEdit = (notification: ModelsNotificationConfiguration) => {
     setEditingNotification(notification);
   };
 
@@ -82,63 +88,77 @@ export const NotificationTable = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {notificationsData.notifications.map((notification: any) => (
-                <tr key={notification.id}>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {notification.id}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {notification.name}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {notification.method}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {notification.method === "email"
-                      ? notification.email
-                      : notification.webhookUrl}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {notification.events &&
-                      notification.events.map((e: any, idx: number) => (
-                        <span key={idx}>
-                          {friendlyEventNames[e.name] || e.name}
-                          {idx < notification.events.length - 1 ? ", " : ""}
-                        </span>
-                      ))}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {notification.boards &&
-                      notification.boards.map((board: any, idx: number) => (
-                        <span key={idx}>
-                          {board.name}
-                          {idx < notification.boards.length - 1 ? ", " : ""}
-                        </span>
-                      ))}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {notification.onlyAssignee ? "Yes" : "No"}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {notification.createdAt}
-                  </td>
-                  <td className="px-4 py-2 text-sm">
-                    <button
-                      className="mr-2 text-yellow-600 dark:text-yellow-400 hover:underline disabled:opacity-50"
-                      onClick={() => handleEdit(notification)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="text-red-600 dark:text-red-400 hover:underline disabled:opacity-50"
-                      onClick={() => deleteNotification(notification.id)}
-                      disabled={deleting}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {notificationsData.notifications.map(
+                (notification: ModelsNotificationConfiguration) => (
+                  <tr key={notification.id}>
+                    <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                      {notification.id}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                      {notification.name}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                      {notification.method}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                      {notification.method === "email"
+                        ? notification.email
+                        : notification.webhookUrl}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                      {notification.events &&
+                        notification.events.map(
+                          (e: ModelsNotificationEvent, idx: number) => (
+                            <span key={idx}>
+                              {friendlyEventNames[
+                                e.name as keyof typeof friendlyEventNames
+                              ] || e.name}
+                              {idx < (notification.events?.length || 0) - 1
+                                ? ", "
+                                : ""}
+                            </span>
+                          )
+                        )}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                      {notification.boards &&
+                        notification.boards.map(
+                          (board: ModelsBoard, idx: number) => (
+                            <span key={idx}>
+                              {board.name}
+                              {idx < (notification.boards?.length || 0) - 1
+                                ? ", "
+                                : ""}
+                            </span>
+                          )
+                        )}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                      {notification.onlyAssignee ? "Yes" : "No"}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                      {notification.createdAt}
+                    </td>
+                    <td className="px-4 py-2 text-sm">
+                      <button
+                        className="mr-2 text-yellow-600 dark:text-yellow-400 hover:underline disabled:opacity-50"
+                        onClick={() => handleEdit(notification)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="text-red-600 dark:text-red-400 hover:underline disabled:opacity-50"
+                        onClick={() =>
+                          deleteNotification(notification.id as number)
+                        }
+                        disabled={deleting}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                )
+              )}
             </tbody>
           </table>
         </div>

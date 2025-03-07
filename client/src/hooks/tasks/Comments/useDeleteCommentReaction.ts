@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { commentsApi } from "../../../lib/api";
-import { ModelsReaction } from "../../../typescript-fetch-client";
 import { toast } from "react-toastify";
 
 export const useDeleteCommentReaction = () => {
@@ -20,7 +19,7 @@ export const useDeleteCommentReaction = () => {
       });
       toast.success("Reaction deleted successfully!");
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       toast.error(err.message || "Failed to delete reaction.");
     },
   });
