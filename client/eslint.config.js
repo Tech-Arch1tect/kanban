@@ -11,4 +11,5 @@ export default [
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   { ignores: ["dist", "src/typescript-fetch-client/*"] },
+  { rules: { "react/react-in-jsx-scope": "off" } },
 ];
