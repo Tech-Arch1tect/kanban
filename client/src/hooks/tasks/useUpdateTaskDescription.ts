@@ -21,7 +21,7 @@ export const useUpdateTaskDescription = () => {
       });
       toast.success("Task description updated successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to update task description.");
     },
   });

@@ -24,7 +24,7 @@ export const useUpdateTaskStatus = () => {
       }
       toast.success("Task status updated successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to update task status.");
     },
   });

@@ -3,7 +3,7 @@ import {
   ModelsColumn,
   ModelsSwimlane,
   ModelsTask,
-  TaskMoveTaskRequest,
+  ServerApiControllersTaskMoveTaskRequest,
 } from "../../typescript-fetch-client";
 import { UseMutateFunction } from "@tanstack/react-query";
 import useDebounce from "../useDebounce";
@@ -11,15 +11,17 @@ import useDebounce from "../useDebounce";
 interface UseTaskDragDropProps {
   column: ModelsColumn;
   swimlane: ModelsSwimlane;
-  moveTask: UseMutateFunction<void, unknown, TaskMoveTaskRequest>;
-  tasks: ModelsTask[];
+  moveTask: UseMutateFunction<
+    void,
+    unknown,
+    ServerApiControllersTaskMoveTaskRequest
+  >;
 }
 
 export function useTaskDragDrop({
   column,
   swimlane,
   moveTask,
-  tasks,
 }: UseTaskDragDropProps) {
   const [draggedTaskId, setDraggedTaskId] = useState<number | null>(null);
   const [rawHoveredTaskId, setRawHoveredTaskId] = useState<number | null>(null);

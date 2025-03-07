@@ -24,7 +24,7 @@ export const useUpdateTaskAssignee = () => {
       }
       toast.success("Task assignee updated successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to update task assignee.");
     },
   });

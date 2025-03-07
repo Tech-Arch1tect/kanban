@@ -22,7 +22,7 @@ export const useUpdateTaskExternalLink = () => {
       });
       toast.success("Task external link updated successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to update task external link.");
     },
   });

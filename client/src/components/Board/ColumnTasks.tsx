@@ -36,7 +36,6 @@ export default function ColumnTasks({
       column,
       swimlane,
       moveTask,
-      tasks,
     });
 
   const handleSubmit = (e: React.FormEvent) => {

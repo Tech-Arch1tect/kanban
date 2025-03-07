@@ -11,7 +11,7 @@ export const useGetTaskQuery = (query: string, boardId: number) => {
           boardId: boardId,
         });
       } catch (error) {
-        throw new Error("Failed to fetch tasks");
+        throw new Error((error as Error).message || "Failed to fetch tasks");
       }
     },
     enabled: Boolean(boardId),
