@@ -25,6 +25,7 @@ import (
 	"server/services/swimlane"
 	"server/services/task"
 	"server/services/taskActivity"
+	taskquery "server/services/taskQuery"
 	testdata "server/services/testData"
 	"time"
 
@@ -48,6 +49,7 @@ type Params struct {
 	ColumnS                 *column.ColumnService
 	SwimlaneS               *swimlane.SwimlaneService
 	TaskS                   *task.TaskService
+	TaskQueryS              *taskquery.TaskQueryService
 	CommentS                *comment.CommentService
 	SettingsS               *settings.SettingsService
 	EmailS                  *email.EmailService
@@ -163,6 +165,7 @@ func SetupRouter() (*gin.Engine, *config.Config, func()) {
 			column.NewColumnService,
 			swimlane.NewSwimlaneService,
 			task.NewTaskService,
+			taskquery.NewTaskQueryService,
 			comment.NewCommentService,
 			settings.NewSettingsService,
 			notification.NewNotificationService,

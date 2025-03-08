@@ -2,10 +2,7 @@ package task
 
 import (
 	"errors"
-	"fmt"
-	"regexp"
 	"sort"
-	"strings"
 
 	"server/database/repository"
 	"server/models"
@@ -66,55 +63,11 @@ func (ts *TaskService) GetTasksWithQuery(userID uint, boardID uint, query string
 		return nil, errors.New("forbidden")
 	}
 
-	statuses, assigneeUsername, title, searchTerm, creatorUsername := parseQuery(query)
-	var qopts []repository.QueryOption
-
-	qopts = append(qopts, repository.WithWhere("board_id = ?", boardID))
-	qopts = append(qopts, repository.WithWhere("parent_task_id IS NULL"))
-
-	if len(statuses) > 0 {
-		qopts = append(qopts, repository.WithWhere("LOWER(status) IN ?", statuses))
-	}
-	if assigneeUsername != "" {
-		if assigneeUsername == "unassigned" {
-			qopts = append(qopts, repository.WithWhere("assignee_id = 0"))
-		} else {
-			user, err := ts.db.UserRepository.GetFirst(
-				repository.WithWhere("LOWER(username) = ?", strings.ToLower(assigneeUsername)),
-			)
-			if err != nil {
-				if errors.Is(err, gorm.ErrRecordNotFound) {
-					return []models.Task{}, nil
-				}
-				return nil, err
-			}
-			qopts = append(qopts, repository.WithWhere("assignee_id = ?", user.ID))
-		}
-	}
-	if creatorUsername != "" {
-		user, err := ts.db.UserRepository.GetFirst(
-			repository.WithWhere("LOWER(username) = ?", strings.ToLower(creatorUsername)),
-		)
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return []models.Task{}, nil
-			}
-			return nil, err
-		}
-		qopts = append(qopts, repository.WithWhere("creator_id = ?", user.ID))
-	}
-	if title != "" {
-		titleLike := fmt.Sprintf("%%%s%%", strings.ToLower(title))
-		qopts = append(qopts, repository.WithWhere("LOWER(title) LIKE ?", titleLike))
-	}
-	if searchTerm != "" {
-		likeValue := fmt.Sprintf("%%%s%%", strings.ToLower(searchTerm))
-		qopts = append(qopts, repository.WithCustom(func(db *gorm.DB) *gorm.DB {
-			return db.Where("LOWER(title) LIKE ? OR LOWER(description) LIKE ?", likeValue, likeValue)
-		}))
+	qopts, err := ts.tqs.BuildQuery(boardID, query)
+	if err != nil {
+		return nil, err
 	}
 
-	qopts = append(qopts, repository.WithPreload("Assignee", "Subtasks", "Subtasks.Assignee"))
 	tasks, err := ts.db.TaskRepository.GetAll(qopts...)
 	if err != nil {
 		return nil, err
@@ -128,46 +81,6 @@ func (ts *TaskService) SortTasks(tasks []models.Task) {
 	sort.Slice(tasks, func(i, j int) bool {
 		return tasks[i].Position < tasks[j].Position
 	})
-}
-
-// parseQuery is a naive parser that extracts:
-//   - `status:open|closed`   → []string{"open", "closed"}
-//   - `assignee:username`    → "username"
-//   - `creator:username`     → "username"
-//   - `title:"my title"`      → "my title"
-//   - Everything else is appended into one search string
-func parseQuery(q string) (statuses []string, assignee string, title string, searchTerm string, creator string) {
-	re := regexp.MustCompile(`\S+:"[^"]+"|\S+`)
-	tokens := re.FindAllString(q, -1)
-	var searchParts []string
-	for _, token := range tokens {
-		token = strings.TrimSpace(token)
-		if token == "" {
-			continue
-		}
-		lowerToken := strings.ToLower(token)
-		switch {
-		case strings.HasPrefix(lowerToken, "status:"):
-			raw := token[len("status:"):]
-			raw = strings.Trim(raw, "\"")
-			rawStatuses := strings.Split(raw, "|")
-			for _, s := range rawStatuses {
-				statuses = append(statuses, strings.ToLower(strings.TrimSpace(s)))
-			}
-		case strings.HasPrefix(lowerToken, "assignee:"):
-			assignee = strings.Trim(token[len("assignee:"):], "\"")
-		case strings.HasPrefix(lowerToken, "creator:"):
-			creator = strings.Trim(token[len("creator:"):], "\"")
-		case strings.HasPrefix(lowerToken, "title:"):
-			title = strings.Trim(token[len("title:"):], "\"")
-		default:
-			searchParts = append(searchParts, token)
-		}
-	}
-	if len(searchParts) > 0 {
-		searchTerm = strings.Join(searchParts, " ")
-	}
-	return statuses, assignee, title, searchTerm, creator
 }
 
 func (ts *TaskService) GetTaskActivities(userID uint, taskID uint, page, pageSize int) (taskActivities []models.TaskActivity, totalRecords int, totalPages int, err error) {

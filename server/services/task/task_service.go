@@ -6,6 +6,7 @@ import (
 	"server/services/comment"
 	"server/services/role"
 	"server/services/taskActivity"
+	taskquery "server/services/taskQuery"
 	"time"
 )
 
@@ -15,6 +16,7 @@ type TaskService struct {
 	config *config.Config
 	cs     *comment.CommentService
 	tas    *taskActivity.TaskActivityService
+	tqs    *taskquery.TaskQueryService
 }
 
 type CreateTaskRequest struct {
@@ -30,6 +32,6 @@ type CreateTaskRequest struct {
 	Colour       string     `json:"colour"`
 }
 
-func NewTaskService(db *repository.Database, rs *role.RoleService, config *config.Config, cs *comment.CommentService, tas *taskActivity.TaskActivityService) *TaskService {
-	return &TaskService{db: db, rs: rs, config: config, cs: cs, tas: tas}
+func NewTaskService(db *repository.Database, rs *role.RoleService, config *config.Config, cs *comment.CommentService, tas *taskActivity.TaskActivityService, tqs *taskquery.TaskQueryService) *TaskService {
+	return &TaskService{db: db, rs: rs, config: config, cs: cs, tas: tas, tqs: tqs}
 }
