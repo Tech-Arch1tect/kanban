@@ -28,12 +28,17 @@ export default function QueryInput({
 }: QueryInputProps) {
   const [inputValue, setInputValue] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
 
   useEffect(() => {
-    const tokens = inputValue.split(/\s+/);
+    const tokens = inputValue.trim().split(/\s+/);
     const lastToken = tokens[tokens.length - 1].toLowerCase();
+    if (!lastToken) {
+      setFilteredSuggestions([]);
+      return;
+    }
     const suggestions = [...FIELD_SUGGESTIONS, ...OPERATOR_SUGGESTIONS].filter(
       (item) =>
         item.toLowerCase().startsWith(lastToken) &&
@@ -43,11 +48,28 @@ export default function QueryInput({
     setActiveSuggestionIndex(0);
   }, [inputValue]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setFilteredSuggestions([]);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleSuggestionClick = useCallback(
     (suggestion: string) => {
       const tokens = inputValue.split(/\s+/);
       tokens[tokens.length - 1] = suggestion;
       setInputValue(tokens.join(" "));
+      setFilteredSuggestions([]);
       inputRef.current?.focus();
     },
     [inputValue]
@@ -80,7 +102,7 @@ export default function QueryInput({
   };
 
   return (
-    <div className="relative flex">
+    <div ref={containerRef} className="relative flex">
       <input
         ref={inputRef}
         type="text"
@@ -92,7 +114,10 @@ export default function QueryInput({
       />
       <button
         type="button"
-        onClick={() => onSearch(inputValue)}
+        onClick={() => {
+          setFilteredSuggestions([]);
+          onSearch(inputValue);
+        }}
         className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
       >
         Search
