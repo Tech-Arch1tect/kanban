@@ -10,7 +10,7 @@ export default function BoardView() {
   const { slug } = useParams({ from: "/boards/$slug" });
   const { data, isLoading, error } = useBoardDataBySlug(slug);
 
-  const [taskQuery, setTaskQuery] = useState("status:open");
+  const [taskQuery, setTaskQuery] = useState("status == open");
 
   const {
     data: tasks,
