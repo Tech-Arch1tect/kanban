@@ -50,8 +50,8 @@ export default function BoardView() {
           Filter tasks by query:
         </label>
         <QueryInput
-          value={taskQuery}
-          onChange={setTaskQuery}
+          initialValue={taskQuery}
+          onSearch={(value) => setTaskQuery(value)}
           placeholder='e.g. "status == open"'
         />
         {tasksLoading && (

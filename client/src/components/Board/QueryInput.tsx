@@ -16,22 +16,23 @@ const OPERATOR_SUGGESTIONS = [
 ];
 
 interface QueryInputProps {
-  value: string;
-  onChange: (value: string) => void;
+  initialValue?: string;
+  onSearch: (value: string) => void;
   placeholder?: string;
 }
 
 export default function QueryInput({
-  value,
-  onChange,
+  initialValue = "",
+  onSearch,
   placeholder,
 }: QueryInputProps) {
+  const [inputValue, setInputValue] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
 
   useEffect(() => {
-    const tokens = value.split(/\s+/);
+    const tokens = inputValue.split(/\s+/);
     const lastToken = tokens[tokens.length - 1].toLowerCase();
     const suggestions = [...FIELD_SUGGESTIONS, ...OPERATOR_SUGGESTIONS].filter(
       (item) =>
@@ -40,16 +41,16 @@ export default function QueryInput({
     );
     setFilteredSuggestions(suggestions);
     setActiveSuggestionIndex(0);
-  }, [value]);
+  }, [inputValue]);
 
   const handleSuggestionClick = useCallback(
     (suggestion: string) => {
-      const tokens = value.split(/\s+/);
+      const tokens = inputValue.split(/\s+/);
       tokens[tokens.length - 1] = suggestion;
-      onChange(tokens.join(" "));
+      setInputValue(tokens.join(" "));
       inputRef.current?.focus();
     },
-    [value, onChange]
+    [inputValue]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -66,22 +67,36 @@ export default function QueryInput({
         );
       } else if (e.key === "Enter") {
         e.preventDefault();
-        handleSuggestionClick(filteredSuggestions[activeSuggestionIndex]);
+        if (filteredSuggestions.length > 0) {
+          handleSuggestionClick(filteredSuggestions[activeSuggestionIndex]);
+        } else {
+          onSearch(inputValue);
+        }
       }
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      onSearch(inputValue);
     }
   };
 
   return (
-    <div className="relative">
+    <div className="relative flex">
       <input
         ref={inputRef}
         type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
       />
+      <button
+        type="button"
+        onClick={() => onSearch(inputValue)}
+        className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+      >
+        Search
+      </button>
       <QuerySuggestions
         suggestions={filteredSuggestions}
         activeIndex={activeSuggestionIndex}

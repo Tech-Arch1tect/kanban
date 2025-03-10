@@ -13,7 +13,7 @@ export default function QuerySuggestions({
 
   return (
     <ul
-      className="absolute left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-10"
+      className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-10"
       style={{ maxHeight: "150px", overflowY: "auto" }}
     >
       {suggestions.map((suggestion, index) => (
