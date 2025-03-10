@@ -5,11 +5,11 @@ import BoardSwimlanes from "./BoardSwimlanes";
 import { useGetTaskQuery } from "../../hooks/tasks/useTaskQuery";
 import AdminLinks from "./AdminLinks";
 import { useBoardDataBySlug } from "../../hooks/boards/useBoardDataBySlug";
+import QueryInput from "./QueryInput";
 
 export default function BoardView() {
   const { slug } = useParams({ from: "/boards/$slug" });
   const { data, isLoading, error } = useBoardDataBySlug(slug);
-
   const [taskQuery, setTaskQuery] = useState("status == open");
 
   const {
@@ -49,34 +49,29 @@ export default function BoardView() {
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Filter tasks by query:
         </label>
-        <div className="flex items-center gap-4">
-          <input
-            type="text"
-            value={taskQuery}
-            onChange={(e) => setTaskQuery(e.target.value)}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
-            placeholder='e.g. "status:open"'
-          />
-          {tasksLoading && (
-            <div className="text-gray-500 dark:text-gray-400">
-              Loading tasks...
-            </div>
-          )}
-          {tasksError && (
-            <div className="text-red-500 dark:text-red-400">
-              Error loading tasks
-            </div>
-          )}
-        </div>
+        <QueryInput
+          value={taskQuery}
+          onChange={setTaskQuery}
+          placeholder='e.g. "status == open"'
+        />
+        {tasksLoading && (
+          <div className="mt-2 text-gray-500 dark:text-gray-400">
+            Loading tasks...
+          </div>
+        )}
+        {tasksError && (
+          <div className="mt-2 text-red-500 dark:text-red-400">
+            Error loading tasks
+          </div>
+        )}
         {tasks && (
           <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
             Found{" "}
             <strong className="text-blue-600 dark:text-blue-400">
               {tasks?.tasks?.length ?? 0}
             </strong>{" "}
-            tasks for query
+            tasks for query{" "}
             <strong className="text-blue-600 dark:text-blue-400">
-              {" "}
               &quot;{taskQuery}&quot;
             </strong>
           </div>
@@ -84,7 +79,7 @@ export default function BoardView() {
       </div>
 
       {/* Board Columns and Swimlanes */}
-      <div className="">
+      <div>
         {board?.swimlanes?.map((swimlane: ModelsSwimlane) => (
           <BoardSwimlanes
             key={swimlane.id}
