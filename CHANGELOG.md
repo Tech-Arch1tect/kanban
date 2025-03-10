@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.13](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.12...v0.3.13) (2025-03-10)
+
+
+### Features
+
+* **taskQuery:** Add 'creator:username' task query ([e90bcc4](https://github.com/Tech-Arch1tect/kanban/commit/e90bcc4ce0696f81994a3b613f4ff2a0abe8eb6a))
+* **taskQuery:** Add 'title:' query option ([d7bde48](https://github.com/Tech-Arch1tect/kanban/commit/d7bde48b4b8933d5da958055027dc3ee11e54419))
+* **taskQuery:** Add very basic suggestions/completions ([67b73aa](https://github.com/Tech-Arch1tect/kanban/commit/67b73aa717a5043a5d5cd310355d364ca181aff1))
+* **taskQuery:** Re-implement query parsing with a basic implementation of a Lexer, AST, Parser ([265d660](https://github.com/Tech-Arch1tect/kanban/commit/265d660447d4c2430a6803a20d81c720281a1f89))
+
+
+### Bug Fixes
+
+* **eslint:** 2fa.lazy.tsx: error  Unexpected any. Specify a different type ([480709a](https://github.com/Tech-Arch1tect/kanban/commit/480709a2e5f5afc35e34bc0391a875f4b1ba0f77))
+* **eslint:** Fix even more eslint errors ([ce511ac](https://github.com/Tech-Arch1tect/kanban/commit/ce511acfcccf3f5a84d213496069e7e9d2379e1f))
+* **eslint:** Fix many 'Unexpected any. Specify a different type' errors ([fa75219](https://github.com/Tech-Arch1tect/kanban/commit/fa75219db885ff08d6ebc6a7ee888c9c724d27b3))
+* **eslint:** Fix many eslint errors ([3f23cd6](https://github.com/Tech-Arch1tect/kanban/commit/3f23cd6bb6fcc29634f56b2b3b0ae619efdd6f80))
+* **eslint:** remove unused import ([eddc0ad](https://github.com/Tech-Arch1tect/kanban/commit/eddc0ad4455dec3a0a855d7b641a8ca667515ad0))
+* **eslint:** resolve a few more eslint errors ([2368aea](https://github.com/Tech-Arch1tect/kanban/commit/2368aea346bab505940ab7f6e36071af7ed9c875))
+* **eslint:** tailwind.config.js: A `require()` style import is forbidden ([723d7d6](https://github.com/Tech-Arch1tect/kanban/commit/723d7d696d5447b2faad20724c3e2f13c76f4f89))
+* **eslint:** users.lazy.tsx: Unexpected any. Specify a different type ([6156c54](https://github.com/Tech-Arch1tect/kanban/commit/6156c5403999fa930d0382a13dbddfead9df702c))
+* **eslint:** useUserProfile.ts: Unexpected any. Specify a different type ([ce809ca](https://github.com/Tech-Arch1tect/kanban/commit/ce809ca5499b74f03fe23708fedfc271dfd334ee))
+* **tsc:** Fix typescript errors in task hooks ([a4cba5d](https://github.com/Tech-Arch1tect/kanban/commit/a4cba5d2ba431f69c07952cd4d83a9a1b4789682))
+* **tsc:** vite-env.d.ts: resolve missing environment types ([e16ed20](https://github.com/Tech-Arch1tect/kanban/commit/e16ed206cf726ba5cc1cef67ef5c4fc7052a5c8b))
+
+
+### Chores
+
+* **eslint:** Run eslint when building for releases ([c747bf6](https://github.com/Tech-Arch1tect/kanban/commit/c747bf6d519a318ec0275b368251c5b97e79b492))
+* **taskQuery:** change default query to 'status == open' ([a6e6ede](https://github.com/Tech-Arch1tect/kanban/commit/a6e6edea2a24addaa7f49f4ec41cf03bd56070ca))
+
+
+### Code Refactoring
+
+* **eslint:** detect react version & disable react/prop-types rule for typescript files ([55eded8](https://github.com/Tech-Arch1tect/kanban/commit/55eded8848fe828f18268ad2a9d252b5b5805271))
+* **eslint:** Disable "react/react-in-jsx-scope" rule ([b9d230e](https://github.com/Tech-Arch1tect/kanban/commit/b9d230ece43c31e6f7bf9f760d44750dae6c695c))
+* **eslint:** eslint --init ([36a6a53](https://github.com/Tech-Arch1tect/kanban/commit/36a6a53f65779c7fafd59f4dbfcb741bb7416170))
+* **eslint:** ignore auto-generated api client and built app ([bb6460c](https://github.com/Tech-Arch1tect/kanban/commit/bb6460c7915a6aef6641245f8c2520820b8f5e7d))
+* **lint:** Add 'npm run lint' ([071fa99](https://github.com/Tech-Arch1tect/kanban/commit/071fa99513a326e2859f617e78326df7fbbd579b))
+* **lint:** refactor justfile linting to include client and server lint ([f952ddf](https://github.com/Tech-Arch1tect/kanban/commit/f952ddfda3540ff97b262cd296ecf749e2809513))
+* **taskQuery:** change assignee: to query usernames, rather than emails ([b6a621d](https://github.com/Tech-Arch1tect/kanban/commit/b6a621dc025eeda13b6d4d83a246e6d797070909))
+* **taskQuery:** Create TaskQueryService and move task query logic from the TaskService ([6b1f147](https://github.com/Tech-Arch1tect/kanban/commit/6b1f14775274270f3b3f4fcb324770b9dcf921db))
+* **taskQuery:** don't query tasks on change, require an explicit request to query ([3863a9d](https://github.com/Tech-Arch1tect/kanban/commit/3863a9d7b0566c392ccb9bbdd9e33b70d210bcb6))
+* **taskQuery:** Improve extensibility of token parsing ([a1bc5d1](https://github.com/Tech-Arch1tect/kanban/commit/a1bc5d11195c0d917a84faf5ec438459f30cebfe))
+* **taskQuery:** Make task query case-insensitive ([cb0b926](https://github.com/Tech-Arch1tect/kanban/commit/cb0b926f77916f30f38c306210501acff5824d4d))
+* **taskQuery:** Move registry into the QueryParser struct ([c46d69b](https://github.com/Tech-Arch1tect/kanban/commit/c46d69b8476f7073feb4296fdd7fd28f2848683f))
+* **taskQuery:** Resolve issues with suggestions staying open when not intended to ([88aef45](https://github.com/Tech-Arch1tect/kanban/commit/88aef4561efb018c2dcc9fc1bb7637f830a32218))
+* **tsc:** Add 'tsc --noEmit' before builds & add @types/node ([6755f06](https://github.com/Tech-Arch1tect/kanban/commit/6755f06ca347613915b60d402c01fd045def1d21))
+
 ### [0.3.12](https://github.com/Tech-Arch1tect/kanban/compare/v0.3.11...v0.3.12) (2025-03-06)
 
 
