@@ -28,8 +28,13 @@ export function useTaskDragDrop({
     null
   );
 
+  const [rawHoveredMoveAfter, setRawHoveredMoveAfter] = useState<
+    boolean | null
+  >(null);
+
   const hoveredTaskId = useDebounce(rawHoveredTaskId, 5);
   const hoveredPosition = useDebounce(rawHoveredPosition, 5);
+  const hoveredMoveAfter = useDebounce(rawHoveredMoveAfter, 5);
 
   const handleDragStart = useCallback(
     (event: React.DragEvent<HTMLDivElement>, taskId: number) => {
@@ -50,10 +55,15 @@ export function useTaskDragDrop({
         if (pos !== null && hoveredId !== null) {
           setRawHoveredTaskId(Number(hoveredId));
           setRawHoveredPosition(Number(pos));
+
+          const rect = targetElement.getBoundingClientRect();
+          const isAfter = event.clientY > rect.top + rect.height / 2;
+          setRawHoveredMoveAfter(isAfter);
         }
       } else {
         setRawHoveredTaskId(null);
         setRawHoveredPosition(null);
+        setRawHoveredMoveAfter(null);
       }
     },
     []
@@ -62,6 +72,7 @@ export function useTaskDragDrop({
   const handleDragLeave = useCallback(() => {
     setRawHoveredTaskId(null);
     setRawHoveredPosition(null);
+    setRawHoveredMoveAfter(null);
   }, []);
 
   const handleDrop = useCallback(
@@ -77,13 +88,15 @@ export function useTaskDragDrop({
         columnId: column.id,
         swimlaneId: swimlane.id,
         position: hoveredPosition ?? 0,
+        moveAfter: hoveredMoveAfter ?? false,
       });
 
       setDraggedTaskId(null);
       setRawHoveredTaskId(null);
       setRawHoveredPosition(null);
+      setRawHoveredMoveAfter(null);
     },
-    [column.id, swimlane.id, hoveredPosition, moveTask]
+    [column.id, swimlane.id, hoveredPosition, hoveredMoveAfter, moveTask]
   );
 
   const isDraggedTask = useCallback(
@@ -100,6 +113,7 @@ export function useTaskDragDrop({
     draggedTaskId,
     hoveredTaskId,
     hoveredPosition,
+    hoveredMoveAfter,
     handleDragStart,
     handleDragOver,
     handleDragLeave,

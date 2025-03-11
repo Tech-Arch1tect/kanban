@@ -14,6 +14,7 @@ export const useMoveTask = () => {
             columnId: task.columnId,
             swimlaneId: task.swimlaneId,
             position: task.position,
+            moveAfter: task.moveAfter,
           },
         })
         .then(() => {
