@@ -27,8 +27,8 @@ export const TaskLinkLoop = ({ links }: { links: ModelsTaskLinks[] }) => {
           className="flex items-center justify-between p-2 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
         >
           <Link
-            // @ts-expect-error link.dstTaskId is a number yet the type is $id? Requires further understanding TODO: fix
-            to={`/task/${link.dstTaskId}`}
+            to="/task/$id"
+            params={{ id: link.dstTaskId?.toString() ?? "" }}
             className="text-sm font-medium text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
           >
             <span>

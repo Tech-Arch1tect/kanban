@@ -121,8 +121,10 @@ export const TaskSubTasks = ({ task }: { task: ModelsTask }) => {
                   </div>
                 ) : (
                   <>
-                    {/* @ts-expect-error subtask.id is a number yet the type is $id? Requires further understanding TODO: fix */}
-                    <Link to={`/task/${subtask.id as number}`}>
+                    <Link
+                      to="/task/$id"
+                      params={{ id: subtask.id?.toString() ?? "" }}
+                    >
                       <div
                         className={`font-semibold ${
                           subtask.status === "closed" ? "line-through" : ""

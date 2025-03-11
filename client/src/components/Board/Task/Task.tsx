@@ -44,8 +44,8 @@ export function Task({
       `}
     >
       <Link
-        //@ts-expect-error task.id is a number yet the type is $id? Requires further understanding TODO: fix
-        to={`/task/${task.id}`}
+        to="/task/$id"
+        params={{ id: task.id.toString() }}
         className="block"
       >
         {/* Task Header & Title */}
@@ -96,8 +96,8 @@ export function Task({
               {visibleSubtasks?.map((subtask) => (
                 <Link
                   key={subtask.id}
-                  //@ts-expect-error subtask.id is a number yet the type is $id? Requires further understanding TODO: fix
-                  to={`/task/${subtask.id}`}
+                  to="/task/$id"
+                  params={{ id: subtask.id?.toString() ?? "" }}
                   className={`block text-base leading-relaxed hover:text-blue-500 truncate
                     ${subtask.status === "open" ? "" : "line-through"}
                   `}
