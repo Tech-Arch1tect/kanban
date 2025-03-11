@@ -43,6 +43,7 @@ type MoveTaskRequest struct {
 	ColumnID   uint    `json:"column_id" binding:"required"`
 	SwimlaneID uint    `json:"swimlane_id" binding:"required"`
 	Position   float64 `json:"position" binding:"number"`
+	MoveAfter  bool    `json:"move_after"`
 }
 
 type MoveTaskResponse struct {

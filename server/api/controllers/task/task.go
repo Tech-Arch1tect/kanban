@@ -201,6 +201,7 @@ func (tc *TaskController) MoveTask(c *gin.Context) {
 		ColumnID:   request.ColumnID,
 		SwimlaneID: request.SwimlaneID,
 		Position:   request.Position,
+		MoveAfter:  request.MoveAfter,
 	})
 	if err != nil {
 		if err.Error() == "forbidden" {

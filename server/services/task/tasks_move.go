@@ -12,6 +12,7 @@ type MoveTaskRequest struct {
 	ColumnID   uint    `json:"column_id"`
 	SwimlaneID uint    `json:"swimlane_id"`
 	Position   float64 `json:"position"`
+	MoveAfter  bool    `json:"move_after"`
 }
 
 func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Task, models.Task, error) {
@@ -52,19 +53,36 @@ func (ts *TaskService) MoveTask(userID uint, request MoveTaskRequest) (models.Ta
 	if len(tasks) == 0 {
 		newPos = request.Position
 	} else {
-		var nextPos float64
-		foundNext := false
-		for _, t := range tasks {
-			if t.Position > request.Position {
-				nextPos = t.Position
-				foundNext = true
-				break
+		if request.MoveAfter {
+			var nextPos float64
+			foundNext := false
+			for _, t := range tasks {
+				if t.Position > request.Position {
+					nextPos = t.Position
+					foundNext = true
+					break
+				}
 			}
-		}
-		if !foundNext {
-			newPos = request.Position + 1.0
+			if !foundNext {
+				newPos = request.Position + 1.0
+			} else {
+				newPos = (request.Position + nextPos) / 2.0
+			}
 		} else {
-			newPos = (request.Position + nextPos) / 2.0
+			var prevPos float64
+			foundPrev := false
+			for i := len(tasks) - 1; i >= 0; i-- {
+				if tasks[i].Position < request.Position {
+					prevPos = tasks[i].Position
+					foundPrev = true
+					break
+				}
+			}
+			if !foundPrev {
+				newPos = request.Position - 1.0
+			} else {
+				newPos = (prevPos + request.Position) / 2.0
+			}
 		}
 	}
 
