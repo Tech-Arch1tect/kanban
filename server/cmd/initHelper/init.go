@@ -3,6 +3,7 @@ package initHelper
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"server/api/controllers"
 	"server/api/middleware"
 	"server/api/routes"
@@ -78,6 +79,10 @@ func NewRouter(p Params) (*gin.Engine, error) {
 		gin.SetMode(gin.DebugMode)
 	}
 	router := gin.New()
+
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
+	})
 
 	router.Use(ginzap.Ginzap(p.Logger, time.RFC3339, true))
 	router.Use(ginzap.RecoveryWithZap(p.Logger, true))
