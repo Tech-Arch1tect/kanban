@@ -23,5 +23,6 @@ func (r *router) RegisterBoardRoutes(router *gin.RouterGroup) {
 		board.POST("/change-role", r.mw.CSRFTokenRequired(), r.cr.BoardController.ChangeBoardRole)
 		board.POST("/rename", r.mw.CSRFTokenRequired(), r.cr.BoardController.RenameBoard)
 		board.POST("/update-slug", r.mw.CSRFTokenRequired(), r.cr.BoardController.UpdateBoardSlug)
+		board.GET("/can-administrate/:board_id", r.cr.BoardController.CanAdministrateBoard)
 	}
 }

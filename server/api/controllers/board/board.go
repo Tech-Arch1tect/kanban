@@ -539,3 +539,41 @@ func (bc *BoardController) ChangeBoardRole(c *gin.Context) {
 
 	c.JSON(http.StatusOK, ChangeBoardRoleResponse{BoardID: req.BoardID, Message: "Role changed"})
 }
+
+type CanAdministrateBoardRequest struct {
+	BoardID uint `uri:"board_id" binding:"required"`
+}
+
+type CanAdministrateBoardResponse struct {
+	CanAdministrate bool `json:"can_administrate"`
+}
+
+// @Summary Check if a user can administrate a board
+// @Description Check if a user can administrate a board
+// @Tags boards
+// @Security cookieAuth
+// @Accept json
+// @Produce json
+// @Param board_id path uint true "Board ID"
+// @Success 200 {object} CanAdministrateBoardResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Failure 403 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /api/v1/boards/can-administrate/{board_id} [get]
+func (bc *BoardController) CanAdministrateBoard(c *gin.Context) {
+	var req CanAdministrateBoardRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := bc.hs.GetUserFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	canAdministrate := bc.bs.CanAdministrateBoard(user.ID, req.BoardID)
+	c.JSON(http.StatusOK, CanAdministrateBoardResponse{CanAdministrate: canAdministrate})
+}
