@@ -1,14 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { useAuth } from "../../hooks/auth/useAuth";
-import { useUserProfile } from "../../hooks/profile/useUserProfile";
 import { ModelsBoard } from "../../typescript-fetch-client";
+import { useCanAdministrate } from "../../hooks/boards/useCanAdministrate";
 
 export default function AdminLinks({ board }: { board: ModelsBoard }) {
-  const { profile } = useUserProfile();
-  const { isAdmin } = useAuth(profile);
+  const { canAdministrate } = useCanAdministrate(board.id!);
 
-  // todo: check if user is admin of the board
-  if (!isAdmin) return null;
+  if (!canAdministrate) return null;
 
   return (
     <div className="flex gap-3">
