@@ -26,11 +26,11 @@ func (s *TaskActivityService) Subscribe() {
 		case "task.updated.due-date":
 			oldDate := ""
 			if change.Old.DueDate != nil {
-				oldDate = change.Old.DueDate.Format("2006-01-02")
+				oldDate = change.Old.DueDate.Format("2006-01-02 15:04:05")
 			}
 			newDate := ""
 			if change.New.DueDate != nil {
-				newDate = change.New.DueDate.Format("2006-01-02")
+				newDate = change.New.DueDate.Format("2006-01-02 15:04:05")
 			}
 			err = s.CreateTaskActivity(change.New.ID, user.ID, event, oldDate, newDate)
 		case "task.moved":
